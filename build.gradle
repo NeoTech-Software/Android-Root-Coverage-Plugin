@@ -1,0 +1,48 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: 'jacoco'
+apply plugin: 'org.neotech.library.rootcoverage'
+
+buildscript {
+    ext.deps = [
+            kotlinPlugin: 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.71',
+            gradlePlugin: 'com.android.tools.build:gradle:3.1.4',
+            kotlinStdlibJdk7: 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.71'
+    ]
+
+    repositories {
+        google()
+        jcenter()
+        //mavenCentral() //Jacoco is only on mavenCentral
+    }
+    dependencies {
+        classpath deps.gradlePlugin
+        classpath deps.kotlinPlugin
+       // classpath "org.jacoco:org.jacoco.core:0.8.2"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        //mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+
+jacoco {
+    toolVersion = "0.8.2"
+}
+
+
+rootCoverage {
+    buildVariant "debug"
+    //excludes ["**/library.a/**"]
+}
