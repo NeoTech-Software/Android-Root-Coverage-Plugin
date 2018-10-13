@@ -15,7 +15,6 @@ class RootCoveragePlugin: Plugin<Project> {
     private lateinit var rootProjectExtension: RootCoveragePluginExtension;
 
     override fun apply(project: Project) {
-        println("RootCoveragePlugin v1.0.0-SNAPSHOT")
         if(project.rootProject !== project) {
             throw GradleException("The RootCoveragePlugin can not be applied to project '${project.name}' (${project.buildFile}) because it is not the root project!")
         }

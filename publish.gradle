@@ -1,53 +1,50 @@
 apply plugin: 'maven'
 
-version = VERSION_NAME
-group = GROUP // Maven Group ID for the artifact
-
+// project.archivesBaseName is added by the Maven plugin to the project, the value defaults to the
+// project.name property, but since project.name is basically the current folder name the desired
+// archive name is often different hence the explicit assignment.
+project.archivesBaseName = ARTIFACT_ID
+project.version = VERSION
+project.group = GROUP
 
 install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
+    repositories{
+        mavenInstaller {
+            // This generates POM.xml with proper parameters
+            pom {
+                groupId = GROUP
+                artifactId = ARTIFACT_ID
+                version = VERSION
 
-            groupId = GROUP
-            artifactId = POM_ARTIFACT_ID
-            version = VERSION_NAME
+                project {
+                    packaging PACKAGING
+                    name NAME
+                    description DESCRIPTION
+                    url PROJECT_WEBSITE
 
-            project {
-                packaging POM_PACKAGING
-
-
-                // Add your description here
-                name POM_NAME
-                description POM_DESCRIPTION
-                url POM_URL
-
-                // Set your license
-                licenses {
-                    license {
-                        name POM_LICENCE_NAME
-                        url POM_LICENCE_URL
+                    licenses {
+                        license {
+                            name LICENCE_NAME
+                            url LICENCE_URL
+                        }
                     }
-                }
-                developers {
-                    developer {
-                        id POM_DEVELOPER_ID
-                        name POM_DEVELOPER_NAME
-                        email POM_DEVELOPER_EMAIL
+                    developers {
+                        developer {
+                            id DEVELOPER_ID
+                            name DEVELOPER_NAME
+                            email DEVELOPER_EMAIL
+                        }
                     }
-                }
-                scm {
-                    connection POM_SCM_CONNECTION
-                    developerConnection POM_SCM_DEV_CONNECTION
-                    url POM_SCM_URL
-
+                    scm {
+                        connection SCM_CONNECTION
+                        developerConnection SCM_DEV_CONNECTION
+                        url SCM_URL
+                    }
                 }
             }
         }
     }
 }
-
-apply plugin: 'com.jfrog.bintray'
 
 if (project.getPlugins().hasPlugin('com.android.application') || project.getPlugins().hasPlugin('com.android.library')) {
     // Android libraries
@@ -81,7 +78,6 @@ if (project.getPlugins().hasPlugin('com.android.application') || project.getPlug
     }
 }
 
-
 artifacts {
     if (project.getPlugins().hasPlugin('com.android.application') || project.getPlugins().hasPlugin('com.android.library')) {
         archives androidSourcesJar
@@ -93,28 +89,33 @@ artifacts {
 }
 
 // Bintray
+apply plugin: 'com.jfrog.bintray'
+
 Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
 bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
 
-    configurations = ['archives']
+    publish = true
+    configurations = ["archives"]
 
-    // Bintry package information
+    // Package information
     pkg {
-        repo = BINTRAY_REPO
-        name = POM_ARTIFACT_ID
-        desc = POM_DESCRIPTION
-        websiteUrl = POM_URL
-        vcsUrl = POM_SCM_URL
-        licenses = [BINTRAY_LICENCE]
-        publish = true
-        publicDownloadNumbers = true
+        repo = "maven"
+        name = ARTIFACT_ID
+        desc = DESCRIPTION
+        websiteUrl = PROJECT_WEBSITE
+        vcsUrl = SCM_URL
+        licenses = [LICENCE]
         version {
-            name = VERSION_NAME
+            name = VERSION
+            vcsTag = VERSION
             released = new Date();
         }
     }
 }
+
+// Make sure clean and install are executed before upload.
+bintrayUpload.dependsOn clean, install
