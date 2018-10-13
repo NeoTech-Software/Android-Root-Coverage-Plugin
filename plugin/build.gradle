@@ -1,0 +1,35 @@
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'kotlin'
+apply plugin: 'maven'
+
+// To upload new artifact to maven:
+// > gradlew install
+// > gradlew bintrayUpload
+
+//Without this line the Bintray upload will fail as it uses the module directory name as artifactId
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    implementation gradleApi()
+    implementation deps.kotlinPlugin
+    implementation deps.gradlePlugin
+    implementation deps.kotlinStdlibJdk7
+}
+
+// For publishing to local maven repository for development purposes.
+uploadArchives {
+    dependsOn install
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../repo'))
+        }
+    }
+}
+
+// For publishing to external maven repository
+archivesBaseName = POM_ARTIFACT_ID
+group = GROUP
+version = VERSION_NAME
+apply from: rootProject.file('publish.gradle')

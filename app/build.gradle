@@ -1,14 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'jacoco'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion versions.compileSdk
     defaultConfig {
         applicationId "org.neotech.app.multimoduleapplication"
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -24,12 +23,6 @@ android {
         }
     }
 }
-
-/*
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
-}
-*/
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])

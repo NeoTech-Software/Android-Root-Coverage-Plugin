@@ -15,6 +15,7 @@ class RootCoveragePlugin: Plugin<Project> {
     private lateinit var rootProjectExtension: RootCoveragePluginExtension;
 
     override fun apply(project: Project) {
+        println("RootCoveragePlugin v1.0.0-SNAPSHOT")
         if(project.rootProject !== project) {
             throw GradleException("The RootCoveragePlugin can not be applied to project '${project.name}' (${project.buildFile}) because it is not the root project!")
         }
@@ -94,13 +95,13 @@ class RootCoveragePlugin: Plugin<Project> {
             return
         }
 
-        if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
+       /* if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
             subProject.logger.warn("Jacoco plugin not applied to project: '${subProject.name}'! RootCoveragePlugin automatically applied it but you should do this manually: ${subProject.buildFile}")
             subProject.plugins.apply(JacocoPlugin::class.java)
-        }
+        }*/
 
         // If the sub-project does not apply the jacoco plugin, skip that project.
-        if (subProject.plugins.withType(JacocoPlugin::class.java).isNotEmpty()) {
+        //if (subProject.plugins.withType(JacocoPlugin::class.java).isNotEmpty()) {
 
             // Get the exact required build variant for the current subproject.
             val buildVariant = getBuildVariantFor(subProject)
@@ -108,6 +109,10 @@ class RootCoveragePlugin: Plugin<Project> {
                 is LibraryExtension -> {
                     extension.libraryVariants.all { variant ->
                         if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
+                            if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
+                                subProject.logger.warn("Jacoco plugin not applied to project: '${subProject.name}'! RootCoveragePlugin automatically applied it but you should do this manually: ${subProject.buildFile}")
+                                subProject.plugins.apply(JacocoPlugin::class.java)
+                            }
                             val subTask = createTask(subProject, variant)
                             addSubTaskDependencyToRootTask(task, subTask)
                         }
@@ -116,28 +121,32 @@ class RootCoveragePlugin: Plugin<Project> {
                 is AppExtension -> {
                     extension.applicationVariants.all { variant ->
                         if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
+                            if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
+                                subProject.logger.warn("Jacoco plugin not applied to project: '${subProject.name}'! RootCoveragePlugin automatically applied it but you should do this manually: ${subProject.buildFile}")
+                                subProject.plugins.apply(JacocoPlugin::class.java)
+                            }
                             val subTask = createTask(subProject, variant)
                             addSubTaskDependencyToRootTask(task, subTask)
                         }
                     }
                 }
             }
-        }
+        //}
     }
 
-    private fun createTask(project: Project, variant: BaseVariant): JacocoReport {
+    private fun createTask(project: Project, variant: BaseVariant): RootCoverageModuleTask {
         //println("Create code coverage report for variant ${project.name} ${variant.name}")
 
         val name = variant.name.capitalize()
 
-        val task = project.tasks.create("codeCoverageReport$name", JacocoReport::class.java)
+        val task = project.tasks.create("codeCoverageReport$name", RootCoverageModuleTask::class.java)
         task.group = null // null makes sure the group does not show in the gradle-view in Android Studio/Intellij
         task.description = "Generate unified Jacoco code codecoverage report"
         task.dependsOn("test${name}UnitTest", "connected${name}AndroidTest")
 
-        task.reports.html.isEnabled = false
-        task.reports.xml.isEnabled = false
-        task.reports.csv.isEnabled = false
+        //task.reports.html.isEnabled = false
+        //task.reports.xml.isEnabled = false
+        //task.reports.csv.isEnabled = false
         //task.reports.html.destination = project.file("${project.buildDir}/reports/jacoco")
 
         // Collect the class files based on the Java Compiler output
@@ -157,12 +166,13 @@ class RootCoveragePlugin: Plugin<Project> {
         task.classDirectories = project.files(javaClassTrees, kotlinClassTree)
         task.executionData = project.fileTree(project.buildDir, includes = listOf("jacoco/test${name}UnitTest.exec", "outputs/code-coverage/connected/*coverage.ec"))
 
+        //task.onlyIf { true }
         //println("Source files: ${task.classDirectories.files}")
 
         return task
     }
 
-    private fun addSubTaskDependencyToRootTask(rootTask: JacocoReport, subModuleTask: JacocoReport) {
+    private fun addSubTaskDependencyToRootTask(rootTask: JacocoReport, subModuleTask: RootCoverageModuleTask) {
 
         // Make the root task depend on the sub-project code coverage task
         rootTask.dependsOn(subModuleTask)

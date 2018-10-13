@@ -3,22 +3,37 @@ apply plugin: 'jacoco'
 apply plugin: 'org.neotech.library.rootcoverage'
 
 buildscript {
+    ext.versions = [
+            minSdk: 21,
+            targetSdk: 28,
+            compileSdk: 28,
+            kotlin: "1.2.71",
+            gradlePlugin: "3.1.4"
+    ]
     ext.deps = [
-            kotlinPlugin: 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.71',
-            gradlePlugin: 'com.android.tools.build:gradle:3.1.4',
-            kotlinStdlibJdk7: 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.71'
+            kotlinPlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+            gradlePlugin: "com.android.tools.build:gradle:${versions.gradlePlugin}",
+            kotlinStdlibJdk7: "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     ]
 
     repositories {
         google()
         jcenter()
-        //mavenCentral() //Jacoco is only on mavenCentral
+
+        // Local maven repository for development purposes.
+        maven {
+            url uri('/repo')
+        }
     }
     dependencies {
         classpath deps.gradlePlugin
         classpath deps.kotlinPlugin
-       // classpath "org.jacoco:org.jacoco.core:0.8.2"
 
+        // Bintray & Maven for publishing
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+
+        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.0.0-SNAPSHOT'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -28,7 +43,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        //mavenCentral()
     }
 }
 
@@ -40,7 +54,6 @@ task clean(type: Delete) {
 jacoco {
     toolVersion = "0.8.2"
 }
-
 
 rootCoverage {
     buildVariant "debug"

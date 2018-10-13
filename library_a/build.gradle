@@ -3,15 +3,19 @@ apply plugin: 'kotlin-android'
 apply plugin: 'jacoco'
 
 android {
-    compileSdkVersion 28
-
+    compileSdkVersion versions.compileSdk
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildTypes {
@@ -24,11 +28,6 @@ android {
         }
     }
 }
-/*
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
-}
-*/
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
