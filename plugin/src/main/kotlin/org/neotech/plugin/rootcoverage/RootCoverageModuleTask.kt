@@ -1,4 +1,4 @@
-package org.neotech.library.rootcoverage
+package org.neotech.plugin.rootcoverage
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection

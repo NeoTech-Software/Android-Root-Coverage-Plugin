@@ -1,4 +1,4 @@
-package org.neotech.library.rootcoverage
+package org.neotech.plugin.rootcoverage
 
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.LibraryExtension

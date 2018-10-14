@@ -1,4 +1,4 @@
-package org.neotech.library.rootcoverage
+package org.neotech.plugin.rootcoverage
 
 open class RootCoveragePluginExtension {
 

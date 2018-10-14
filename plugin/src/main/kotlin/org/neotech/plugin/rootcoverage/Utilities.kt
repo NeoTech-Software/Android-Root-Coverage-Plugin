@@ -1,4 +1,4 @@
-package org.neotech.library.rootcoverage
+package org.neotech.plugin.rootcoverage
 
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
