@@ -57,5 +57,6 @@ jacoco {
 
 rootCoverage {
     buildVariant "debug"
+    buildVariantOverrides ":library_a" : "debug", ":library_b": "debug"
     //excludes ["**/library.a/**"]
 }
