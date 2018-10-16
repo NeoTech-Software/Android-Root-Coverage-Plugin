@@ -7,22 +7,15 @@ Generating code coverage reports for Android Projects that make use of the Gradl
   - Supports custom filters.
 
 # Setup
-Apply the Android-Root-Coverage-Plugin plugin to your top-level (root project) gradle file following these 3 steps:
+Apply the Android-Root-Coverage-Plugin plugin to your top-level (root project) gradle file following these 2 steps:
 
 ```
-// Step 3: Apply the plugin to the top-level gradle file
+// Step 2: Apply the plugin to the top-level gradle file
 apply plugin: 'org.neotech.plugin.rootcoverage'
 
 buildscript {
-    repositories {
-        // Step 1: add the repository
-        // This plugin is not yet available on Maven Central, so currently it is needed to add the following repository:
-        maven {
-            url  "http://dl.bintray.com/rolf-smit/maven"
-        }
-    }
     dependencies {
-        // Step 2: add the dependency
+        // Step 1: add the dependency
         classpath 'org.neotech.plugin:android-root-coverage-plugin:0.0.1-dev'
     }
 }
