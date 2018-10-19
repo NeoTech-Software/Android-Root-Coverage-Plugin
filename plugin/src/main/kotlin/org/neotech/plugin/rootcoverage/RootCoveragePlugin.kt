@@ -168,7 +168,10 @@ class RootCoveragePlugin: Plugin<Project> {
         val task = project.tasks.create("codeCoverageReport$name", RootCoverageModuleTask::class.java)
         task.group = null // null makes sure the group does not show in the gradle-view in Android Studio/Intellij
         task.description = "Generate unified Jacoco code codecoverage report"
-        task.dependsOn("test${name}UnitTest", "connected${name}AndroidTest")
+
+        if(!rootProjectExtension.skipTestExecution) {
+            task.dependsOn("test${name}UnitTest", "connected${name}AndroidTest")
+        }
 
         // Collect the class files based on the Java Compiler output
         val javaClassTrees = variant.javaCompiler.outputs.files.map { file ->

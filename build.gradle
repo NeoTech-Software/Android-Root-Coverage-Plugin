@@ -33,7 +33,7 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
 
-        classpath 'org.neotech.plugin:android-root-coverage-plugin:0.0.1-dev'
+        classpath 'org.neotech.plugin:android-root-coverage-plugin:0.0.2-dev'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -58,5 +58,6 @@ jacoco {
 rootCoverage {
     buildVariant "debug"
     buildVariantOverrides ":library_a" : "debug", ":library_b": "debug"
-    //excludes ["**/library.a/**"]
+    //excludes = ["**/LibraryAJava.class"]
+    //skipTestExecution true
 }

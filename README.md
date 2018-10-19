@@ -9,7 +9,7 @@ Generating code coverage reports for Android Projects that make use of the Gradl
 # Setup
 Apply the Android-Root-Coverage-Plugin plugin to your top-level (root project) gradle file following these 2 steps:
 
-```
+```groovy
 // Step 2: Apply the plugin to the top-level gradle file
 apply plugin: 'org.neotech.plugin.rootcoverage'
 
@@ -25,7 +25,7 @@ buildscript {
 Currently only modules with the plugin type `com.android.application` or `com.android.library` are taken into account when generating the root code coverage report, besides this any module that does not have `testCoverageEnabled true` for the default build variant (`debug`) will be skipped::
 
 You can add a module by enabling `testCoverageEnabled`:
-```
+```groovy
 android {
     buildTypes {
         debug {
@@ -43,14 +43,16 @@ The Android-Root-Coverage-Plugin generates a special Gradle task `:rootCodeCover
 # Configuration
 By default the plugin generates code coverage reports using the build variant `debug` for every module. However in some cases different build variants per module might be required, especially if there is no `debug` build variant available. In those cases you can configure custom build variants for specific modules:
 
-```
+```groovy
 rootCoverage {
     // The default build variant for every module
     buildVariant "debug"
     // Overrides the default build variant for specific modules.
     buildVariantOverrides ":moduleA" : "debugFlavourA", ":moduleB": "debugFlavourA"
     // Class exclude patterns
-    excludes ["**/library.a/**"]
+    excludes = ["**/some.package/**"]
+    // If true the task it self does not execute any tests (debug option)
+    skipTestExecution false
 }
 ```
 
