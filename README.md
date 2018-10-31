@@ -16,7 +16,7 @@ apply plugin: 'org.neotech.plugin.rootcoverage'
 buildscript {
     dependencies {
         // Step 1: add the dependency
-        classpath 'org.neotech.plugin:android-root-coverage-plugin:0.0.1-dev'
+        classpath 'org.neotech.plugin:android-root-coverage-plugin:0.0.2-dev'
     }
 }
 ```
@@ -63,7 +63,11 @@ Want to contribute? Great! Currently this plugin is in need of extensive testing
 - Support for Java modules
 - Make use of the JacocoMerge task? To merge the `exec` en `ec` files?
 - Support for configuring the output type: html, xml etc. (Just like Jacoco)
-- Actual Plugin unit-tests (instead of a test project)
+- Improved integration test setup?
+
+To run the integration test that comes with the plugin, either execute `gradlew clean test` or run the test directly from Android Studio using a proper run/test configuration as shown in the image *(by default it generates configuration that is not compatible with a plugin module)*:
+![Correct run/test configuration](correct-test-run-configuration.png)
+
 
 # Author note
 Many thanks to [Hans van Dam](https://github.com/hansvdam) for helping with testing and the inital idea.
