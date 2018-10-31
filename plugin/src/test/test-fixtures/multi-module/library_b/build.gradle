@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.library'
+    id "org.jetbrains.kotlin.android" apply false
+    id 'jacoco'
+}
+
+// Applying it in the plugins block directly leads to:
+// UnknownDomainObjectException: Extension with name 'android' does not exist.
+// Not sure why... if anyone can tell me, perfect!
+apply plugin: 'kotlin-android'
+
+android {
+
+    compileSdkVersion projectVersion.compileSdk
+    defaultConfig {
+        minSdkVersion projectVersion.minSdk
+        targetSdkVersion projectVersion.compileSdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation projectDependency.kotlinStdlibJdk7
+    implementation projectDependency.appCompat
+
+    testImplementation projectDependency.junit
+    androidTestImplementation projectDependency.supportTestRunner
+    androidTestImplementation projectDependency.espressoCore
+}

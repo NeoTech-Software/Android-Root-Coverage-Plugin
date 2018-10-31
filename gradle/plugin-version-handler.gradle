@@ -1,0 +1,40 @@
+// Copyright (C) 2018 Rolf Smit
+//
+// This file can be used as a hack to make it possible to use variable/dynamic version numbers for
+// plugins in the new Gradle Plugins Block:
+// https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block
+// Normally variables cannot be used, but through the project settings.pluginManagement DSL some
+// configuration is possible.
+//
+// How to use?
+//
+// 1. Add the following to your settings.gradle file:
+//
+// pluginManagement {
+//     apply from: "path/to/plugin-version-handler.gradle", to: pluginManagement
+// }
+//
+// 2. Add the plugins that you want to use variable/dynamic version for to the dependencies.gradle
+// file:
+//
+// ext {
+//     projectVersion = [
+//             kotlin      : "1.3.0",
+//     ]
+//
+//     pluginVersions = [
+//             "org.jetbrains.kotlin.android": "${projectVersion.kotlin}"
+//     ]
+// }
+
+
+apply from: "dependencies.gradle"
+
+resolutionStrategy {
+    eachPlugin {
+        def version = pluginVersions[requested.id.id]
+        if (requested.version == null && version != null) {
+            useVersion version
+        }
+    }
+}
