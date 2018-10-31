@@ -13,7 +13,7 @@ android {
 
     compileSdkVersion projectVersion.compileSdk
     defaultConfig {
-        applicationId "org.neotech.app.multimoduleapplication"
+        applicationId "org.neotech.app"
         minSdkVersion projectVersion.minSdk
         targetSdkVersion projectVersion.compileSdk
         versionCode 1
@@ -34,8 +34,7 @@ android {
 
 dependencies {
 
-    implementation project(":library_a")
-    implementation project(":library_b")
+    implementation project(":library_android")
 
     implementation projectDependency.kotlinStdlibJdk7
     implementation projectDependency.appCompat

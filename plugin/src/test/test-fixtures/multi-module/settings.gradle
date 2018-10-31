@@ -3,4 +3,4 @@ pluginManagement {
     apply from: "../../../../../gradle/plugin-version-handler.gradle", to: pluginManagement
 }
 
-include ':app', ':library_a', ':library_b', ':java_module'
+include ':app', ':library_android', ':library_java'
