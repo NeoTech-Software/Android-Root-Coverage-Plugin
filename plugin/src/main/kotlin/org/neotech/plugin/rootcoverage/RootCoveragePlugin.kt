@@ -19,12 +19,12 @@ class RootCoveragePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         if (project.rootProject !== project) {
-            throw GradleException("The RootCoveragePlugin can not be applied to project '${project.name}' (${project.buildFile}) because it is not the root project!")
+            throw GradleException("The RootCoveragePlugin can not be applied to project '${project.name}' because it is not the root project. Build file: ${project.buildFile}")
         }
         rootProjectExtension = project.extensions.create("rootCoverage", RootCoveragePluginExtension::class.java)
 
         if (project.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-            project.logger.warn("Jacoco plugin not applied to project: '${project.name}'! RootCoveragePlugin automatically applied it but you should do this manually: ${project.buildFile}")
+            project.logger.warn("Warning: Jacoco plugin was not found for project: '${project.name}', it has been applied automatically but you should do this manually. Build file: ${project.buildFile}")
             project.plugins.apply(JacocoPlugin::class.java)
         }
 
@@ -84,8 +84,7 @@ class RootCoveragePlugin : Plugin<Project> {
     private fun <T : BaseVariant> assertVariantExists(set: DomainObjectSet<T>, buildVariant: String, project: Project) {
         set.find {
             it.name.capitalize() == buildVariant.capitalize()
-        }
-                ?: throw GradleException("Build variant `$buildVariant` required for module `${project.name}` does not exist! Make sure to use a proper build variant configuration using rootCoverage.buildVariant and rootCoverage.buildVariantOverrides!")
+        } ?: throw GradleException("Build variant `$buildVariant` required for module `${project.name}` does not exist. Make sure to use a proper build variant configuration using rootCoverage.buildVariant and rootCoverage.buildVariantOverrides.")
     }
 
     private fun createCoverageTaskForRoot(project: Project) {
@@ -128,11 +127,11 @@ class RootCoveragePlugin : Plugin<Project> {
         val extension = subProject.extensions.findByName("android")
         if (extension == null) {
             // TODO support java modules?
-            subProject.logger.warn("Skipping code coverage for module '${subProject.name}': currently RootCoveragePlugin only supports Android Application or Android Library modules!");
+            subProject.logger.warn("Note: Skipping code coverage for module '${subProject.name}', currently the RootCoveragePlugin does not yet support Java Library Modules.");
             return
         } else if (extension is com.android.build.gradle.FeatureExtension) {
             // TODO support feature modules?
-            subProject.logger.warn("Skipping code coverage for module '${subProject.name}': Currently RootCoveragePlugin does not yet support Android Feature Modules!")
+            subProject.logger.warn("Note: Skipping code coverage for module '${subProject.name}', currently the RootCoveragePlugin does not yet support Android Feature Modules.")
             return
         }
 
@@ -147,7 +146,7 @@ class RootCoveragePlugin : Plugin<Project> {
 
                     if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
                         if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-                            subProject.logger.warn("Jacoco plugin not applied to project: '${subProject.name}'! RootCoveragePlugin automatically applied it but you should do this manually: ${subProject.buildFile}")
+                            subProject.logger.warn("Warning: Jacoco plugin was not found for project: '${subProject.name}', it has been applied automatically but you should do this manually. Build file: ${subProject.buildFile}")
                             subProject.plugins.apply(JacocoPlugin::class.java)
                         }
                         val subTask = createTask(subProject, variant)
