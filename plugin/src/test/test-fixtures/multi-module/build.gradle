@@ -1,8 +1,9 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 buildscript {
 
     // Import versions
-    apply from: "gradle/dependencies.gradle"
+    apply from: "../../../../../gradle/dependencies.gradle"
 
     repositories {
         google()
@@ -10,16 +11,18 @@ buildscript {
     }
     dependencies {
         classpath projectDependency.gradlePlugin
-        classpath projectDependency.kotlinPlugin
-
-        // Bintray & Maven for publishing
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
+
+plugins {
+    // Prevent adding this plugin to all submodules (default behaviour)
+    id 'org.neotech.plugin.rootcoverage' apply false
+}
+// Add the plugin just to this module
+apply plugin: 'jacoco'
+apply plugin: 'org.neotech.plugin.rootcoverage'
 
 allprojects {
     repositories {
@@ -30,4 +33,15 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+jacoco {
+    toolVersion = "0.8.2"
+}
+
+import com.android.builder.model.TestVariantBuildOutput.TestType
+
+rootCoverage {
+    buildVariant "debug"
+    testTypes = [TestType.UNIT, TestType.ANDROID_TEST]
 }

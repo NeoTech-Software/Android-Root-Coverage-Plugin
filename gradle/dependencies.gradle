@@ -1,0 +1,30 @@
+ext {
+    projectVersion = [
+            minSdk      : 21,
+            targetSdk   : 28,
+            compileSdk  : 28,
+            // Kotlin version is used in multiple places hence it is available as version variable
+            kotlin      : "1.2.71"
+    ]
+    projectDependency = [
+
+            // Gradle Plugins
+            kotlinPlugin      : "org.jetbrains.kotlin:kotlin-gradle-plugin:${projectVersion.kotlin}",
+            gradlePlugin      : "com.android.tools.build:gradle:3.2.1",
+
+            // Dependencies
+            kotlinStdlibJdk7  : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${projectVersion.kotlin}",
+            appCompat         : "com.android.support:appcompat-v7:28.0.0",
+
+            // Test dependencies
+            junit             : "junit:junit:4.12",
+            truth             : "com.google.truth:truth:0.42",
+            supportTestRunner : "com.android.support.test:runner:1.0.2",
+            espressoCore      : "com.android.support.test.espresso:espresso-core:3.0.2"
+    ]
+
+    // Used by the plugin-version-handler.gradle
+    pluginVersions = [
+            "org.jetbrains.kotlin.android": "${projectVersion.kotlin}"
+    ]
+}

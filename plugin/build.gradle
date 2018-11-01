@@ -1,27 +1,34 @@
-apply plugin: 'java-gradle-plugin'
 apply plugin: 'kotlin'
+apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven'
 
-// To upload new artifact to maven:
+// To upload new plugin artifact to maven:
 // > gradlew bintrayUpload
+//
+// To test the plugin:
+// > gradlew clean test
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-dependencies {
-    compileOnly gradleApi()
-    implementation deps.gradlePlugin
-    implementation deps.kotlinStdlibJdk7
-}
-
-// For publishing to local maven repository for development purposes.
-uploadArchives {
-    dependsOn install
-    repositories {
-        mavenDeployer {
-            repository(url: uri('../repo'))
+gradlePlugin {
+    plugins {
+        rootCoverage {
+            id = 'org.neotech.plugin.rootcoverage'
+            implementationClass = 'org.neotech.plugin.rootcoverage.RootCoveragePlugin'
         }
     }
+}
+
+dependencies {
+    compileOnly gradleApi()
+    implementation projectDependency.gradlePlugin
+    implementation projectDependency.kotlinStdlibJdk7
+
+    testImplementation projectDependency.kotlinStdlibJdk7
+    testImplementation gradleTestKit()
+    testImplementation projectDependency.junit
+    testImplementation projectDependency.truth
 }
 
 apply from: rootProject.file('publish.gradle')
