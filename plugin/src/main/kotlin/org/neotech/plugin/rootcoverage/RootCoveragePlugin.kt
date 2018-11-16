@@ -197,8 +197,12 @@ class RootCoveragePlugin : Plugin<Project> {
         // Hard coded alternative to get class files for Java.
         //val classesTree = project.fileTree(mapOf("dir" to "${project.buildDir}/intermediates/classes/${variant.dirName}", "excludes" to getFileFilterPatterns()))
 
-        // TODO: No idea how to dynamically get the kotlin class files output folder... so for now this is hardcoded.
-        val kotlinClassTree = project.fileTree("${project.buildDir}/tmp/kotlin-classes/${variant.dirName}", excludes = getFileFilterPatterns()).excludeNonClassFiles()
+        // TODO: No idea how to dynamically get the kotlin class files output folder, so for now this is hardcoded.
+        // TODO: For some reason the tmp/kotlin-classes folder does not use the variant.dirName property, for now we instead use the variant.name.
+        val kotlinClassFolder = "${project.buildDir}/tmp/kotlin-classes/${variant.name}"
+        project.logger.info("Kotlin class folder for variant '${variant.name}': $kotlinClassFolder")
+
+        val kotlinClassTree = project.fileTree(kotlinClassFolder, excludes = getFileFilterPatterns()).excludeNonClassFiles()
 
         // getSourceFolders returns ConfigurableFileCollections, but we only need the base directory of each ConfigurableFileCollection.
         val sourceFiles = variant.getSourceFolders(SourceKind.JAVA).map { file -> file.dir }
