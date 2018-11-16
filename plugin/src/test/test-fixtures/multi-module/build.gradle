@@ -17,12 +17,9 @@ buildscript {
 }
 
 plugins {
-    // Prevent adding this plugin to all submodules (default behaviour)
-    id 'org.neotech.plugin.rootcoverage' apply false
+    id 'jacoco'
+    id 'org.neotech.plugin.rootcoverage'
 }
-// Add the plugin just to this module
-apply plugin: 'jacoco'
-apply plugin: 'org.neotech.plugin.rootcoverage'
 
 allprojects {
     repositories {

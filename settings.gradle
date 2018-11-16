@@ -1,1 +1,7 @@
+// See plugin-version-handler.gradle for an explanation why this is here.
+pluginManagement {
+    apply from: "gradle/plugin-version-handler.gradle", to: pluginManagement
+}
+
+
 include ':plugin'

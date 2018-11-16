@@ -25,6 +25,7 @@ ext {
 
     // Used by the plugin-version-handler.gradle
     pluginVersions = [
-            "org.jetbrains.kotlin.android": "${projectVersion.kotlin}"
+            "org.jetbrains.kotlin.android": "${projectVersion.kotlin}",
+            "org.jetbrains.kotlin.jvm": "${projectVersion.kotlin}"
     ]
 }
