@@ -1,4 +1,8 @@
-apply plugin: 'maven'
+// This file only works if the project that includes it defines:
+// plugins {
+//     id "com.github.dcendents.android-maven" version "2.1"
+//     id "com.jfrog.bintray" version "1.8.4"
+// }
 
 // project.archivesBaseName is added by the Maven plugin to the project, the value defaults to the
 // project.name property, but since project.name is basically the current folder name the desired
@@ -87,9 +91,6 @@ artifacts {
         archives javadocJar
     }
 }
-
-// Bintray
-apply plugin: 'com.jfrog.bintray'
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file("local.properties").newDataInputStream())

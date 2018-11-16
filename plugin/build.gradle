@@ -1,6 +1,14 @@
-apply plugin: 'kotlin'
-apply plugin: 'java-gradle-plugin'
-apply plugin: 'maven'
+plugins {
+    id "org.jetbrains.kotlin.jvm"
+    id "java-gradle-plugin"
+
+    // For publishing to Plugin Portal
+    id "com.gradle.plugin-publish" version "0.10.0"
+
+    // Bintray & Maven for publishing
+    id "com.github.dcendents.android-maven" version "2.1"
+    id "com.jfrog.bintray" version "1.8.4"
+}
 
 // To upload new plugin artifact to maven:
 // > gradlew bintrayUpload
@@ -16,6 +24,19 @@ gradlePlugin {
         rootCoverage {
             id = 'org.neotech.plugin.rootcoverage'
             implementationClass = 'org.neotech.plugin.rootcoverage.RootCoveragePlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = PROJECT_WEBSITE
+    vcsUrl = 'https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin'
+    description = DESCRIPTION
+    tags = ['android', 'coverage', 'jacoco', 'code-coverage', 'coverage-report', 'aggregated-report']
+
+    plugins {
+        rootCoverage {
+            displayName = 'Android-Root-Coverage-Plugin'
         }
     }
 }
