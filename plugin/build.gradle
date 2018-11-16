@@ -10,8 +10,8 @@ plugins {
     id "com.jfrog.bintray" version "1.8.4"
 }
 
-// To upload new plugin artifact to maven:
-// > gradlew bintrayUpload
+// To upload new plugin artifact to maven and Gradle Portal:
+// > gradlew bintrayUpload publishPlugins
 //
 // To test the plugin:
 // > gradlew clean test
@@ -38,6 +38,12 @@ pluginBundle {
         rootCoverage {
             displayName = 'Android-Root-Coverage-Plugin'
         }
+    }
+
+    mavenCoordinates {
+        groupId = GROUP
+        artifactId = ARTIFACT_ID
+        version = VERSION
     }
 }
 
