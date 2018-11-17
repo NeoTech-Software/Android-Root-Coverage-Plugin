@@ -23,7 +23,7 @@ apply plugin: 'org.neotech.plugin.rootcoverage'
 buildscript {
     dependencies {
         // Step 1: add the dependency
-        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.0.1'
+        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.0.2'
     }
 }
 ```
