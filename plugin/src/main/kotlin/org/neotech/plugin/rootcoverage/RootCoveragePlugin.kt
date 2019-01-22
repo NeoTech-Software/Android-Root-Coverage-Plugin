@@ -199,7 +199,7 @@ class RootCoveragePlugin : Plugin<Project> {
             val javaClassTrees = javaClassOutputs.files.map { file ->
                 project.fileTree(file, excludes = getFileFilterPatterns()).excludeNonClassFiles()
             }
-            
+
             // TODO: No idea how to dynamically get the kotlin class files output folder, so for now this is hardcoded.
             // TODO: For some reason the tmp/kotlin-classes folder does not use the variant.dirName property, for now we instead use the variant.name.
             val kotlinClassFolder = "${project.buildDir}/tmp/kotlin-classes/${variant.name}"
