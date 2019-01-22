@@ -31,39 +31,35 @@ class RootCoveragePlugin : Plugin<Project> {
         project.afterEvaluate { createCoverageTaskForRoot(it) }
     }
 
-    private fun getFileFilterPatterns(): List<String> {
-        return listOf(
-                "**/AutoValue_*.*", // Filter to remove generated files from: https://github.com/google/auto
-                //"**/*JavascriptBridge.class",
+    private fun getFileFilterPatterns(): List<String> = listOf(
+            "**/AutoValue_*.*", // Filter to remove generated files from: https://github.com/google/auto
+            //"**/*JavascriptBridge.class",
 
-                // Android Databinding
-                "**/*databinding",
-                "**/*binders",
-                "**/*layouts",
-                "**/BR.class", // Filter to remove generated databinding files
+            // Android Databinding
+            "**/*databinding",
+            "**/*binders",
+            "**/*layouts",
+            "**/BR.class", // Filter to remove generated databinding files
 
-                // Core Android generated class filters
-                "**/R.class",
-                "**/R$*.class",
-                "**/Manifest*.*",
-                "**/BuildConfig.class",
-                "android/**/*.*",
+            // Core Android generated class filters
+            "**/R.class",
+            "**/R$*.class",
+            "**/Manifest*.*",
+            "**/BuildConfig.class",
+            "android/**/*.*",
 
-                "**/*\$ViewBinder*.*",
-                "**/*\$ViewInjector*.*",
-                "**/Lambda$*.class",
-                "**/Lambda.class",
-                "**/*Lambda.class",
-                "**/*Lambda*.class",
-                "**/*\$InjectAdapter.class",
-                "**/*\$ModuleAdapter.class",
-                "**/*\$ViewInjector*.class") + rootProjectExtension.excludes
-    }
+            "**/*\$ViewBinder*.*",
+            "**/*\$ViewInjector*.*",
+            "**/Lambda$*.class",
+            "**/Lambda.class",
+            "**/*Lambda.class",
+            "**/*Lambda*.class",
+            "**/*\$InjectAdapter.class",
+            "**/*\$ModuleAdapter.class",
+            "**/*\$ViewInjector*.class") + rootProjectExtension.excludes
 
-    private fun getBuildVariantFor(project: Project): String {
-        return rootProjectExtension.buildVariantOverrides[project.path]
-                ?: rootProjectExtension.buildVariant
-    }
+    private fun getBuildVariantFor(project: Project): String =
+            rootProjectExtension.buildVariantOverrides[project.path] ?: rootProjectExtension.buildVariant
 
     private fun getExecutionDataFilePatterns(): List<String> {
         val list = mutableListOf<String>()
