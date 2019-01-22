@@ -199,9 +199,7 @@ class RootCoveragePlugin : Plugin<Project> {
             val javaClassTrees = javaClassOutputs.files.map { file ->
                 project.fileTree(file, excludes = getFileFilterPatterns()).excludeNonClassFiles()
             }
-            // Hard coded alternative to get class files for Java.
-            //val classesTree = project.fileTree(mapOf("dir" to "${project.buildDir}/intermediates/classes/${variant.dirName}", "excludes" to getFileFilterPatterns()))
-
+            
             // TODO: No idea how to dynamically get the kotlin class files output folder, so for now this is hardcoded.
             // TODO: For some reason the tmp/kotlin-classes folder does not use the variant.dirName property, for now we instead use the variant.name.
             val kotlinClassFolder = "${project.buildDir}/tmp/kotlin-classes/${variant.name}"
@@ -225,21 +223,9 @@ class RootCoveragePlugin : Plugin<Project> {
         // Make the root task depend on the sub-project code coverage task
         rootTask.dependsOn(subModuleTask)
 
-        // Set or add the sub-task class directories to the root task
-        if (rootTask.classDirectories == null) {
-            rootTask.classDirectories.setFrom(subModuleTask.classDirectories)
-        } else {
-            rootTask.additionalClassDirs(subModuleTask.classDirectories)
-        }
-
-        // Set or add the sub-task source directories to the root task
-        if (rootTask.sourceDirectories == null) {
-            rootTask.sourceDirectories.setFrom(subModuleTask.sourceDirectories)
-        } else {
-            rootTask.additionalSourceDirs(subModuleTask.sourceDirectories)
-        }
-
-        // Add the sub-task class directories to the root task
-        rootTask.executionData(subModuleTask.executionData)
+        // Add the sub-task class directories, source directories and executionData to the root task
+        rootTask.classDirectories.from(subModuleTask.classDirectories)
+        rootTask.sourceDirectories.from(subModuleTask.sourceDirectories)
+        rootTask.executionData.from(subModuleTask.executionData)
     }
 }
