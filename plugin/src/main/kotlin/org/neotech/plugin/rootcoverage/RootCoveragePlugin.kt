@@ -177,41 +177,44 @@ class RootCoveragePlugin : Plugin<Project> {
 
         val name = variant.name.capitalize()
 
-        val task = project.tasks.create("codeCoverageReport$name", RootCoverageModuleTask::class.java)
-        task.group = null // null makes sure the group does not show in the gradle-view in Android Studio/Intellij
-        task.description = "Generate unified Jacoco code codecoverage report"
+        val codeCoverageReportTask = project.tasks.register("codeCoverageReport$name", RootCoverageModuleTask::class.java)
+        codeCoverageReportTask.configure { task ->
+            task.group = null // null makes sure the group does not show in the gradle-view in Android Studio/Intellij
+            task.description = "Generate unified Jacoco code codecoverage report"
 
-        if (!rootProjectExtension.skipTestExecution) {
-            if (rootProjectExtension.testTypes.contains(TestVariantBuildOutput.TestType.UNIT)) {
-                task.dependsOn("test${name}UnitTest")
+            if (!rootProjectExtension.skipTestExecution) {
+                if (rootProjectExtension.testTypes.contains(TestVariantBuildOutput.TestType.UNIT)) {
+                    task.dependsOn("test${name}UnitTest")
+                }
+                if (rootProjectExtension.testTypes.contains(TestVariantBuildOutput.TestType.ANDROID_TEST)) {
+                    task.dependsOn("connected${name}AndroidTest")
+                }
             }
-            if (rootProjectExtension.testTypes.contains(TestVariantBuildOutput.TestType.ANDROID_TEST)) {
-                task.dependsOn("connected${name}AndroidTest")
+
+            // Collect the class files based on the Java Compiler output
+            val javaClassOutputs = variant.javaCompileProvider.get().outputs
+            val javaClassTrees = javaClassOutputs.files.map { file ->
+                project.fileTree(file, excludes = getFileFilterPatterns()).excludeNonClassFiles()
             }
+            // Hard coded alternative to get class files for Java.
+            //val classesTree = project.fileTree(mapOf("dir" to "${project.buildDir}/intermediates/classes/${variant.dirName}", "excludes" to getFileFilterPatterns()))
+
+            // TODO: No idea how to dynamically get the kotlin class files output folder, so for now this is hardcoded.
+            // TODO: For some reason the tmp/kotlin-classes folder does not use the variant.dirName property, for now we instead use the variant.name.
+            val kotlinClassFolder = "${project.buildDir}/tmp/kotlin-classes/${variant.name}"
+            project.logger.info("Kotlin class folder for variant '${variant.name}': $kotlinClassFolder")
+
+            val kotlinClassTree = project.fileTree(kotlinClassFolder, excludes = getFileFilterPatterns()).excludeNonClassFiles()
+
+            // getSourceFolders returns ConfigurableFileCollections, but we only need the base directory of each ConfigurableFileCollection.
+            val sourceFiles = variant.getSourceFolders(SourceKind.JAVA).map { file -> file.dir }
+
+            task.sourceDirectories = project.files(sourceFiles)
+            task.classDirectories = project.files(javaClassTrees, kotlinClassTree)
+            task.executionData = project.fileTree(project.buildDir, includes = getExecutionDataFilePatterns())
         }
 
-        // Collect the class files based on the Java Compiler output
-        val javaClassTrees = variant.javaCompiler.outputs.files.map { file ->
-            project.fileTree(file, excludes = getFileFilterPatterns()).excludeNonClassFiles()
-        }
-        // Hard coded alternative to get class files for Java.
-        //val classesTree = project.fileTree(mapOf("dir" to "${project.buildDir}/intermediates/classes/${variant.dirName}", "excludes" to getFileFilterPatterns()))
-
-        // TODO: No idea how to dynamically get the kotlin class files output folder, so for now this is hardcoded.
-        // TODO: For some reason the tmp/kotlin-classes folder does not use the variant.dirName property, for now we instead use the variant.name.
-        val kotlinClassFolder = "${project.buildDir}/tmp/kotlin-classes/${variant.name}"
-        project.logger.info("Kotlin class folder for variant '${variant.name}': $kotlinClassFolder")
-
-        val kotlinClassTree = project.fileTree(kotlinClassFolder, excludes = getFileFilterPatterns()).excludeNonClassFiles()
-
-        // getSourceFolders returns ConfigurableFileCollections, but we only need the base directory of each ConfigurableFileCollection.
-        val sourceFiles = variant.getSourceFolders(SourceKind.JAVA).map { file -> file.dir }
-
-        task.sourceDirectories = project.files(sourceFiles)
-        task.classDirectories = project.files(javaClassTrees, kotlinClassTree)
-        task.executionData = project.fileTree(project.buildDir, includes = getExecutionDataFilePatterns())
-
-        return task
+        return codeCoverageReportTask.get()
     }
 
     private fun addSubTaskDependencyToRootTask(rootTask: JacocoReport, subModuleTask: RootCoverageModuleTask) {
@@ -221,16 +224,16 @@ class RootCoveragePlugin : Plugin<Project> {
 
         // Set or add the sub-task class directories to the root task
         if (rootTask.classDirectories == null) {
-            rootTask.classDirectories = subModuleTask.classDirectories
+            rootTask.classDirectories.setFrom(subModuleTask.classDirectories)
         } else {
-            rootTask.classDirectories += subModuleTask.classDirectories
+            rootTask.additionalClassDirs(subModuleTask.classDirectories)
         }
 
         // Set or add the sub-task source directories to the root task
         if (rootTask.sourceDirectories == null) {
-            rootTask.sourceDirectories = subModuleTask.sourceDirectories
+            rootTask.sourceDirectories.setFrom(subModuleTask.sourceDirectories)
         } else {
-            rootTask.sourceDirectories += subModuleTask.sourceDirectories
+            rootTask.additionalSourceDirs(subModuleTask.sourceDirectories)
         }
 
         // Add the sub-task class directories to the root task
