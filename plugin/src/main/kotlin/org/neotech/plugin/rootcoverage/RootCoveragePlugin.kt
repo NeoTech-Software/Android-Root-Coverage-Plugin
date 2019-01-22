@@ -99,10 +99,13 @@ class RootCoveragePlugin : Plugin<Project> {
         task.group = "reporting"
         task.description = "Generates a Jacoco report with combined results from all the subprojects."
 
-        task.reports.html.isEnabled = true
-        task.reports.xml.isEnabled = false
-        task.reports.csv.isEnabled = false
+        task.reports.html.isEnabled = rootProjectExtension.generateHtml
+        task.reports.xml.isEnabled = rootProjectExtension.generateXml
+        task.reports.csv.isEnabled = rootProjectExtension.generateCsv
+
         task.reports.html.destination = project.file("${project.buildDir}/reports/jacoco")
+        task.reports.xml.destination = project.file("${project.buildDir}/reports/jacoco.xml")
+        task.reports.csv.destination = project.file("${project.buildDir}/reports/jacoco.csv")
 
         // Add some run-time checks.
         task.doFirst {

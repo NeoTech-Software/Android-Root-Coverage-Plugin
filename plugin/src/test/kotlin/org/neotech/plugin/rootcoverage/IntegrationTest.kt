@@ -1,15 +1,15 @@
 package org.neotech.plugin.rootcoverage
 
 import com.google.common.truth.Truth.assertThat
+import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
 import java.io.File
 import java.io.OutputStreamWriter
+import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
 class IntegrationTest(
@@ -32,13 +32,18 @@ class IntegrationTest(
 
         assertThat(result.output).contains("BUILD SUCCESSFUL")
         assertEquals(result.task(":rootCodeCoverageReport")!!.outcome, TaskOutcome.SUCCESS)
+
+        val report = CoverageReport.from(File(projectRoot, "build/reports/jacoco.csv"))
+
+        report.assertFullCoverage("org.neotech.library.android", "LibraryAndroidJava")
+        report.assertFullCoverage("org.neotech.library.android", "LibraryAndroidKotlin")
     }
 
     companion object {
 
         // This method is used by the JVM (Parameterized JUnit Runner)
         @Suppress("unused")
-        @Parameters(name = "{1}")
+        @Parameterized.Parameters(name = "{1}")
         @JvmStatic
         fun parameters(): List<Array<Any>> {
             return File("src/test/test-fixtures")
