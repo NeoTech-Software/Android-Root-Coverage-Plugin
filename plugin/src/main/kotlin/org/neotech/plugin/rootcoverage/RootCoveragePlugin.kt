@@ -31,39 +31,35 @@ class RootCoveragePlugin : Plugin<Project> {
         project.afterEvaluate { createCoverageTaskForRoot(it) }
     }
 
-    private fun getFileFilterPatterns(): List<String> {
-        return listOf(
-                "**/AutoValue_*.*", // Filter to remove generated files from: https://github.com/google/auto
-                //"**/*JavascriptBridge.class",
+    private fun getFileFilterPatterns(): List<String> = listOf(
+            "**/AutoValue_*.*", // Filter to remove generated files from: https://github.com/google/auto
+            //"**/*JavascriptBridge.class",
 
-                // Android Databinding
-                "**/*databinding",
-                "**/*binders",
-                "**/*layouts",
-                "**/BR.class", // Filter to remove generated databinding files
+            // Android Databinding
+            "**/*databinding",
+            "**/*binders",
+            "**/*layouts",
+            "**/BR.class", // Filter to remove generated databinding files
 
-                // Core Android generated class filters
-                "**/R.class",
-                "**/R$*.class",
-                "**/Manifest*.*",
-                "**/BuildConfig.class",
-                "android/**/*.*",
+            // Core Android generated class filters
+            "**/R.class",
+            "**/R$*.class",
+            "**/Manifest*.*",
+            "**/BuildConfig.class",
+            "android/**/*.*",
 
-                "**/*\$ViewBinder*.*",
-                "**/*\$ViewInjector*.*",
-                "**/Lambda$*.class",
-                "**/Lambda.class",
-                "**/*Lambda.class",
-                "**/*Lambda*.class",
-                "**/*\$InjectAdapter.class",
-                "**/*\$ModuleAdapter.class",
-                "**/*\$ViewInjector*.class") + rootProjectExtension.excludes
-    }
+            "**/*\$ViewBinder*.*",
+            "**/*\$ViewInjector*.*",
+            "**/Lambda$*.class",
+            "**/Lambda.class",
+            "**/*Lambda.class",
+            "**/*Lambda*.class",
+            "**/*\$InjectAdapter.class",
+            "**/*\$ModuleAdapter.class",
+            "**/*\$ViewInjector*.class") + rootProjectExtension.excludes
 
-    private fun getBuildVariantFor(project: Project): String {
-        return rootProjectExtension.buildVariantOverrides[project.path]
-                ?: rootProjectExtension.buildVariant
-    }
+    private fun getBuildVariantFor(project: Project): String =
+            rootProjectExtension.buildVariantOverrides[project.path] ?: rootProjectExtension.buildVariant
 
     private fun getExecutionDataFilePatterns(): List<String> {
         val list = mutableListOf<String>()
@@ -99,10 +95,13 @@ class RootCoveragePlugin : Plugin<Project> {
         task.group = "reporting"
         task.description = "Generates a Jacoco report with combined results from all the subprojects."
 
-        task.reports.html.isEnabled = true
-        task.reports.xml.isEnabled = false
-        task.reports.csv.isEnabled = false
+        task.reports.html.isEnabled = rootProjectExtension.generateHtml
+        task.reports.xml.isEnabled = rootProjectExtension.generateXml
+        task.reports.csv.isEnabled = rootProjectExtension.generateCsv
+
         task.reports.html.destination = project.file("${project.buildDir}/reports/jacoco")
+        task.reports.xml.destination = project.file("${project.buildDir}/reports/jacoco.xml")
+        task.reports.csv.destination = project.file("${project.buildDir}/reports/jacoco.csv")
 
         // Add some run-time checks.
         task.doFirst {
@@ -200,8 +199,6 @@ class RootCoveragePlugin : Plugin<Project> {
             val javaClassTrees = javaClassOutputs.files.map { file ->
                 project.fileTree(file, excludes = getFileFilterPatterns()).excludeNonClassFiles()
             }
-            // Hard coded alternative to get class files for Java.
-            //val classesTree = project.fileTree(mapOf("dir" to "${project.buildDir}/intermediates/classes/${variant.dirName}", "excludes" to getFileFilterPatterns()))
 
             // TODO: No idea how to dynamically get the kotlin class files output folder, so for now this is hardcoded.
             // TODO: For some reason the tmp/kotlin-classes folder does not use the variant.dirName property, for now we instead use the variant.name.
@@ -226,21 +223,9 @@ class RootCoveragePlugin : Plugin<Project> {
         // Make the root task depend on the sub-project code coverage task
         rootTask.dependsOn(subModuleTask)
 
-        // Set or add the sub-task class directories to the root task
-        if (rootTask.classDirectories == null) {
-            rootTask.classDirectories.setFrom(subModuleTask.classDirectories)
-        } else {
-            rootTask.additionalClassDirs(subModuleTask.classDirectories)
-        }
-
-        // Set or add the sub-task source directories to the root task
-        if (rootTask.sourceDirectories == null) {
-            rootTask.sourceDirectories.setFrom(subModuleTask.sourceDirectories)
-        } else {
-            rootTask.additionalSourceDirs(subModuleTask.sourceDirectories)
-        }
-
-        // Add the sub-task class directories to the root task
-        rootTask.executionData(subModuleTask.executionData)
+        // Add the sub-task class directories, source directories and executionData to the root task
+        rootTask.classDirectories.from(subModuleTask.classDirectories)
+        rootTask.sourceDirectories.from(subModuleTask.sourceDirectories)
+        rootTask.executionData.from(subModuleTask.executionData)
     }
 }

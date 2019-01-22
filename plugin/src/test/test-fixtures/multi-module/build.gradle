@@ -39,6 +39,7 @@ jacoco {
 import com.android.builder.model.TestVariantBuildOutput.TestType
 
 rootCoverage {
+    generateCsv true
     buildVariant "debug"
     testTypes = [TestType.UNIT, TestType.ANDROID_TEST]
 }
