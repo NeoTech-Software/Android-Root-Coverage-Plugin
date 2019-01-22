@@ -10,7 +10,7 @@ ext {
 
             // Gradle Plugins
             kotlinPlugin      : "org.jetbrains.kotlin:kotlin-gradle-plugin:${projectVersion.kotlin}",
-            gradlePlugin      : "com.android.tools.build:gradle:3.2.1",
+            gradlePlugin      : "com.android.tools.build:gradle:3.3.0",
 
             // Dependencies
             kotlinStdlibJdk7  : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${projectVersion.kotlin}",
