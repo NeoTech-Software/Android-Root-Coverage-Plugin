@@ -47,6 +47,14 @@ pluginBundle {
     }
 }
 
+test {
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams true
+    }
+}
+
 dependencies {
     compileOnly gradleApi()
     implementation projectDependency.gradlePlugin
