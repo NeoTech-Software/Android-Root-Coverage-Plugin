@@ -1,3 +1,6 @@
+[![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/org.neotech.plugin/android-root-coverage-plugin/maven-metadata.xml.svg?label=Plugin%20portal)](https://plugins.gradle.org/plugin/org.neotech.plugin.rootcoverage)
+[![Build status](https://travis-ci.com/NeoTech-Software/Android-Root-Coverage-Plugin.svg?branch=master)](https://travis-ci.com/NeoTech-Software/Android-Root-Coverage-Plugin/)
+
 # Android-Root-Coverage-Plugin
 **A Gradle plugin for combined code coverage reports for Android projects.**
 Generating code coverage reports for Android Projects is in most cases quite easy. Unfortunately by
@@ -23,7 +26,7 @@ apply plugin: 'org.neotech.plugin.rootcoverage'
 buildscript {
     dependencies {
         // Step 1: add the dependency
-        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.0.2'
+        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.1.0'
     }
 }
 ```
