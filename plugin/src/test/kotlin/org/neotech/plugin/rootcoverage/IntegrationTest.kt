@@ -1,14 +1,12 @@
 package org.neotech.plugin.rootcoverage
 
 import com.google.common.truth.Truth.assertThat
-import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.io.File
-import java.io.OutputStreamWriter
 import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
@@ -24,7 +22,9 @@ class IntegrationTest(
         val runner = GradleRunner.create()
                 .withProjectDir(projectRoot)
                 .withPluginClasspath()
-                .forwardStdOutput(OutputStreamWriter(System.out))
+                // Without forwardOutput travis CI could timeout because not output will be reported
+                // for a long time.
+                .forwardOutput()
                 .withArguments("clean", "rootCodeCoverageReport", "--stacktrace")
 
         // Expect no failure
