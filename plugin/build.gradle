@@ -29,9 +29,9 @@ gradlePlugin {
 }
 
 pluginBundle {
-    website = PROJECT_WEBSITE
+    setWebsite(PROJECT_WEBSITE)
     vcsUrl = 'https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin'
-    description = DESCRIPTION
+    setDescription(DESCRIPTION)
     tags = ['android', 'coverage', 'jacoco', 'code-coverage', 'coverage-report', 'aggregated-report']
 
     plugins {
