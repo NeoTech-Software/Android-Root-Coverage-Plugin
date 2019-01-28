@@ -57,6 +57,15 @@ https://www.jetbrains.com/help/idea/jetgradle-tool-window.html) or from the term
 - **Terminal:** Execute the task using `gradlew rootCodeCoverageReport`.
 
 
+# Compatibility
+| Android Gradle Plugin | Plugin     |
+| --------------------- | ---------- |
+| 3.2                   | **1.0.2**  |
+| 3.3                   | **1.1.0**  |
+
+*Note: The Android Gradle Plugin requires a minimum Gradle version, for more information please refer to:* 
+https://developer.android.com/studio/releases/gradle-plugin#updating-gradle
+
 # Configuration
 By default the plugin generates code coverage reports using the build variant `debug` for every
 module. However in some cases different build variants per module might be required, especially if

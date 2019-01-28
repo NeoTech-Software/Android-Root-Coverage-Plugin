@@ -11,9 +11,10 @@ import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
 class IntegrationTest(
-        private val projectRoot: File,
         // Used by Junit as the test name, see @Parameters
-        @Suppress("unused") private val name: String) {
+        @Suppress("unused") private val name: String,
+        private val projectRoot: File,
+        private val gradleVersion: String) {
 
     @Test
     fun execute() {
@@ -21,6 +22,7 @@ class IntegrationTest(
 
         val runner = GradleRunner.create()
                 .withProjectDir(projectRoot)
+                .withGradleVersion(gradleVersion)
                 .withPluginClasspath()
                 // Without forwardOutput travis CI could timeout because not output will be reported
                 // for a long time.
@@ -43,14 +45,19 @@ class IntegrationTest(
 
         // This method is used by the JVM (Parameterized JUnit Runner)
         @Suppress("unused")
-        @Parameterized.Parameters(name = "{1}")
+        @Parameterized.Parameters(name = "{0}")
         @JvmStatic
         fun parameters(): List<Array<Any>> {
+
+            val gradleVersions = arrayOf("4.10.1", "5.1.1")
+
             return File("src/test/test-fixtures")
                     .listFiles()
                     .filter { it.isDirectory }
-                    .map {
-                        arrayOf(it, it.name)
+                    .flatMap { file ->
+                        gradleVersions.map { gradleVersion ->
+                            arrayOf("${file.name}-$gradleVersion", file, gradleVersion)
+                        }
                     }
         }
     }

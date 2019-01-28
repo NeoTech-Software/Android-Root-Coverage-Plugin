@@ -7,9 +7,17 @@ import java.util.*
  * Creates the local.properties file if it does not exist in the given root, automatically tries to
  * add the sdk.dir property.
  */
-internal fun createLocalPropertiesFile(root: File) {
+internal fun createLocalPropertiesFile(root: File, properties: Properties = Properties()) {
     val androidHomeDirectory = androidHomeDirectory().absolutePath.replace('\\', '/')
-    File(root, "local.properties").writeText("sdk.dir=$androidHomeDirectory\n")
+    properties["sdk.dir"] = androidHomeDirectory
+    File(root, "local.properties").outputStream().use { properties.store(it, null) }
+}
+
+/**
+ * Creates the gradle.properties file if it does not exist in the given root
+ */
+internal fun createGradlePropertiesFile(root: File, properties: Properties) {
+    File(root, "gradle.properties").outputStream().use { properties.store(it, null) }
 }
 
 /**
