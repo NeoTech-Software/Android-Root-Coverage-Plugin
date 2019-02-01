@@ -26,7 +26,7 @@ apply plugin: 'org.neotech.plugin.rootcoverage'
 buildscript {
     dependencies {
         // Step 1: add the dependency
-        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.1.0'
+        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.1.1'
     }
 }
 ```
@@ -58,12 +58,14 @@ https://www.jetbrains.com/help/idea/jetgradle-tool-window.html) or from the term
 
 
 # Compatibility
-| Version   | Android Gradle plugin version | Gradle version |
-| --------- | ----------------------------- | -------------- |
-| **1.1.0** | 3.3                           | 5+             |
-| **1.0.2** | 3.2                           | 4.6+           |
+| Version       | Android Gradle plugin version | Gradle version |
+| ------------- | ----------------------------- | -------------- |
+| **1.1.1**     | 3.3                           | 4.10.1+        |
+| ~~**1.1.0**~~ | ~~3.3~~                       | ~~5+~~         |
+| **1.0.2**     | 3.2                           | 4.6+           |
 
-*Note: The Android Gradle Plugin requires a minimum Gradle version, for more information please refer to:* 
+*Note: This plugin normally supports exactly the same Gradle versions as the Android Gradle
+plugin, for more information please refer to:* 
 https://developer.android.com/studio/releases/gradle-plugin#updating-gradle
 
 # Configuration
