@@ -58,10 +58,10 @@ https://www.jetbrains.com/help/idea/jetgradle-tool-window.html) or from the term
 
 
 # Compatibility
-| Android Gradle Plugin | Plugin     |
-| --------------------- | ---------- |
-| 3.2                   | **1.0.2**  |
-| 3.3                   | **1.1.0**  |
+| Version   | Android Gradle plugin version | Gradle version |
+| --------- | ----------------------------- | -------------- |
+| **1.1.0** | 3.3                           | 5+             |
+| **1.0.2** | 3.2                           | 4.6+           |
 
 *Note: The Android Gradle Plugin requires a minimum Gradle version, for more information please refer to:* 
 https://developer.android.com/studio/releases/gradle-plugin#updating-gradle
