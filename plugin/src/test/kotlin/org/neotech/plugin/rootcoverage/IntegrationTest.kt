@@ -6,6 +6,7 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.neotech.plugin.rootcoverage.util.SystemOutputWriter
 import org.neotech.plugin.rootcoverage.util.createLocalPropertiesFile
 import java.io.File
 import kotlin.test.assertEquals
@@ -25,9 +26,10 @@ class IntegrationTest(
                 .withProjectDir(projectRoot)
                 .withGradleVersion(gradleVersion)
                 .withPluginClasspath()
-                // Without forwardOutput travis CI could timeout because not output will be reported
-                // for a long time.
-                .forwardOutput()
+                // Without forwardOutput Travis CI could timeout (which happens when Travis receives
+                // no output for more than 10 minutes)
+                .forwardStdOutput(SystemOutputWriter.out())
+                .forwardStdError(SystemOutputWriter.err())
                 .withArguments("clean", "rootCodeCoverageReport", "--stacktrace")
 
         // Expect no failure
