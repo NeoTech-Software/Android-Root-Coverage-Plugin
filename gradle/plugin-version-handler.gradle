@@ -1,5 +1,7 @@
 // Copyright (C) 2018 Rolf Smit
 //
+// Version 1
+//
 // This file can be used as a hack to make it possible to use variable/dynamic version numbers for
 // plugins in the new Gradle Plugins Block:
 // https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block

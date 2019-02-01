@@ -1,4 +1,4 @@
-package org.neotech.plugin.rootcoverage
+package org.neotech.plugin.rootcoverage.util
 
 import java.io.File
 import java.util.*

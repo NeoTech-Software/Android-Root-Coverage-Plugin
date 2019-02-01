@@ -6,6 +6,7 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.neotech.plugin.rootcoverage.util.createLocalPropertiesFile
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -43,22 +44,19 @@ class IntegrationTest(
 
     companion object {
 
-        // This method is used by the JVM (Parameterized JUnit Runner)
-        @Suppress("unused")
+        @Suppress("unused") // This method is used by the JVM (Parameterized JUnit Runner)
         @Parameterized.Parameters(name = "{0}")
         @JvmStatic
         fun parameters(): List<Array<Any>> {
 
+            val testFixtures = File("src/test/test-fixtures").listFiles().filter { it.isDirectory }
             val gradleVersions = arrayOf("4.10.1", "5.1.1")
 
-            return File("src/test/test-fixtures")
-                    .listFiles()
-                    .filter { it.isDirectory }
-                    .flatMap { file ->
-                        gradleVersions.map { gradleVersion ->
-                            arrayOf("${file.name}-$gradleVersion", file, gradleVersion)
-                        }
-                    }
+            return testFixtures.flatMap { file ->
+                gradleVersions.map { gradleVersion ->
+                    arrayOf("${file.name}-$gradleVersion", file, gradleVersion)
+                }
+            }
         }
     }
 }

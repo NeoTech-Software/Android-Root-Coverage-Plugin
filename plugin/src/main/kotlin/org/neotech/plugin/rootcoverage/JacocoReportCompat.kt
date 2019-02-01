@@ -14,6 +14,7 @@ open class JacocoReportCompat : JacocoReport() {
             classDirectories.from(fileCollection)
         } else {
             classDirectoriesCompat = classDirectoriesCompat.plus(fileCollection)
+            @Suppress("DEPRECATION")
             setClassDirectories(classDirectoriesCompat)
         }
     }
@@ -23,6 +24,7 @@ open class JacocoReportCompat : JacocoReport() {
             sourceDirectories.from(fileCollection)
         } else {
             sourceDirectoriesCompat = sourceDirectoriesCompat.plus(fileCollection)
+            @Suppress("DEPRECATION")
             setSourceDirectories(sourceDirectoriesCompat)
         }
     }
