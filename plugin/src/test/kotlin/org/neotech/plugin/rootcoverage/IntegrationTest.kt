@@ -6,14 +6,17 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.neotech.plugin.rootcoverage.util.SystemOutputWriter
+import org.neotech.plugin.rootcoverage.util.createLocalPropertiesFile
 import java.io.File
 import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
 class IntegrationTest(
-        private val projectRoot: File,
         // Used by Junit as the test name, see @Parameters
-        @Suppress("unused") private val name: String) {
+        @Suppress("unused") private val name: String,
+        private val projectRoot: File,
+        private val gradleVersion: String) {
 
     @Test
     fun execute() {
@@ -21,10 +24,12 @@ class IntegrationTest(
 
         val runner = GradleRunner.create()
                 .withProjectDir(projectRoot)
+                .withGradleVersion(gradleVersion)
                 .withPluginClasspath()
-                // Without forwardOutput travis CI could timeout because not output will be reported
-                // for a long time.
-                .forwardOutput()
+                // Without forwardOutput Travis CI could timeout (which happens when Travis receives
+                // no output for more than 10 minutes)
+                .forwardStdOutput(SystemOutputWriter.out())
+                .forwardStdError(SystemOutputWriter.err())
                 .withArguments("clean", "rootCodeCoverageReport", "--stacktrace")
 
         // Expect no failure
@@ -41,17 +46,19 @@ class IntegrationTest(
 
     companion object {
 
-        // This method is used by the JVM (Parameterized JUnit Runner)
-        @Suppress("unused")
-        @Parameterized.Parameters(name = "{1}")
+        @Suppress("unused") // This method is used by the JVM (Parameterized JUnit Runner)
+        @Parameterized.Parameters(name = "{0}")
         @JvmStatic
         fun parameters(): List<Array<Any>> {
-            return File("src/test/test-fixtures")
-                    .listFiles()
-                    .filter { it.isDirectory }
-                    .map {
-                        arrayOf(it, it.name)
-                    }
+
+            val testFixtures = File("src/test/test-fixtures").listFiles().filter { it.isDirectory }
+            val gradleVersions = arrayOf("4.10.1", "5.1.1")
+
+            return testFixtures.flatMap { file ->
+                gradleVersions.map { gradleVersion ->
+                    arrayOf("${file.name}-$gradleVersion", file, gradleVersion)
+                }
+            }
         }
     }
 }

@@ -57,7 +57,7 @@ test {
 
 dependencies {
     compileOnly gradleApi()
-    implementation projectDependency.gradlePlugin
+    implementation projectDependency.androidGradlePlugin
     implementation projectDependency.kotlinStdlibJdk7
 
     testImplementation projectDependency.kotlinStdlibJdk7
