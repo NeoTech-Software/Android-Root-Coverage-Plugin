@@ -68,6 +68,12 @@ https://www.jetbrains.com/help/idea/jetgradle-tool-window.html) or from the term
 plugin, for more information please refer to:* 
 https://developer.android.com/studio/releases/gradle-plugin#updating-gradle
 
+Android Gradle Plugin versions before `3.4.0-alpha05` are affected by a bug that in certain conditions can
+cause Jacoco instrumentation to fail in combination with inline kotlin methods shared across modules. For more information
+see: https://issuetracker.google.com/issues/109771903 and https://issuetracker.google.com/issues/110763361.
+If your project is affected by this upgrade to an Android Gradle Plugin version of at least `3.4.0-alpha05`.
+
+
 # Configuration
 By default the plugin generates code coverage reports using the build variant `debug` for every
 module. However in some cases different build variants per module might be required, especially if
