@@ -1,4 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: "com.github.ben-manes.versions"
+
 buildscript {
 
     // Import versions
@@ -7,6 +9,10 @@ buildscript {
     repositories {
         google()
         jcenter()
+    }
+
+    dependencies {
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.21.0"
     }
 }
 

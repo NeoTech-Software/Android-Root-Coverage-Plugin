@@ -60,24 +60,24 @@ if (project.getPlugins().hasPlugin('com.android.application') || project.getPlug
     }
 
     task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-        classifier = 'javadoc'
+        getArchiveClassifier().set('javadoc')
         from androidJavadocs.destinationDir
     }
 
     task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
+        getArchiveClassifier().set('sources')
         from android.sourceSets.main.java.source
     }
 
 } else {
     // Java libraries
-    task sourcesJar(type: Jar, dependsOn:classes) {
-        classifier = 'sources'
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        getArchiveClassifier().set('sources')
         from sourceSets.main.allSource
     }
 
-    task javadocJar(type: Jar, dependsOn:javadoc) {
-        classifier = 'javadoc'
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        getArchiveClassifier().set('javadoc')
         from javadoc.destinationDir
     }
 }
@@ -113,7 +113,7 @@ bintray {
         version {
             name = VERSION
             vcsTag = VERSION
-            released = new Date();
+            released = new Date()
         }
     }
 }
