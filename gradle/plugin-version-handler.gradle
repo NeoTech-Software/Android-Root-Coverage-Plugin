@@ -37,6 +37,10 @@ resolutionStrategy {
         def version = pluginVersions[requested.id.id]
         if (requested.version == null && version != null) {
             useVersion version
+        } else if(requested.version == null) {
+            logger.log(LogLevel.WARN, "Plugin with id `${requested.id.id}` is requested without version and no version can be found in the `pluginVersions` map!")
+        } else {
+            logger.log(LogLevel.WARN, "Plugin with id `${requested.id.id}` is not defined in the `pluginVersions` map, using version ${requested.version}")
         }
     }
 }

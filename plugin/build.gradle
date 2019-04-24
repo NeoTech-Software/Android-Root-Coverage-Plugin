@@ -2,12 +2,10 @@ plugins {
     id "org.jetbrains.kotlin.jvm"
     id "java-gradle-plugin"
 
-    // For publishing to Plugin Portal
-    id "com.gradle.plugin-publish" version "0.10.0"
-
-    // Bintray & Maven for publishing
-    id "com.github.dcendents.android-maven" version "2.1"
-    id "com.jfrog.bintray" version "1.8.4"
+    // For publishing to Plugin Portal & Bintray
+    id "com.gradle.plugin-publish"
+    id "com.github.dcendents.android-maven"
+    id "com.jfrog.bintray"
 }
 
 // To upload new plugin artifact to maven and Gradle Portal:
