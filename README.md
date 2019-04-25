@@ -60,6 +60,7 @@ https://www.jetbrains.com/help/idea/jetgradle-tool-window.html) or from the term
 # Compatibility
 | Version       | Android Gradle plugin version | Gradle version |
 | ------------- | ----------------------------- | -------------- |
+| **develop**   | 3.4                           | 5.1.1+         |
 | **1.1.1**     | 3.3                           | 4.10.1+        |
 | ~~**1.1.0**~~ | ~~3.3~~                       | ~~5+~~         |
 | **1.0.2**     | 3.2                           | 4.6+           |

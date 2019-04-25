@@ -33,7 +33,6 @@ android {
 }
 
 dependencies {
-
     implementation project(":library_android")
 
     implementation projectDependency.kotlinStdlibJdk7
@@ -42,4 +41,5 @@ dependencies {
     testImplementation projectDependency.junit
     androidTestImplementation projectDependency.supportTestRunner
     androidTestImplementation projectDependency.espressoCore
+    androidTestImplementation projectDependency.androidJUnit
 }
