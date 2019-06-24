@@ -52,7 +52,7 @@ class IntegrationTest(
         fun parameters(): List<Array<Any>> {
 
             val testFixtures = File("src/test/test-fixtures").listFiles().filter { it.isDirectory }
-            val gradleVersions = arrayOf("5.1.1", "5.2.1")
+            val gradleVersions = arrayOf("5.1.1", "5.2.1", "5.4.1")
 
             return testFixtures.flatMap { file ->
                 gradleVersions.map { gradleVersion ->

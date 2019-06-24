@@ -1,9 +1,9 @@
 ext {
     projectVersion = [
             minSdk    : 19,
-            targetSdk : 28,
-            compileSdk: 28,
-            kotlin    : "1.3.31"
+            targetSdk : 29,
+            compileSdk: 29,
+            kotlin    : "1.3.40"
     ]
     projectDependency = [
 
@@ -17,11 +17,11 @@ ext {
 
             // Test dependencies
             junit              : "junit:junit:4.12",
-            truth              : "com.google.truth:truth:0.44",
+            truth              : "com.google.truth:truth:0.45",
             supportTestRunner  : "androidx.test:runner:1.1.1",
             espressoCore       : "androidx.test.espresso:espresso-core:3.1.1",
             androidJUnit       : "androidx.test.ext:junit:1.1.0",
-            commonsCsv         : "org.apache.commons:commons-csv:1.6",
+            commonsCsv         : "org.apache.commons:commons-csv:1.7",
             kotlinTest         : "org.jetbrains.kotlin:kotlin-test:${projectVersion.kotlin}"
     ]
 
