@@ -51,7 +51,8 @@ class IntegrationTest(
         @JvmStatic
         fun parameters(): List<Array<Any>> {
 
-            val testFixtures = File("src/test/test-fixtures").listFiles().filter { it.isDirectory }
+            val testFixtures = File("src/test/test-fixtures").listFiles()?.filter { it.isDirectory }
+                    ?: error("Could not list test fixture directories")
             val gradleVersions = arrayOf("5.1.1", "5.2.1", "5.4.1")
 
             return testFixtures.flatMap { file ->
