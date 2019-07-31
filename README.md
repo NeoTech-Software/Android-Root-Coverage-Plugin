@@ -26,7 +26,7 @@ apply plugin: 'org.neotech.plugin.rootcoverage'
 buildscript {
     dependencies {
         // Step 1: add the dependency
-        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.1.1'
+        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.1.2'
     }
 }
 ```
@@ -60,7 +60,7 @@ https://www.jetbrains.com/help/idea/jetgradle-tool-window.html) or from the term
 # Compatibility
 | Version       | Android Gradle plugin version | Gradle version |
 | ------------- | ----------------------------- | -------------- |
-| **develop**   | 3.4                           | 5.1.1+         |
+| **1.1.2**     | 3.4                           | 5.1.1+         |
 | **1.1.1**     | 3.3                           | 4.10.1+        |
 | ~~**1.1.0**~~ | ~~3.3~~                       | ~~5+~~         |
 | **1.0.2**     | 3.2                           | 4.6+           |
@@ -110,7 +110,7 @@ projects. But if you like to add some actually functionality, this is the wish l
 
 **How to test your changes/additions?**
 The plugin comes with an integration test. You can run this test either by executing
-`gradlew clean test` or run the test directly from Android Studio using a proper run/test
+`gradlew clean test` or run the test directly from Android Studio (or IntelliJ IDEA) using a proper run/test
 configuration as shown in the image *(by default it generates configuration that is not compatible
 with a plugin module)*:
 ![Correct run/test configuration](correct-test-run-configuration.png)
