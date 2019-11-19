@@ -33,13 +33,18 @@ task clean(type: Delete) {
 }
 
 jacoco {
-    toolVersion = "0.8.2"
+    // https://www.jacoco.org/jacoco/trunk/doc/changes.html
+    toolVersion = "0.8.4"
 }
 
 import com.android.builder.model.TestVariantBuildOutput.TestType
 
 rootCoverage {
+    generateHtml true
+    generateXml false
     generateCsv true
     buildVariant "debug"
-    testTypes = [TestType.UNIT, TestType.ANDROID_TEST]
+    executeTests true
+    includeUnitTestResults true
+    includeAndroidTestResults true
 }
