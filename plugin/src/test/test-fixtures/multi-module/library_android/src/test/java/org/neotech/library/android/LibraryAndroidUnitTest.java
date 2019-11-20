@@ -7,17 +7,17 @@ import static org.junit.Assert.*;
 public class LibraryAndroidUnitTest {
 
     @Test
-    public void isJavaInstanceNotNull() {
+    public void touchJavaCode() {
+        LibraryAndroidJava.getInstance().touchedByUnitTest();
+    }
+
+    @Test
+    public void touchKotlinCode() {
+        LibraryAndroidKotlin.touchedByUnitTest();
+    }
+
+    @Test
+    public void touchGetInstanceToEnsureFullCoverage() {
         assertNotNull(LibraryAndroidJava.getInstance());
-    }
-
-    @Test
-    public void isKotlinGetNameCorrect() {
-        assertEquals("LibraryAndroidKotlin", LibraryAndroidKotlin.getName());
-    }
-
-    @Test
-    public void isJavaGetNameCorrect() {
-        assertEquals("LibraryAndroidJava", LibraryAndroidJava.getInstance().getName());
     }
 }

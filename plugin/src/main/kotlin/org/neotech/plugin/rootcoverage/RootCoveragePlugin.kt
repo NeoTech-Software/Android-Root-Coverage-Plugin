@@ -4,7 +4,6 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.api.SourceKind
-import com.android.builder.model.TestVariantBuildOutput
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -18,12 +17,12 @@ class RootCoveragePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         if (project.rootProject !== project) {
-            throw GradleException("The RootCoveragePlugin can not be applied to project '${project.name}' because it is not the root project. Build file: ${project.buildFile}")
+            throw GradleException("The RootCoveragePlugin cannot be applied to project '${project.name}' because it is not the root project. Build file: ${project.buildFile}")
         }
         rootProjectExtension = project.extensions.create("rootCoverage", RootCoveragePluginExtension::class.java)
 
         if (project.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-            project.logger.warn("Warning: Jacoco plugin was not found for project: '${project.name}', it has been applied automatically but you should do this manually. Build file: ${project.buildFile}")
+            project.logger.warn("Warning: Jacoco plugin was not found for project: '${project.name}', it has been applied automatically, but you should do this manually. Build file: ${project.buildFile}")
             project.plugins.apply(JacocoPlugin::class.java)
         }
 
@@ -31,41 +30,42 @@ class RootCoveragePlugin : Plugin<Project> {
     }
 
     private fun getFileFilterPatterns(): List<String> = listOf(
-            "**/AutoValue_*.*", // Filter to remove generated files from: https://github.com/google/auto
-            //"**/*JavascriptBridge.class",
+        "**/AutoValue_*.*", // Filter to remove generated files from: https://github.com/google/auto
+        //"**/*JavascriptBridge.class",
 
-            // Android Databinding
-            "**/*databinding",
-            "**/*binders",
-            "**/*layouts",
-            "**/BR.class", // Filter to remove generated databinding files
+        // Android Databinding
+        "**/*databinding",
+        "**/*binders",
+        "**/*layouts",
+        "**/BR.class", // Filter to remove generated databinding files
 
-            // Core Android generated class filters
-            "**/R.class",
-            "**/R$*.class",
-            "**/Manifest*.*",
-            "**/BuildConfig.class",
-            "android/**/*.*",
+        // Core Android generated class filters
+        "**/R.class",
+        "**/R$*.class",
+        "**/Manifest*.*",
+        "**/BuildConfig.class",
+        "android/**/*.*",
 
-            "**/*\$ViewBinder*.*",
-            "**/*\$ViewInjector*.*",
-            "**/Lambda$*.class",
-            "**/Lambda.class",
-            "**/*Lambda.class",
-            "**/*Lambda*.class",
-            "**/*\$InjectAdapter.class",
-            "**/*\$ModuleAdapter.class",
-            "**/*\$ViewInjector*.class") + rootProjectExtension.excludes
+        "**/*\$ViewBinder*.*",
+        "**/*\$ViewInjector*.*",
+        "**/Lambda$*.class",
+        "**/Lambda.class",
+        "**/*Lambda.class",
+        "**/*Lambda*.class",
+        "**/*\$InjectAdapter.class",
+        "**/*\$ModuleAdapter.class",
+        "**/*\$ViewInjector*.class"
+    ) + rootProjectExtension.excludes
 
     private fun getBuildVariantFor(project: Project): String =
-            rootProjectExtension.buildVariantOverrides[project.path] ?: rootProjectExtension.buildVariant
+        rootProjectExtension.buildVariantOverrides[project.path] ?: rootProjectExtension.buildVariant
 
     private fun getExecutionDataFilePatterns(): List<String> {
         val list = mutableListOf<String>()
-        if (rootProjectExtension.testTypes.contains(TestVariantBuildOutput.TestType.UNIT)) {
+        if (rootProjectExtension.includeUnitTestResults()) {
             list.add("jacoco/test*UnitTest.exec")
         }
-        if (rootProjectExtension.testTypes.contains(TestVariantBuildOutput.TestType.ANDROID_TEST)) {
+        if (rootProjectExtension.includeAndroidTestResults()) {
             // Android Build Tools Plugin 3.2
             list.add("outputs/code-coverage/connected/*coverage.ec")
 
@@ -141,9 +141,6 @@ class RootCoveragePlugin : Plugin<Project> {
         val buildVariant = getBuildVariantFor(subProject)
         when (extension) {
             is LibraryExtension -> {
-
-                //assertVariantExists(extension.libraryVariants, buildVariant, subProject)
-
                 extension.libraryVariants.all { variant ->
 
                     if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
@@ -157,9 +154,6 @@ class RootCoveragePlugin : Plugin<Project> {
                 }
             }
             is AppExtension -> {
-
-                //assertVariantExists(extension.libraryVariants, buildVariant, subProject)
-
                 extension.applicationVariants.all { variant ->
                     if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
                         if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
@@ -175,8 +169,6 @@ class RootCoveragePlugin : Plugin<Project> {
     }
 
     private fun createTask(project: Project, variant: BaseVariant): RootCoverageModuleTask {
-        //println("Create code coverage report for variant ${project.name} ${variant.name}")
-
         val name = variant.name.capitalize()
 
         val codeCoverageReportTask = project.tasks.register("codeCoverageReport$name", RootCoverageModuleTask::class.java)
@@ -184,13 +176,11 @@ class RootCoveragePlugin : Plugin<Project> {
             task.group = null // null makes sure the group does not show in the gradle-view in Android Studio/Intellij
             task.description = "Generate unified Jacoco code codecoverage report"
 
-            if (!rootProjectExtension.skipTestExecution) {
-                if (rootProjectExtension.testTypes.contains(TestVariantBuildOutput.TestType.UNIT)) {
-                    task.dependsOn("test${name}UnitTest")
-                }
-                if (rootProjectExtension.testTypes.contains(TestVariantBuildOutput.TestType.ANDROID_TEST)) {
-                    task.dependsOn("connected${name}AndroidTest")
-                }
+            if (rootProjectExtension.shouldExecuteUnitTests()) {
+                task.dependsOn("test${name}UnitTest")
+            }
+            if (rootProjectExtension.shouldExecuteAndroidTests()) {
+                task.dependsOn("connected${name}AndroidTest")
             }
 
             // Collect the class files based on the Java Compiler output
