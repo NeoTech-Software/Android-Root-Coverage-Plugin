@@ -16,4 +16,9 @@ object LibraryAndroidKotlin {
     fun touchedByAndroidTestInConsumer(): String {
         return "touchedByAndroidTestInConsumer"
     }
+
+    @JvmStatic
+    fun touchedByUnitTestInConsumer(): String {
+        return "touchedByUnitTestInConsumer"
+    }
 }

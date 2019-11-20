@@ -26,4 +26,8 @@ public final class LibraryAndroidJava {
     public String touchedByAndroidTestInConsumer() {
         return "touchedByAndroidTestInConsumer";
     }
+
+    public String touchedByUnitTestInConsumer() {
+        return "touchedByUnitTestInConsumer";
+    }
 }
