@@ -5,7 +5,7 @@ public final class LibraryAndroidJava {
     private static LibraryAndroidJava INSTANCE;
 
     public static synchronized LibraryAndroidJava getInstance() {
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new LibraryAndroidJava();
         }
         return INSTANCE;
@@ -15,14 +15,15 @@ public final class LibraryAndroidJava {
 
     }
 
-    public String getName() {
-        return "LibraryAndroidJava";
+    public String touchedByUnitTest() {
+        return "touchedByUnitTest";
     }
 
-    // This methed will not be tested in this module, but is touched and tested by the app
-    // module. This to proof that the coverage report shows it as "covered" because the
-    // app module tests touched it.
-    public String getName2() {
-        return "LibraryAndroidJava";
+    public String touchedByAndroidTest() {
+        return "touchedByAndroidTest";
+    }
+
+    public String touchedByAndroidTestInConsumer() {
+        return "touchedByAndroidTestInConsumer";
     }
 }
