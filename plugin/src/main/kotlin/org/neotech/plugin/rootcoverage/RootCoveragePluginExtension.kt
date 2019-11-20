@@ -84,13 +84,13 @@ open class RootCoveragePluginExtension {
         mutableListOf(TestVariantBuildOutput.TestType.ANDROID_TEST, TestVariantBuildOutput.TestType.UNIT)
 
     @Suppress("DEPRECATION")
-    internal fun shouldExecuteAndroidTests() = executeTests && executeAndroidTests && includeAndroidInstrumentedTestResults()
+    internal fun shouldExecuteAndroidTests() = executeTests && executeAndroidTests && includeAndroidTestResults()
 
     @Suppress("DEPRECATION")
     internal fun shouldExecuteUnitTests() = executeTests && executeUnitTests && includeUnitTestResults()
 
     @Suppress("DEPRECATION")
-    internal fun includeAndroidInstrumentedTestResults(): Boolean {
+    internal fun includeAndroidTestResults(): Boolean {
         return if (!testTypes.contains(TestVariantBuildOutput.TestType.ANDROID_TEST)) {
             if (includeAndroidTestResults) {
                 LoggerFactory.getLogger(Project::class.java).warn(

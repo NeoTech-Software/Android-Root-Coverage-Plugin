@@ -10,7 +10,7 @@ class RootCoveragePluginExtensionTest {
     fun `default setting`() {
         val config = RootCoveragePluginExtension()
         assertEquals(true, config.includeUnitTestResults())
-        assertEquals(true, config.includeAndroidInstrumentedTestResults())
+        assertEquals(true, config.includeAndroidTestResults())
         assertEquals(true, config.shouldExecuteUnitTests())
         assertEquals(true, config.shouldExecuteAndroidTests())
     }
@@ -24,7 +24,7 @@ class RootCoveragePluginExtensionTest {
             testTypes = listOf()
         }
         assertEquals(false, config.includeUnitTestResults())
-        assertEquals(false, config.includeAndroidInstrumentedTestResults())
+        assertEquals(false, config.includeAndroidTestResults())
     }
 
     @Test
@@ -36,7 +36,7 @@ class RootCoveragePluginExtensionTest {
             testTypes = listOf(TestVariantBuildOutput.TestType.UNIT, TestVariantBuildOutput.TestType.ANDROID_TEST)
         }
         assertEquals(false, config.includeUnitTestResults())
-        assertEquals(false, config.includeAndroidInstrumentedTestResults())
+        assertEquals(false, config.includeAndroidTestResults())
     }
 
     @Test
@@ -49,7 +49,7 @@ class RootCoveragePluginExtensionTest {
             testTypes = listOf(TestVariantBuildOutput.TestType.UNIT, TestVariantBuildOutput.TestType.ANDROID_TEST)
         }
         assertEquals(false, config.includeUnitTestResults())
-        assertEquals(false, config.includeAndroidInstrumentedTestResults())
+        assertEquals(false, config.includeAndroidTestResults())
 
         assertEquals(false, config.shouldExecuteUnitTests())
         assertEquals(false, config.shouldExecuteAndroidTests())

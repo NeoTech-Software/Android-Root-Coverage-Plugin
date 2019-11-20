@@ -65,7 +65,7 @@ class RootCoveragePlugin : Plugin<Project> {
         if (rootProjectExtension.includeUnitTestResults()) {
             list.add("jacoco/test*UnitTest.exec")
         }
-        if (rootProjectExtension.includeAndroidInstrumentedTestResults()) {
+        if (rootProjectExtension.includeAndroidTestResults()) {
             // Android Build Tools Plugin 3.2
             list.add("outputs/code-coverage/connected/*coverage.ec")
 
