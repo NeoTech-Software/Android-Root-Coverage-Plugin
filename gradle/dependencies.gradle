@@ -3,24 +3,24 @@ ext {
             minSdk    : 19,
             targetSdk : 29,
             compileSdk: 29,
-            kotlin    : "1.3.41"
+            kotlin    : "1.3.60"
     ]
     projectDependency = [
 
             // Gradle Plugins
             kotlinPlugin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:${projectVersion.kotlin}",
-            androidGradlePlugin: "com.android.tools.build:gradle:3.4.1",
+            androidGradlePlugin: "com.android.tools.build:gradle:3.5.2",
 
             // Dependencies
             kotlinStdlibJdk7   : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${projectVersion.kotlin}",
-            appCompat          : "androidx.appcompat:appcompat:1.0.2",
+            appCompat          : "androidx.appcompat:appcompat:1.1.0",
 
             // Test dependencies
             junit              : "junit:junit:4.12",
             truth              : "com.google.truth:truth:1.0",
-            supportTestRunner  : "androidx.test:runner:1.1.1",
-            espressoCore       : "androidx.test.espresso:espresso-core:3.1.1",
-            androidJUnit       : "androidx.test.ext:junit:1.1.0",
+            supportTestRunner  : "androidx.test:runner:1.2.0",
+            espressoCore       : "androidx.test.espresso:espresso-core:3.2.0",
+            androidJUnit       : "androidx.test.ext:junit:1.1.1",
             commonsCsv         : "org.apache.commons:commons-csv:1.7",
             kotlinTest         : "org.jetbrains.kotlin:kotlin-test:${projectVersion.kotlin}"
     ]
