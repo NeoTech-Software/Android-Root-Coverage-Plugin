@@ -26,7 +26,7 @@ apply plugin: 'org.neotech.plugin.rootcoverage'
 buildscript {
     dependencies {
         // Step 1: add the dependency
-        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.1.2'
+        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.2.0'
     }
 }
 ```
@@ -51,7 +51,7 @@ android {
 The Android-Root-Coverage-Plugin generates a special Gradle task `:rootCodeCoverageReport` that when
 executed generates a Jacoco code coverage report. You can either run this task directly from
 Android Studio using the Gradle Tool Window (see:
-https://www.jetbrains.com/help/idea/jetgradle-tool-window.html) or from the terminal.
+<https://www.jetbrains.com/help/idea/jetgradle-tool-window.html>) or from the terminal.
 
 - **Gradle Tool Window:** You can find the task under: `Tasks > reporting > rootCodeCoverageReport`, double click to  execute it.
 - **Terminal:** Execute the task using `gradlew rootCodeCoverageReport`.
@@ -60,6 +60,7 @@ https://www.jetbrains.com/help/idea/jetgradle-tool-window.html) or from the term
 # Compatibility
 | Version       | Android Gradle plugin version | Gradle version |
 | ------------- | ----------------------------- | -------------- |
+| **1.2.0**     | 3.5                           | 5.4.1-5.6.4    |
 | **1.1.2**     | 3.4                           | 5.1.1+         |
 | **1.1.1**     | 3.3                           | 4.10.1+        |
 | ~~**1.1.0**~~ | ~~3.3~~                       | ~~5+~~         |
@@ -67,11 +68,11 @@ https://www.jetbrains.com/help/idea/jetgradle-tool-window.html) or from the term
 
 *Note: This plugin normally supports exactly the same Gradle versions as the Android Gradle
 plugin, for more information please refer to:* 
-https://developer.android.com/studio/releases/gradle-plugin#updating-gradle
+<https://developer.android.com/studio/releases/gradle-plugin#updating-gradle>
 
 Android Gradle Plugin versions before `3.4.0-alpha05` are affected by a bug that in certain conditions can
 cause Jacoco instrumentation to fail in combination with inline kotlin methods shared across modules. For more information
-see: https://issuetracker.google.com/issues/109771903 and https://issuetracker.google.com/issues/110763361.
+see: <https://issuetracker.google.com/issues/109771903> and <https://issuetracker.google.com/issues/110763361>.
 If your project is affected by this upgrade to an Android Gradle Plugin version of at least `3.4.0-alpha05`.
 
 
@@ -88,13 +89,23 @@ rootCoverage {
     // Overrides the default build variant for specific modules.
     buildVariantOverrides ":moduleA" : "debugFlavourA", ":moduleB": "debugFlavourA"
     
-
     // Class exclude patterns
     excludes = ["**/some.package/**"]
-    // If true the task it self does not execute any tests (debug option)
-    skipTestExecution false
-    // Type of tests to run (import com.android.builder.model.TestVariantBuildOutput.TestType)
-    testTypes = [TestType.UNIT, TestType.ANDROID_TEST]
+
+    // Since 1.2: When false the plugin does not execute any tests, useful when you run the tests manually or remote (Firebase Test Lab)
+    executeTests true
+    
+    // Since 1.2: Same as executeTests except that this only affects the instrumented Android tests
+    executeAndroidTests true
+
+    // Since 1.2: Same as executeTests except that this only affects the unit tests
+    executeUnitTests true
+
+    // Since 1.2: When true include results from instrumented Android tests into the coverage report
+    includeAndroidTestResults true
+
+    // Since 1.2: When true include results from unit tests into the coverage report
+    includeUnitTestResults true
 }
 ```
 
@@ -105,7 +116,6 @@ projects. But if you like to add some actually functionality, this is the wish l
 
 - Support for Java library modules
 - Make use of the JacocoMerge task? To merge the `exec` en `ec` files?
-- Support for configuring the output type: html, xml etc. (Just like Jacoco)
 - Improved integration test setup: without the hackish dynamic versions in the Gradle plugin block?
 
 **How to test your changes/additions?**
