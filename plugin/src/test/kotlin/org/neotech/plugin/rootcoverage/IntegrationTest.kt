@@ -42,6 +42,8 @@ class IntegrationTest(
 
         report.assertFullCoverage("org.neotech.library.android", "LibraryAndroidJava")
         report.assertFullCoverage("org.neotech.library.android", "LibraryAndroidKotlin")
+        report.assertFullCoverage("org.neotech.app", "AppJava")
+        report.assertFullCoverage("org.neotech.app", "AppKotlin")
     }
 
     companion object {
