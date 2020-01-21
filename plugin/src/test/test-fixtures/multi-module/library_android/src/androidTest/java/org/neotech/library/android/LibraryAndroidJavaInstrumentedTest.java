@@ -8,16 +8,16 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
-public class LibraryAndroidInstrumentedTest {
+public class LibraryAndroidJavaInstrumentedTest {
 
     @Test
-    public void touchJavaCode() {
-        LibraryAndroidJava.getInstance().touchedByAndroidTest();
+    public void touchJavaCodeInLibrary() {
+        LibraryAndroidJava.getInstance().touchedByJavaInstrumentedTestInAndroidLibrary();
     }
 
     @Test
-    public void touchKotlinCode() {
-        LibraryAndroidKotlin.touchedByAndroidTest();
+    public void touchKotlinCodeInLibrary() {
+        LibraryAndroidKotlin.touchedByJavaInstrumentedTestInAndroidLibrary();
     }
 
     @Test

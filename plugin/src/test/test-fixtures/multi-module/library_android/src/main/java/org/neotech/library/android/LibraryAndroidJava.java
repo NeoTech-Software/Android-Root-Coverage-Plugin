@@ -15,15 +15,35 @@ public final class LibraryAndroidJava {
 
     }
 
-    public String touchedByUnitTest() {
-        return "touchedByUnitTest";
+    public String touchedByJavaInstrumentedTestInAndroidLibrary() {
+        return "touchedByJavaInstrumentedTestInAndroidLibrary";
     }
 
-    public String touchedByAndroidTest() {
-        return "touchedByAndroidTest";
+    public String touchedByJavaUnitTestInAndroidLibrary() {
+        return "touchedByJavaUnitTestInAndroidLibrary";
     }
 
-    public String touchedByAndroidTestInConsumer() {
-        return "touchedByAndroidTestInConsumer";
+    public String touchedByKotlinInstrumentedTestInAndroidLibrary() {
+        return "touchedByKotlinInstrumentedTestInAndroidLibrary";
+    }
+
+    public String touchedByKotlinUnitTestInAndroidLibrary() {
+        return "touchedByKotlinUnitTestInAndroidLibrary";
+    }
+
+    public String touchedByJavaInstrumentedTestInApp() {
+        return "touchedByJavaInstrumentedTestInApp";
+    }
+
+    public String touchedByJavaUnitTestInApp() {
+        return "touchedByJavaUnitTestInApp";
+    }
+
+    public String touchedByKotlinInstrumentedTestInApp() {
+        return "touchedByKotlinInstrumentedTestInApp";
+    }
+
+    public String touchedByKotlinUnitTestInApp() {
+        return "touchedByKotlinUnitTestInApp";
     }
 }

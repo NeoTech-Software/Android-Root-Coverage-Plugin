@@ -8,7 +8,10 @@ import org.gradle.api.DomainObjectSet
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.FileTree
+import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
+import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 
 @Suppress("unused")
 class RootCoveragePlugin : Plugin<Project> {
@@ -60,19 +63,30 @@ class RootCoveragePlugin : Plugin<Project> {
     private fun getBuildVariantFor(project: Project): String =
         rootProjectExtension.buildVariantOverrides[project.path] ?: rootProjectExtension.buildVariant
 
-    private fun getExecutionDataFilePatterns(): List<String> {
-        val list = mutableListOf<String>()
+    private fun getExecutionDataFileTree(project: Project): FileTree {
+        val rootFolderPatterns = mutableListOf<String>()
+        val buildFolderPatterns = mutableListOf<String>()
         if (rootProjectExtension.includeUnitTestResults()) {
-            list.add("jacoco/test*UnitTest.exec")
+            buildFolderPatterns.add("jacoco/test*UnitTest.exec")
+
+            // TODO instead of hardcoding this, obtain the location from the test tasks, something like this:
+            // tasks.withType(Test::class.java).all { testTask ->
+            //     testTask.extensions.findByType(JacocoTaskExtension::class.java)?.apply {
+            //         destinationFile
+            //     }
+            // }
+            rootFolderPatterns.add("jacoco.exec")
         }
         if (rootProjectExtension.includeAndroidTestResults()) {
             // Android Build Tools Plugin 3.2
-            list.add("outputs/code-coverage/connected/*coverage.ec")
+            buildFolderPatterns.add("outputs/code-coverage/connected/*coverage.ec")
 
             // Android Build Tools Plugin 3.3+
-            list.add("outputs/code_coverage/*/connected/*coverage.ec")
+            buildFolderPatterns.add("outputs/code_coverage/*/connected/*coverage.ec")
         }
-        return list
+
+        return project.fileTree(project.buildDir, includes = buildFolderPatterns) +
+                project.fileTree(project.projectDir, includes = rootFolderPatterns)
     }
 
     /**
@@ -142,7 +156,6 @@ class RootCoveragePlugin : Plugin<Project> {
         when (extension) {
             is LibraryExtension -> {
                 extension.libraryVariants.all { variant ->
-
                     if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
                         if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
                             subProject.logger.warn("Warning: Jacoco plugin was not found for project: '${subProject.name}', it has been applied automatically but you should do this manually. Build file: ${subProject.buildFile}")
@@ -201,9 +214,8 @@ class RootCoveragePlugin : Plugin<Project> {
 
             task.sourceDirectories = project.files(sourceFiles)
             task.classDirectories = project.files(javaClassTrees, kotlinClassTree)
-            task.executionData = project.fileTree(project.buildDir, includes = getExecutionDataFilePatterns())
+            task.executionData = getExecutionDataFileTree(project)
         }
-
         return codeCoverageReportTask.get()
     }
 

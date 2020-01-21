@@ -3,17 +3,38 @@ package org.neotech.library.android
 object LibraryAndroidKotlin {
 
     @JvmStatic
-    fun touchedByAndroidTest(): String {
-        return "touchedByAndroidTest"
+    fun touchedByJavaInstrumentedTestInAndroidLibrary(): String {
+        return "touchedByJavaInstrumentedTestInAndroidLibrary"
     }
 
     @JvmStatic
-    fun touchedByUnitTest(): String {
-        return "touchedByUnitTest"
+    fun touchedByJavaUnitTestInAndroidLibrary(): String {
+        return "touchedByJavaUnitTestInAndroidLibrary"
+    }
+
+    fun touchedByKotlinInstrumentedTestInAndroidLibrary(): String {
+        return "touchedByKotlinInstrumentedTestInAndroidLibrary"
+    }
+
+    fun touchedByKotlinUnitTestInAndroidLibrary(): String {
+        return "touchedByKotlinUnitTestInAndroidLibrary"
     }
 
     @JvmStatic
-    fun touchedByAndroidTestInConsumer(): String {
-        return "touchedByAndroidTestInConsumer"
+    fun touchedByJavaInstrumentedTestInApp(): String {
+        return "touchedByJavaInstrumentedTestInApp"
+    }
+
+    @JvmStatic
+    fun touchedByJavaUnitTestInApp(): String {
+        return "touchedByJavaUnitTestInApp"
+    }
+
+    fun touchedByKotlinInstrumentedTestInApp(): String {
+        return "touchedByKotlinInstrumentedTestInApp"
+    }
+    
+    fun touchedByKotlinUnitTestInApp(): String {
+        return "touchedByKotlinUnitTestInApp"
     }
 }
