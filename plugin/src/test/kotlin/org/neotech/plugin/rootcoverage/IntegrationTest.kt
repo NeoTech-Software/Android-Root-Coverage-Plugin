@@ -55,10 +55,7 @@ class IntegrationTest(
 
             val testFixtures = File("src/test/test-fixtures").listFiles()?.filter { it.isDirectory }
                     ?: error("Could not list test fixture directories")
-
-            // TODO comment all versions back-in when tests in this branch succeed
-            val gradleVersions = arrayOf( /* "5.4.1", "5.5.1", */ "5.6.4")
-
+            val gradleVersions = arrayOf("5.4.1", "5.5.1", "5.6.4")
             return testFixtures.flatMap { file ->
                 gradleVersions.map { gradleVersion ->
                     arrayOf("${file.name}-$gradleVersion", file, gradleVersion)
