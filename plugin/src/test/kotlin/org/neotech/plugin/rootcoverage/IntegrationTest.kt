@@ -7,8 +7,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.neotech.plugin.rootcoverage.util.SystemOutputWriter
+import org.neotech.plugin.rootcoverage.util.createGradlePropertiesFile
 import org.neotech.plugin.rootcoverage.util.createLocalPropertiesFile
 import java.io.File
+import java.util.Properties
 import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
@@ -21,6 +23,9 @@ class IntegrationTest(
     @Test
     fun execute() {
         createLocalPropertiesFile(projectRoot)
+        createGradlePropertiesFile(projectRoot, properties = Properties().apply {
+            put("android.useAndroidX", "true")
+        })
 
         val runner = GradleRunner.create()
                 .withProjectDir(projectRoot)
@@ -55,7 +60,7 @@ class IntegrationTest(
 
             val testFixtures = File("src/test/test-fixtures").listFiles()?.filter { it.isDirectory }
                     ?: error("Could not list test fixture directories")
-            val gradleVersions = arrayOf("5.4.1", "5.5.1", "5.6.4")
+            val gradleVersions = arrayOf("5.6.4", "6.1.1", "6.2.1")
             return testFixtures.flatMap { file ->
                 gradleVersions.map { gradleVersion ->
                     arrayOf("${file.name}-$gradleVersion", file, gradleVersion)

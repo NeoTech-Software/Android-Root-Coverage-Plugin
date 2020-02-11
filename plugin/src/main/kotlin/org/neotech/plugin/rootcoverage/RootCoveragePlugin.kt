@@ -9,9 +9,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
-import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
-import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
+import org.gradle.testing.jacoco.tasks.JacocoReport
 
 @Suppress("unused")
 class RootCoveragePlugin : Plugin<Project> {
@@ -104,7 +103,7 @@ class RootCoveragePlugin : Plugin<Project> {
         // Aggregates jacoco results from the app sub-project and bankingright sub-project and generates a report.
         // The report can be found at the root of the project in /build/reports/jacoco, so don't look in
         // /app/build/reports/jacoco you will only find the app sub-project report there.
-        val task = project.tasks.create("rootCodeCoverageReport", JacocoReportCompat::class.java)
+        val task = project.tasks.create("rootCodeCoverageReport", JacocoReport::class.java)
         task.group = "reporting"
         task.description = "Generates a Jacoco report with combined results from all the subprojects."
 
@@ -138,7 +137,7 @@ class RootCoveragePlugin : Plugin<Project> {
         }
     }
 
-    private fun createCoverageTaskForSubProject(subProject: Project, task: JacocoReportCompat) {
+    private fun createCoverageTaskForSubProject(subProject: Project, task: JacocoReport) {
         // Only Android Application and Android Library modules are supported for now.
         val extension = subProject.extensions.findByName("android")
         if (extension == null) {
@@ -219,13 +218,13 @@ class RootCoveragePlugin : Plugin<Project> {
         return codeCoverageReportTask.get()
     }
 
-    private fun addSubTaskDependencyToRootTask(rootTask: JacocoReportCompat, subModuleTask: RootCoverageModuleTask) {
+    private fun addSubTaskDependencyToRootTask(rootTask: JacocoReport, subModuleTask: RootCoverageModuleTask) {
 
         // Make the root task depend on the sub-project code coverage task
         rootTask.dependsOn(subModuleTask)
 
-        rootTask.classDirectoriesFromCompat(subModuleTask.classDirectories)
-        rootTask.sourceDirectoriesFromCompat(subModuleTask.sourceDirectories)
-        rootTask.executionDataFromCompat(subModuleTask.executionData)
+        rootTask.classDirectories.from(subModuleTask.classDirectories)
+        rootTask.sourceDirectories.from(subModuleTask.sourceDirectories)
+        rootTask.executionData.from(subModuleTask.executionData)
     }
 }
