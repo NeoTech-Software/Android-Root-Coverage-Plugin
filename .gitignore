@@ -14,3 +14,4 @@ local.properties
 repo/
 build/
 */out/*/classes/*
+plugin/src/test/test-fixtures/multi-module/gradle.properties

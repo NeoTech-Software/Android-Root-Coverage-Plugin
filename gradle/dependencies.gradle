@@ -9,7 +9,7 @@ ext {
 
             // Gradle Plugins
             kotlinPlugin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:${projectVersion.kotlin}",
-            androidGradlePlugin: "com.android.tools.build:gradle:3.5.3",
+            androidGradlePlugin: "com.android.tools.build:gradle:3.6.1",
 
             // Dependencies
             kotlinStdlibJdk7   : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${projectVersion.kotlin}",
@@ -17,11 +17,11 @@ ext {
 
             // Test dependencies
             junit              : "junit:junit:4.13",
-            truth              : "com.google.truth:truth:1.0",
+            truth              : "com.google.truth:truth:1.0.1",
             supportTestRunner  : "androidx.test:runner:1.2.0",
             espressoCore       : "androidx.test.espresso:espresso-core:3.2.0",
             androidJUnit       : "androidx.test.ext:junit:1.1.1",
-            commonsCsv         : "org.apache.commons:commons-csv:1.7",
+            commonsCsv         : "org.apache.commons:commons-csv:1.8",
             kotlinTest         : "org.jetbrains.kotlin:kotlin-test:${projectVersion.kotlin}"
     ]
 
