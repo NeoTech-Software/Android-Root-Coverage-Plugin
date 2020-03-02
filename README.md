@@ -26,7 +26,7 @@ apply plugin: 'org.neotech.plugin.rootcoverage'
 buildscript {
     dependencies {
         // Step 1: add the dependency
-        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.2.1'
+        classpath 'org.neotech.plugin:android-root-coverage-plugin:1.3.0'
     }
 }
 ```
@@ -60,7 +60,8 @@ Android Studio using the Gradle Tool Window (see:
 # Compatibility
 | Version       | Android Gradle plugin version | Gradle version |
 | ------------- | ----------------------------- | -------------- |
-| **1.2.1**     | 3.5                           | 5.4.1-5.6.4    |
+| **1.3.0**     | 3.6                           | 5.6.4+         |
+| **1.2.1**     | 3.5                           | 5.4.1+         |
 | **1.1.2**     | 3.4                           | 5.1.1+         |
 | **1.1.1**     | 3.3                           | 4.10.1+        |
 | ~~**1.1.0**~~ | ~~3.3~~                       | ~~5+~~         |
