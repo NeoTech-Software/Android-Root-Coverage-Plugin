@@ -15,7 +15,7 @@ import org.gradle.testing.jacoco.tasks.JacocoReport
 @Suppress("unused")
 class RootCoveragePlugin : Plugin<Project> {
 
-    private lateinit var rootProjectExtension: RootCoveragePluginExtension;
+    private lateinit var rootProjectExtension: RootCoveragePluginExtension
 
     override fun apply(project: Project) {
         if (project.rootProject !== project) {
@@ -142,7 +142,7 @@ class RootCoveragePlugin : Plugin<Project> {
         val extension = subProject.extensions.findByName("android")
         if (extension == null) {
             // TODO support java modules?
-            subProject.logger.warn("Note: Skipping code coverage for module '${subProject.name}', currently the RootCoveragePlugin does not yet support Java Library Modules.");
+            subProject.logger.warn("Note: Skipping code coverage for module '${subProject.name}', currently the RootCoveragePlugin does not yet support Java Library Modules.")
             return
         } else if (extension is com.android.build.gradle.FeatureExtension) {
             // TODO support feature modules?
