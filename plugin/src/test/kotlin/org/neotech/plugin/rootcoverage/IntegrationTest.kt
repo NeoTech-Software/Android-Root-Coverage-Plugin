@@ -60,7 +60,7 @@ class IntegrationTest(
 
             val testFixtures = File("src/test/test-fixtures").listFiles()?.filter { it.isDirectory }
                     ?: error("Could not list test fixture directories")
-            val gradleVersions = arrayOf("5.6.4", "6.1.1", "6.2.1")
+            val gradleVersions = arrayOf("6.1.1", "6.2.1", "6.5")
             return testFixtures.flatMap { file ->
                 gradleVersions.map { gradleVersion ->
                     arrayOf("${file.name}-$gradleVersion", file, gradleVersion)
