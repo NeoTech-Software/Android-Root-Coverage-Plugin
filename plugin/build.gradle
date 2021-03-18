@@ -2,34 +2,63 @@ plugins {
     id "org.jetbrains.kotlin.jvm"
     id "java-gradle-plugin"
 
-    // For publishing to Plugin Portal & Bintray
+    // For publishing to Plugin Portal & Maven Central
     id "com.gradle.plugin-publish"
     id "com.github.dcendents.android-maven"
-    id "com.jfrog.bintray"
+    id "org.jetbrains.dokka"
+    id "com.vanniktech.maven.publish" apply false
 }
 
-// To upload new plugin artifact to maven and Gradle Portal:
-// > gradlew bintrayUpload publishPlugins
+// See: https://github.com/vanniktech/gradle-maven-publish-plugin/issues/206
+ext {
+    RELEASE_REPOSITORY_URL = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+    SNAPSHOT_REPOSITORY_URL = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+}
+
+apply plugin: "com.vanniktech.maven.publish"
+
+// To upload new plugin artifact Gradle Portal:
+// > ./gradlew publishPlugins
+//
+// To upload new plugin artifact to Maven Central Repository:
+// > ./gradlew publishPluginMavenPublicationToMavenCentralRepository --no-daemon --no-parallel
 //
 // To test the plugin:
-// > gradlew clean test
+// > ./gradlew clean test
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+
+publishing {
+    repositories {
+        maven {
+            url = version.endsWith('SNAPSHOT') ? SNAPSHOT_REPOSITORY_URL : RELEASE_REPOSITORY_URL
+            name = "mavenCentral"
+            credentials {
+                Properties properties = new Properties()
+                properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+                username = properties.getProperty("ossrhUsername")
+                password = properties.getProperty("ossrhPassword")
+            }
+        }
+    }
+}
+
 gradlePlugin {
     plugins {
         rootCoverage {
-            id = 'org.neotech.plugin.rootcoverage'
+            id = 'nl.neotech.plugin.rootcoverage'
             implementationClass = 'org.neotech.plugin.rootcoverage.RootCoveragePlugin'
         }
     }
 }
 
 pluginBundle {
-    setWebsite(PROJECT_WEBSITE)
-    vcsUrl = 'https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin'
-    setDescription(DESCRIPTION)
+    setWebsite(POM_URL)
+    vcsUrl = POM_SCM_URL
+    setDescription(POM_DESCRIPTION)
     tags = ['android', 'coverage', 'jacoco', 'code-coverage', 'coverage-report', 'aggregated-report']
 
     plugins {
@@ -40,8 +69,8 @@ pluginBundle {
 
     mavenCoordinates {
         groupId = GROUP
-        artifactId = ARTIFACT_ID
-        version = VERSION
+        artifactId = POM_ARTIFACT_ID
+        version = VERSION_NAME
     }
 }
 
@@ -66,4 +95,4 @@ dependencies {
     testImplementation projectDependency.commonsCsv
 }
 
-apply from: rootProject.file('publish.gradle')
+// apply from: rootProject.file('publish.gradle')

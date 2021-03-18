@@ -7,19 +7,26 @@ buildscript {
     apply from: "gradle/dependencies.gradle"
 
     repositories {
+        gradlePluginPortal()
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.28.0"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.38.0"
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        jcenter {
+            content {
+                // https://youtrack.jetbrains.com/issue/IDEA-261387
+                includeModule("org.jetbrains.trove4j", "trove4j")
+            }
+        }
     }
 }
 
