@@ -21,6 +21,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // For Dokka/KotlinX
+        maven { url = "https://dl.bintray.com/kotlin/kotlinx/" }
         jcenter {
             content {
                 // https://youtrack.jetbrains.com/issue/IDEA-261387
