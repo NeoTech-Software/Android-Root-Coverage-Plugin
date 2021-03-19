@@ -30,7 +30,7 @@ ext {
             "org.jetbrains.kotlin.android"      : "${projectVersion.kotlin}",
             "org.jetbrains.kotlin.jvm"          : "${projectVersion.kotlin}",
             "com.github.dcendents.android-maven": "2.1",
-            "com.gradle.plugin-publish"         : "0.10.1",
+            "com.gradle.plugin-publish"         : "0.13.0",
             "org.jetbrains.dokka"               : "1.4.30",
             "com.vanniktech.maven.publish"      : "0.14.2"
     ]
