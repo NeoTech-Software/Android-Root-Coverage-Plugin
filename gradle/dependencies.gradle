@@ -12,7 +12,7 @@ ext {
             androidGradlePlugin: "com.android.tools.build:gradle:4.1.2",
 
             // Dependencies
-            kotlinStdlibJdk7   : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${projectVersion.kotlin}",
+            kotlinStdlibJdk8   : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${projectVersion.kotlin}",
             appCompat          : "androidx.appcompat:appcompat:1.2.0",
 
             // Test dependencies

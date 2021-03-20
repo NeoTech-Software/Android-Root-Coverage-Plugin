@@ -85,14 +85,12 @@ test {
 dependencies {
     compileOnly gradleApi()
     implementation projectDependency.androidGradlePlugin
-    implementation projectDependency.kotlinStdlibJdk7
+    implementation projectDependency.kotlinStdlibJdk8
 
-    testImplementation projectDependency.kotlinStdlibJdk7
+    testImplementation projectDependency.kotlinStdlibJdk8
     testImplementation projectDependency.kotlinTest
     testImplementation gradleTestKit()
     testImplementation projectDependency.junit
     testImplementation projectDependency.truth
     testImplementation projectDependency.commonsCsv
 }
-
-// apply from: rootProject.file('publish.gradle')
