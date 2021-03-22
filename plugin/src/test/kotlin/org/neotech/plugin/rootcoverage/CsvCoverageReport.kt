@@ -24,7 +24,7 @@ class CoverageReport private constructor(
         find(packageName, className).assertFullCoverageCoverage()
     }
 
-    fun find(packageName: String, className: String): CSVRecord? = records.find {
+    private fun find(packageName: String, className: String): CSVRecord? = records.find {
         it[packageColumn] == packageName && it[classColumn] == className
     }
 

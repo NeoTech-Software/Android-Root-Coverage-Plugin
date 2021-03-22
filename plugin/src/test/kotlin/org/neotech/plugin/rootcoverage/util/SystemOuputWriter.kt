@@ -8,7 +8,7 @@ import java.io.Writer
  * adding extra new lines to the generated output in the console. This is a small fix for that, it
  * might not be the fastest, but it works.
  */
-class SystemOutputWriter private constructor(private val output: OutputStream) : Writer() {
+class SystemOutputWriter private constructor(output: OutputStream) : Writer() {
 
     private val bufferedWriter = output.bufferedWriter(Charsets.UTF_8)
 
