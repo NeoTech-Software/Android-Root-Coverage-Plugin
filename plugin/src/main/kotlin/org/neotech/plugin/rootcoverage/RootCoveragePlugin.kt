@@ -19,12 +19,18 @@ class RootCoveragePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         if (project.rootProject !== project) {
-            throw GradleException("The RootCoveragePlugin cannot be applied to project '${project.name}' because it is not the root project. Build file: ${project.buildFile}")
+            throw GradleException(
+                "The RootCoveragePlugin cannot be applied to project '${project.name}' because it" +
+                        " is not the root project. Build file: ${project.buildFile}"
+            )
         }
         rootProjectExtension = project.extensions.create("rootCoverage", RootCoveragePluginExtension::class.java)
 
         if (project.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-            project.logger.warn("Warning: Jacoco plugin was not found for project: '${project.name}', it has been applied automatically, but you should do this manually. Build file: ${project.buildFile}")
+            project.logger.warn(
+                "Warning: Jacoco plugin was not found for project: '${project.name}', it has been" +
+                        " applied automatically, but you should do this manually. Build file: ${project.buildFile}"
+            )
             project.plugins.apply(JacocoPlugin::class.java)
         }
 
@@ -96,14 +102,51 @@ class RootCoveragePlugin : Plugin<Project> {
     private fun <T : BaseVariant> assertVariantExists(set: DomainObjectSet<T>, buildVariant: String, project: Project) {
         set.find {
             it.name.capitalize() == buildVariant.capitalize()
-        } ?: throw GradleException("Build variant `$buildVariant` required for module `${project.name}` does not exist. Make sure to use a proper build variant configuration using rootCoverage.buildVariant and rootCoverage.buildVariantOverrides.")
+        }
+            ?: throw GradleException(
+                "Build variant `$buildVariant` required for module `${project.name}` does not exist. Make sure to use" +
+                        " a proper build variant configuration using rootCoverage.buildVariant and" +
+                        " rootCoverage.buildVariantOverrides."
+            )
+    }
+
+    private fun createSubProjectCoverageTask(subProject: Project) {
+        // Aggregates jacoco results from the app sub-project and bankingright sub-project and generates a report.
+        // The report can be found at the root of the project in /build/reports/jacoco, so don't look in
+        // /app/build/reports/jacoco you will only find the app sub-project report there.
+        val task = subProject.tasks.create("coverageReport", JacocoReport::class.java)
+        task.group = "reporting"
+        task.description = "Generates a Jacoco for this Gradle module."
+
+        task.reports.html.isEnabled = rootProjectExtension.generateHtml
+        task.reports.xml.isEnabled = rootProjectExtension.generateXml
+        task.reports.csv.isEnabled = rootProjectExtension.generateCsv
+
+        task.reports.html.destination = subProject.file("${subProject.buildDir}/reports/jacoco")
+        task.reports.xml.destination = subProject.file("${subProject.buildDir}/reports/jacoco.xml")
+        task.reports.csv.destination = subProject.file("${subProject.buildDir}/reports/jacoco.csv")
+
+        // Add some run-time checks.
+        task.doFirst {
+            val extension = subProject.extensions.findByName("android")
+            if (extension != null) {
+                val buildVariant = getBuildVariantFor(subProject)
+                when (extension) {
+                    is LibraryExtension -> assertVariantExists(extension.libraryVariants, buildVariant, subProject)
+                    is AppExtension -> assertVariantExists(extension.applicationVariants, buildVariant, subProject)
+                }
+            }
+        }
+
+        task.addSubProject(task.project)
     }
 
     private fun createCoverageTaskForRoot(project: Project) {
         // Aggregates jacoco results from the app sub-project and bankingright sub-project and generates a report.
         // The report can be found at the root of the project in /build/reports/jacoco, so don't look in
         // /app/build/reports/jacoco you will only find the app sub-project report there.
-        val task = project.tasks.create("rootCodeCoverageReport", JacocoReport::class.java)
+
+        val task = project.tasks.create("rootCoverageReport", JacocoReport::class.java)
         task.group = "reporting"
         task.description = "Generates a Jacoco report with combined results from all the subprojects."
 
@@ -130,23 +173,40 @@ class RootCoveragePlugin : Plugin<Project> {
         }
 
         // Configure the root task with sub-tasks for the sub-projects.
-        project.subprojects.forEach {
+        task.project.subprojects.forEach {
             it.afterEvaluate { subProject ->
-                createCoverageTaskForSubProject(subProject, task)
+                task.addSubProject(subProject)
+                createSubProjectCoverageTask(subProject)
             }
+        }
+
+        project.tasks.create("rootCodeCoverageReport").apply {
+            doFirst {
+                logger.warn(
+                    "The rootCodeCoverageReport task has been renamed in favor of rootCoverageReport, please" +
+                            " rename any references to this task."
+                )
+            }
+            dependsOn("rootCoverageReport")
         }
     }
 
-    private fun createCoverageTaskForSubProject(subProject: Project, task: JacocoReport) {
+    private fun JacocoReport.addSubProject(subProject: Project) {
         // Only Android Application and Android Library modules are supported for now.
         val extension = subProject.extensions.findByName("android")
         if (extension == null) {
             // TODO support java modules?
-            subProject.logger.warn("Note: Skipping code coverage for module '${subProject.name}', currently the RootCoveragePlugin does not yet support Java Library Modules.")
+            subProject.logger.warn(
+                "Note: Skipping code coverage for module '${subProject.name}', currently the" +
+                        " RootCoveragePlugin does not yet support Java Library Modules."
+            )
             return
         } else if (extension is com.android.build.gradle.FeatureExtension) {
             // TODO support feature modules?
-            subProject.logger.warn("Note: Skipping code coverage for module '${subProject.name}', currently the RootCoveragePlugin does not yet support Android Feature Modules.")
+            subProject.logger.warn(
+                "Note: Skipping code coverage for module '${subProject.name}', currently the" +
+                        " RootCoveragePlugin does not yet support Android Feature Modules."
+            )
             return
         }
 
@@ -157,11 +217,14 @@ class RootCoveragePlugin : Plugin<Project> {
                 extension.libraryVariants.all { variant ->
                     if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
                         if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-                            subProject.logger.warn("Warning: Jacoco plugin was not found for project: '${subProject.name}', it has been applied automatically but you should do this manually. Build file: ${subProject.buildFile}")
+                            subProject.logger.info(
+                                "Jacoco plugin was not found for project: '${subProject.name}', it" +
+                                        " has been applied automatically but you should do this manually. Build file:" +
+                                        " ${subProject.buildFile}"
+                            )
                             subProject.plugins.apply(JacocoPlugin::class.java)
                         }
-                        val subTask = createTask(subProject, variant)
-                        addSubTaskDependencyToRootTask(task, subTask)
+                        addSubProjectVariant(subProject, variant)
                     }
                 }
             }
@@ -169,62 +232,53 @@ class RootCoveragePlugin : Plugin<Project> {
                 extension.applicationVariants.all { variant ->
                     if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
                         if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-                            subProject.logger.warn("Jacoco plugin not applied to project: '${subProject.name}'! RootCoveragePlugin automatically applied it but you should do this manually: ${subProject.buildFile}")
+                            subProject.logger.info(
+                                "Jacoco plugin was not found for project: '${subProject.name}', it" +
+                                        " has been applied automatically but you should do this manually. Build file:" +
+                                        " ${subProject.buildFile}"
+                            )
                             subProject.plugins.apply(JacocoPlugin::class.java)
                         }
-                        val subTask = createTask(subProject, variant)
-                        addSubTaskDependencyToRootTask(task, subTask)
+                        addSubProjectVariant(subProject, variant)
                     }
                 }
             }
         }
     }
 
-    private fun createTask(project: Project, variant: BaseVariant): RootCoverageModuleTask {
+    private fun JacocoReport.addSubProjectVariant(subProject: Project, variant: BaseVariant) {
         val name = variant.name.capitalize()
 
-        val codeCoverageReportTask = project.tasks.register("codeCoverageReport$name", RootCoverageModuleTask::class.java)
-        codeCoverageReportTask.configure { task ->
-            task.group = null // null makes sure the group does not show in the gradle-view in Android Studio/Intellij
-            task.description = "Generate unified Jacoco code codecoverage report"
+        // Gets the relative path from this task to the subProject
+        val path = project.relativePath(subProject.path).removeSuffix(":")
 
-            if (rootProjectExtension.shouldExecuteUnitTests()) {
-                task.dependsOn("test${name}UnitTest")
-            }
-            if (rootProjectExtension.shouldExecuteAndroidTests()) {
-                task.dependsOn("connected${name}AndroidTest")
-            }
-
-            // Collect the class files based on the Java Compiler output
-            val javaClassOutput = variant.javaCompileProvider.get().outputs
-            val javaClassTrees = javaClassOutput.files.map { file ->
-                project.fileTree(file, excludes = getFileFilterPatterns()).excludeNonClassFiles()
-            }
-
-            // TODO: No idea how to dynamically get the kotlin class files output folder, so for now this is hardcoded.
-            // TODO: For some reason the tmp/kotlin-classes folder does not use the variant.dirName property, for now we instead use the variant.name.
-            val kotlinClassFolder = "${project.buildDir}/tmp/kotlin-classes/${variant.name}"
-            project.logger.info("Kotlin class folder for variant '${variant.name}': $kotlinClassFolder")
-
-            val kotlinClassTree = project.fileTree(kotlinClassFolder, excludes = getFileFilterPatterns()).excludeNonClassFiles()
-
-            // getSourceFolders returns ConfigurableFileCollections, but we only need the base directory of each ConfigurableFileCollection.
-            val sourceFiles = variant.getSourceFolders(SourceKind.JAVA).map { file -> file.dir }
-
-            task.sourceDirectories = project.files(sourceFiles)
-            task.classDirectories = project.files(javaClassTrees, kotlinClassTree)
-            task.executionData = getExecutionDataFileTree(project)
+        // Add dependencies to the test tasks of the subProject
+        if (rootProjectExtension.shouldExecuteUnitTests()) {
+            dependsOn("$path:test${name}UnitTest")
         }
-        return codeCoverageReportTask.get()
-    }
+        if (rootProjectExtension.shouldExecuteAndroidTests()) {
+            dependsOn("$path:connected${name}AndroidTest")
+        }
 
-    private fun addSubTaskDependencyToRootTask(rootTask: JacocoReport, subModuleTask: RootCoverageModuleTask) {
+        // Collect the class files based on the Java Compiler output
+        val javaClassOutput = variant.javaCompileProvider.get().outputs
+        val javaClassTrees = javaClassOutput.files.map { file ->
+            subProject.fileTree(file, excludes = getFileFilterPatterns()).excludeNonClassFiles()
+        }
 
-        // Make the root task depend on the sub-project code coverage task
-        rootTask.dependsOn(subModuleTask)
+        // TODO: No idea how to dynamically get the kotlin class files output folder, so for now this is hardcoded.
+        // TODO: For some reason the tmp/kotlin-classes folder does not use the variant.dirName property, for now we instead use the variant.name.
+        val kotlinClassFolder = "${subProject.buildDir}/tmp/kotlin-classes/${variant.name}"
+        subProject.logger.info("Kotlin class folder for variant '${variant.name}': $kotlinClassFolder")
 
-        rootTask.classDirectories.from(subModuleTask.classDirectories)
-        rootTask.sourceDirectories.from(subModuleTask.sourceDirectories)
-        rootTask.executionData.from(subModuleTask.executionData)
+        val kotlinClassTree =
+            subProject.fileTree(kotlinClassFolder, excludes = getFileFilterPatterns()).excludeNonClassFiles()
+
+        // getSourceFolders returns ConfigurableFileCollections, but we only need the base directory of each ConfigurableFileCollection.
+        val sourceFiles = variant.getSourceFolders(SourceKind.JAVA).map { file -> file.dir }
+
+        sourceDirectories.from(subProject.files(sourceFiles))
+        classDirectories.from(subProject.files(javaClassTrees, kotlinClassTree))
+        executionData.from(getExecutionDataFileTree(subProject))
     }
 }

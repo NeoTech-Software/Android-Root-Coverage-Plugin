@@ -1,6 +1,7 @@
 package org.neotech.plugin.rootcoverage
 
 import com.google.common.truth.Truth.assertThat
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Test
@@ -15,10 +16,11 @@ import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
 class IntegrationTest(
-        // Used by Junit as the test name, see @Parameters
-        @Suppress("unused") private val name: String,
-        private val projectRoot: File,
-        private val gradleVersion: String) {
+    // Used by Junit as the test name, see @Parameters
+    @Suppress("unused") private val name: String,
+    private val projectRoot: File,
+    private val gradleVersion: String
+) {
 
     @Test
     fun execute() {
@@ -28,27 +30,72 @@ class IntegrationTest(
         })
 
         val runner = GradleRunner.create()
-                .withProjectDir(projectRoot)
-                .withGradleVersion(gradleVersion)
-                .withPluginClasspath()
-                // Without forwardOutput Travis CI could timeout (which happens when Travis receives
-                // no output for more than 10 minutes)
-                .forwardStdOutput(SystemOutputWriter.out())
-                .forwardStdError(SystemOutputWriter.err())
-                .withArguments("clean", "rootCodeCoverageReport", "--stacktrace")
+            .withProjectDir(projectRoot)
+            .withGradleVersion(gradleVersion)
+            .withPluginClasspath()
+            // Without forwardOutput Travis CI could timeout (which happens when Travis receives
+            // no output for more than 10 minutes)
+            .forwardStdOutput(SystemOutputWriter.out())
+            .forwardStdError(SystemOutputWriter.err())
 
-        // Expect no failure
+            // Note: rootCodeCoverageReport is the old and deprecated name of the rootCoverageReport task, it is
+            // used to check whether the old name properly aliases to the new task name.
+            .withArguments("clean", "coverageReport", "rootCodeCoverageReport", "--stacktrace")
+
         val result = runner.build()
 
         assertThat(result.output).contains("BUILD SUCCESSFUL")
-        assertEquals(result.task(":rootCodeCoverageReport")!!.outcome, TaskOutcome.SUCCESS)
+
+        // Assert whether the combined coverage report is what we expected
+        result.assertRootCoverageReport()
+
+        // Assert whether the per module coverage reports are what we expect
+        result.assertAppCoverageReport()
+        result.assertAndroidLibraryCoverageReport()
+    }
+
+    private fun BuildResult.assertRootCoverageReport() {
+        assertEquals(task(":rootCoverageReport")!!.outcome, TaskOutcome.SUCCESS)
+
+        // Also check if the old task name is still exe
+        assertEquals(task(":rootCodeCoverageReport")!!.outcome, TaskOutcome.SUCCESS)
 
         val report = CoverageReport.from(File(projectRoot, "build/reports/jacoco.csv"))
 
-        report.assertFullCoverage("org.neotech.library.android", "LibraryAndroidJava")
-        report.assertFullCoverage("org.neotech.library.android", "LibraryAndroidKotlin")
-        report.assertFullCoverage("org.neotech.app", "AppJava")
-        report.assertFullCoverage("org.neotech.app", "AppKotlin")
+        report.assertCoverage("org.neotech.library.android", "LibraryAndroidJava")
+        report.assertCoverage("org.neotech.library.android", "LibraryAndroidKotlin")
+        report.assertCoverage("org.neotech.app", "AppJava")
+        report.assertCoverage("org.neotech.app", "AppKotlin")
+    }
+
+    private fun BuildResult.assertAppCoverageReport() {
+        assertEquals(task(":app:coverageReport")!!.outcome, TaskOutcome.SUCCESS)
+
+        val report = CoverageReport.from(File(projectRoot, "app/build/reports/jacoco.csv"))
+
+        report.assertCoverage("org.neotech.app", "AppJava")
+        report.assertCoverage("org.neotech.app", "AppKotlin")
+    }
+
+    private fun BuildResult.assertAndroidLibraryCoverageReport() {
+        assertEquals(task(":library_android:coverageReport")!!.outcome, TaskOutcome.SUCCESS)
+
+        val report = CoverageReport.from(File(projectRoot, "library_android/build/reports/jacoco.csv"))
+
+        // Some coverage will be missing since the library also contains code that is only touched by tests in the app
+        // module, which will not be touched when generating a module specific report.
+        report.assertCoverage(
+            packageName = "org.neotech.library.android",
+            className = "LibraryAndroidJava",
+            missedBranches = 0,
+            missedInstructions = 8
+        )
+        report.assertCoverage(
+            packageName = "org.neotech.library.android",
+            className = "LibraryAndroidKotlin",
+            missedBranches = 0,
+            missedInstructions = 8
+        )
     }
 
     companion object {
@@ -59,7 +106,7 @@ class IntegrationTest(
         fun parameters(): List<Array<Any>> {
 
             val testFixtures = File("src/test/test-fixtures").listFiles()?.filter { it.isDirectory }
-                    ?: error("Could not list test fixture directories")
+                ?: error("Could not list test fixture directories")
             val gradleVersions = arrayOf("6.5.1", "6.6.1", "6.7.1", "6.8.3")
             return testFixtures.flatMap { file ->
                 gradleVersions.map { gradleVersion ->
