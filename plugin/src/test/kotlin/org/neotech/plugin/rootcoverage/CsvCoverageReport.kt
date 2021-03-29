@@ -1,11 +1,11 @@
 package org.neotech.plugin.rootcoverage
 
+import junit.framework.Assert.assertEquals
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import java.io.File
 import java.nio.charset.StandardCharsets
-import kotlin.test.assertEquals
 
 class CoverageReport private constructor(
         private val instructionMissedColumn: Int,
@@ -13,15 +13,15 @@ class CoverageReport private constructor(
         private val packageColumn: Int,
         private val classColumn: Int,
         private val records: List<CSVRecord>) {
-
-    private fun CSVRecord?.assertFullCoverageCoverage() {
+    
+    private fun CSVRecord?.assertCoverage(missedBranches: Int = 0, missedInstructions: Int = 0) {
         kotlin.test.assertNotNull(this)
-        assertEquals(this[instructionMissedColumn]?.toInt(), 0)
-        assertEquals(this[branchMissedColumn]?.toInt(), 0)
+        assertEquals(missedInstructions, this[instructionMissedColumn]?.toInt())
+        assertEquals(missedBranches, this[branchMissedColumn]?.toInt())
     }
 
-    fun assertFullCoverage(packageName: String, className: String) {
-        find(packageName, className).assertFullCoverageCoverage()
+    fun assertCoverage(packageName: String, className: String, missedBranches: Int = 0, missedInstructions: Int = 0) {
+        find(packageName, className).assertCoverage(missedBranches, missedInstructions)
     }
 
     private fun find(packageName: String, className: String): CSVRecord? = records.find {
