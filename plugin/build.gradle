@@ -37,8 +37,11 @@ publishing {
             name = "mavenCentral"
             credentials {
                 Properties properties = new Properties()
-                properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
+                try {
+                    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+                } catch(FileNotFoundException ignored) {
+                    logger.warn("local.properties file with ossrhUsername and ossrhPassword properties was not found.")
+                }
                 username = properties.getProperty("ossrhUsername")
                 password = properties.getProperty("ossrhPassword")
             }
