@@ -33,8 +33,6 @@ class IntegrationTest(
             .withProjectDir(projectRoot)
             .withGradleVersion(gradleVersion)
             .withPluginClasspath()
-            // Without forwardOutput Travis CI could timeout (which happens when Travis receives
-            // no output for more than 10 minutes)
             .forwardStdOutput(SystemOutputWriter.out())
             .forwardStdError(SystemOutputWriter.err())
 

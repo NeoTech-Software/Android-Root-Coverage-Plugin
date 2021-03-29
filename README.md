@@ -1,6 +1,6 @@
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/nl.neotech.plugin/android-root-coverage-plugin/maven-metadata.xml.svg?label=Gradle%20Plugin%20Portal)](https://plugins.gradle.org/plugin/nl.neotech.plugin.rootcoverage)
 [![Maven Central](https://img.shields.io/maven-central/v/nl.neotech.plugin/android-root-coverage-plugin?label=Maven%20Central)](https://search.maven.org/artifact/nl.neotech.plugin/android-root-coverage-plugin)
-[![Build status](https://travis-ci.com/NeoTech-Software/Android-Root-Coverage-Plugin.svg?branch=master)](https://travis-ci.com/NeoTech-Software/Android-Root-Coverage-Plugin/)
+[![Build](https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/actions/workflows/build.yml/badge.svg)](https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/actions/workflows/build.yml)
 
 # Android-Root-Coverage-Plugin
 **A Gradle plugin for combined code coverage reports for Android projects.**

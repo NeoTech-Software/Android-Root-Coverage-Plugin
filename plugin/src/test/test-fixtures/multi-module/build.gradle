@@ -26,6 +26,11 @@ allprojects {
         google()
         mavenCentral()
     }
+    tasks.withType(Test) {
+        testLogging {
+            exceptionFormat "full"
+        }
+    }
 }
 
 task clean(type: Delete) {
