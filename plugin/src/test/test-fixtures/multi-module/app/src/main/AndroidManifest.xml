@@ -1,2 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="org.neotech.app" />
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.neotech.app"
+    >
+
+    <application>
+        <activity
+            android:name=".RobolectricTestedActivity"
+            android:theme="@style/Theme.AppCompat"
+            />
+    </application>
+
+</manifest>
