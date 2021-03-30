@@ -3,18 +3,20 @@
 [![Build](https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/actions/workflows/build.yml)
 
 # Android-Root-Coverage-Plugin
-**A Gradle plugin for combined code coverage reports for Android projects.**
-Generating code coverage reports for Android Projects is in most cases quite easy. Unfortunately by
-default (using Jacoco) code coverage is generated separately per module. This means each module
-takes into account it's own sources and tests (which is in terms of domain separation fine). However
-it is very common to find multi-module Android projects where only one module actually has tests.
-This plugin comes in handy for those projects. It generates code coverage reports using Jacoco
-taking into account all the modules and tests at once, or in other words: code in module B will show
-up as "covered" when tests in Module A touch it.
+**Automatically configures Jacoco code coverage tasks for both combined and per module coverage reports.**
 
-  - Supports both Android app and library modules (`com.android.application` & `com.android.library`).
-  - Supports different build variants per module within the same report.
-  - Supports custom package/class filters.
+Configuring Jacoco for Android projects is unfortunately not always easy. It is very common to find multi-module Android
+projects where one module has tests for code found in another module, for example integration/UI tests that cover code
+in multiple other modules. Configuring Jacoco for such a case is not always straight forward, you need to point Jacoco
+to the right sources, execution data and class files, not to mention how error prone manual Jacoco setups can be. This
+plugin automatically configures Jacoco for you, so you don't have to.
+
+**Feature highlights:**
+- Include unit-tests, instrumented unit-tests or both in the final reports
+- Support for combined coverage reports *(code in module X is covered when touched by tests from any other module)*
+- Support for coverage reports per module *(code in module X is only covered when touched by tests from module X)*
+- Custom package/class filters
+- Support for mixed build-types
 
 > Notice: Due to the [shutdown of Bintray/JCenter](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)
 > the Android-Root-Coverage-Plugin has been migrated
@@ -32,76 +34,70 @@ up as "covered" when tests in Module A touch it.
 > }
 > ```
 >
-> The current version has been re-released with the new group ID and plugin ID to Maven Central and
-> the Gradle Plugin Portal (1.3.1), new versions will also be released to these repositories. See
-> the 'Setup' section of this readme on how to use this plugin with the updated group ID and
-> plugin ID.
+> Version 1.3.0 has been re-released (as 1.3.1) with the new group ID and plugin ID to Maven Central and
+> the Gradle Plugin Portal. Upcoming versions will also be released to these repositories. Check the
+> [setup](#1-setup) section on how to use this plugin with the updated group ID and plugin ID.
 
-# Setup
-Apply the Android-Root-Coverage-Plugin plugin to your top-level (root project) gradle file:
 
-```groovy
-// Step 2: Apply the plugin to the top-level gradle file
-apply plugin: 'nl.neotech.plugin.rootcoverage'
+# 1. Setup
+Apply the plugin to your top-level (root project) `build.gradle` file using one of the
+following methods:
+
+<details open>
+  <summary><strong>Plugin block:</strong></summary>
+
+  ```groovy
+  // Below buildscript {}
+  plugins {
+      id "nl.neotech.plugin.rootcoverage" version "1.4.0"
+  }
+  ```
+</details>
+
+<details>
+  <summary><strong>classpath + apply:</strong></summary>
+
+   ```groovy
+   apply plugin: 'nl.neotech.plugin.rootcoverage'
 
 buildscript {
-    dependencies {
-        // Step 1: add the dependency
-        classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.3.1'
-    }
+   dependencies {
+      classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.4.0'
+   }
 }
-```
+   ```
+</details>
 
 
-# How to use
-Currently only modules with the plugin type `com.android.application` or `com.android.library` are
-taken into account when generating the coverage report, besides this any module that does not have
-`testCoverageEnabled true` for the selected build variant (by default: `debug`) will be skipped:
+# 2. How to use
 
-You can add a module by enabling `testCoverageEnabled`:
-```groovy
-android {
-    buildTypes {
-        debug {
-            testCoverageEnabled true
-        }
-    }
-}
-```
+1. Enable running tests with coverage in the desired modules:
 
-The Android-Root-Coverage-Plugin generates a special Gradle task `:rootCodeCoverageReport` that when
-executed generates a Jacoco code coverage report. You can either run this task directly from
-Android Studio using the Gradle Tool Window (see:
-<https://www.jetbrains.com/help/idea/jetgradle-tool-window.html>) or from the terminal.
+   ```groovy
+   android {
+       buildTypes {
+           debug {
+               testCoverageEnabled true
+           }
+       }
+   }
+   ```
 
-- **Gradle Tool Window:** You can find the task under: `Tasks > reporting > rootCodeCoverageReport`, double click to  execute it.
-- **Terminal:** Execute the task using `gradlew rootCodeCoverageReport`.
+   > Only Android modules (`com.android.application` or `com.android.library`) are supported, this plugin will not execute
+   tests and generate coverage reports for non-android modules. Also any Android module that does not have
+   > `testCoverageEnabled true` for the desired coverage variant (default: `debug`) will be ignored.
 
+2. Run one of the automatically configured Gradle tasks to generate a Jacoco report:
+   - **For combined coverage:** `./gradlew :coverageReport`
+   - **For module specific coverage:** `./gradlew :yourModule:coverageReport`
 
-# Compatibility
-| Version       | Android Gradle plugin version | Gradle version |
-| ------------- | ----------------------------- | -------------- |
-| **1.3.1**     | 3.6                           | 5.6.4+         |
-| **1.2.1**     | 3.5                           | 5.4.1+         |
-| **1.1.2**     | 3.4                           | 5.1.1+         |
-| **1.1.1**     | 3.3                           | 4.10.1+        |
-| **1.0.2**     | 3.2                           | 4.6+           |
+   > Resulting reports can be found in `/build/reports/` and `yourModule/build/reports/`
 
-*Note: Versions below 1.3.1, such as 1.3.0, are only available on the Gradle Plugin Portal
-(`maven { url "https://plugins.gradle.org/m2/"}`) and not on Maven Central. These versions use the
-group ID `org.neotech.plugin` and plugin ID `org.neotech.plugin.rootcoverage`!*
-
-*Note: This plugin normally supports exactly the same Gradle versions as the Android Gradle
-plugin, for more information please refer to:* 
-<https://developer.android.com/studio/releases/gradle-plugin#updating-gradle>
-
-Android Gradle Plugin versions before `3.4.0-alpha05` are affected by a bug that in certain conditions can
-cause Jacoco instrumentation to fail in combination with inline kotlin methods shared across modules. For more information
-see: <https://issuetracker.google.com/issues/109771903> and <https://issuetracker.google.com/issues/110763361>.
-If your project is affected by this upgrade to an Android Gradle Plugin version of at least `3.4.0-alpha05`.
+3. Optionally configure the plugin to change the output types, test variants and more, see
+   [Configuration](#3-configuration).
 
 
-# Configuration
+# 3. Configuration
 By default the plugin generates code coverage reports using the build variant `debug` for every
 module. However in some cases different build variants per module might be required, especially if
 there is no `debug` build variant available. In those cases you can configure custom build variants
@@ -109,49 +105,72 @@ for specific modules:
 
 ```groovy
 rootCoverage {
-    // The default build variant for every module
-    buildVariant "debug"
-    // Overrides the default build variant for specific modules.
-    buildVariantOverrides ":moduleA" : "debugFlavourA", ":moduleB": "debugFlavourA"
-    
-    // Class exclude patterns
-    excludes = ["**/some.package/**"]
+   // The default build variant for every module
+   buildVariant "debug"
+   // Overrides the default build variant for specific modules.
+   buildVariantOverrides ":moduleA" : "debugFlavourA", ":moduleB": "debugFlavourA"
 
-    // Since 1.1 generateHtml is by default true
-    generateCsv false
-    generateHtml true
-    generateXml false
+   // Class & package exclude patterns
+   excludes = ["**/some.package/**"]
 
-    // Since 1.2: When false the plugin does not execute any tests, useful when you run the tests manually or remote (Firebase Test Lab)
-    executeTests true
-    
-    // Since 1.2: Same as executeTests except that this only affects the instrumented Android tests
-    executeAndroidTests true
+   // Since 1.1 generateHtml is by default true
+   generateCsv false
+   generateHtml true
+   generateXml false
 
-    // Since 1.2: Same as executeTests except that this only affects the unit tests
-    executeUnitTests true
+   // Since 1.2: When false the plugin does not execute any tests, useful when you run the tests manually or remote (Firebase Test Lab)
+   executeTests true
 
-    // Since 1.2: When true include results from instrumented Android tests into the coverage report
-    includeAndroidTestResults true
+   // Since 1.2: Same as executeTests except that this only affects the instrumented Android tests
+   executeAndroidTests true
 
-    // Since 1.2: When true include results from unit tests into the coverage report
-    includeUnitTestResults true
+   // Since 1.2: Same as executeTests except that this only affects the unit tests
+   executeUnitTests true
+
+   // Since 1.2: When true include results from instrumented Android tests into the coverage report
+   includeAndroidTestResults true
+
+   // Since 1.2: When true include results from unit tests into the coverage report
+   includeUnitTestResults true
+   
+   // Since 1.4: Sets jacoco.includeNoLocationClasses, so you don't have to. Helpful when using Robolectric
+   // which usually requires this attribute to be true
+   includeNoLocationClasses false
 }
 ```
 
 
-# Development
-Want to contribute? Great! Currently this plugin is mainly in need of extensive testing in some more
-projects. But if you like to add some actually functionality, this is the wish list:
+# 4. Compatibility
+| Version       | Android Gradle plugin version | Gradle version    |
+| ------------- | ----------------------------- | ----------------- |
+| **1.4.0**     | 4.1+                          | 6.5+              |
+| **1.3.1**     | 4.0<br/>3.6                   | 6.1.1+<br/>5.6.4+ |
+| **1.2.1**     | 3.5                           | 5.4.1+            |
+| **1.1.2**     | 3.4                           | 5.1.1+            |
+| **1.1.1**     | 3.3                           | 4.10.1+           |
+| **1.0.2**     | 3.2                           | 4.6+              |
 
-- Support for Java library modules
-- Make use of the JacocoMerge task? To merge the `exec` en `ec` files?
-- Improved integration test setup: without the hackish dynamic versions in the Gradle plugin block?
+> *Note 1: Plugin versions below 1.3.1, such as 1.3.0, are only available on the Gradle Plugin Portal
+(`maven { url "https://plugins.gradle.org/m2/"}`) and not on Maven Central. These versions use the
+group ID `org.neotech.plugin` and plugin ID `org.neotech.plugin.rootcoverage`!*
+
+> *Note 2: This plugin normally supports the same Gradle versions as the Android Gradle plugin, for more information
+> see:* <https://developer.android.com/studio/releases/gradle-plugin#updating-gradle>
+
+> Note 3: Android Gradle Plugin versions before `3.4.0-alpha05` are affected by a bug that in certain conditions can
+cause Jacoco instrumentation to fail in combination with inline kotlin methods shared across modules. For more information
+see: <https://issuetracker.google.com/issues/109771903> and <https://issuetracker.google.com/issues/110763361>.
+If your project is affected by this upgrade to an Android Gradle Plugin version of at least `3.4.0-alpha05`.
+
+
+# 5. Development
+Want to contribute? Great! Just clone the repo, code away and create a pull-request. Try to keep changes small and make
+sure to follow the code-style as found in the rest of the project.
 
 **How to test your changes/additions?**
 The plugin comes with an integration test. You can run this test either by executing
-`gradlew clean test` or run the test directly from Android Studio (or IntelliJ IDEA).
+`./gradlew clean test` or run the test directly from Android Studio (or IntelliJ IDEA).
 
 
-# Author note
+# 6. Honorable mentions
 Many thanks to [Hans van Dam](https://github.com/hansvdam) for helping with testing and the initial idea.
