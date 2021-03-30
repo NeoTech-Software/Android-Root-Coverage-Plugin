@@ -36,6 +36,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+    
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -47,7 +53,8 @@ dependencies {
     implementation projectDependency.kotlinStdlibJdk8
     implementation projectDependency.appCompat
 
-    testImplementation projectDependency.junit
+    testImplementation projectDependency.androidJUnit
+    testImplementation projectDependency.robolectric
     androidTestImplementation projectDependency.supportTestRunner
     androidTestImplementation projectDependency.espressoCore
     androidTestImplementation projectDependency.androidJUnit

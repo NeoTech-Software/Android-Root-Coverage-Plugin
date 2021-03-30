@@ -64,6 +64,7 @@ class IntegrationTest(
         report.assertCoverage("org.neotech.library.android", "LibraryAndroidKotlin")
         report.assertCoverage("org.neotech.app", "AppJava")
         report.assertCoverage("org.neotech.app", "AppKotlin")
+        report.assertCoverage("org.neotech.app", "RobolectricTestedActivity")
     }
 
     private fun BuildResult.assertAppCoverageReport() {
@@ -73,6 +74,7 @@ class IntegrationTest(
 
         report.assertCoverage("org.neotech.app", "AppJava")
         report.assertCoverage("org.neotech.app", "AppKotlin")
+        report.assertCoverage("org.neotech.app", "RobolectricTestedActivity")
     }
 
     private fun BuildResult.assertAndroidLibraryCoverageReport() {

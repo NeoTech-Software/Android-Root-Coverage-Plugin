@@ -50,4 +50,5 @@ rootCoverage {
     executeTests true
     includeUnitTestResults true
     includeAndroidTestResults true
+    includeNoLocationClasses true
 }

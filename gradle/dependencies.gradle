@@ -3,7 +3,7 @@ ext {
             minSdk    : 19,
             targetSdk : 30,
             compileSdk: 30,
-            kotlin    : "1.4.31"
+            kotlin    : "1.4.31",
     ]
     projectDependency = [
 
@@ -22,7 +22,8 @@ ext {
             espressoCore       : "androidx.test.espresso:espresso-core:3.3.0",
             androidJUnit       : "androidx.test.ext:junit:1.1.2",
             commonsCsv         : "org.apache.commons:commons-csv:1.8",
-            kotlinTest         : "org.jetbrains.kotlin:kotlin-test:${projectVersion.kotlin}"
+            kotlinTest         : "org.jetbrains.kotlin:kotlin-test:${projectVersion.kotlin}",
+            robolectric        : "org.robolectric:robolectric:4.5.1",
     ]
 
     // Used by the plugin-version-handler.gradle
@@ -32,6 +33,6 @@ ext {
             "com.github.dcendents.android-maven": "2.1",
             "com.gradle.plugin-publish"         : "0.13.0",
             "org.jetbrains.dokka"               : "1.4.30",
-            "com.vanniktech.maven.publish"      : "0.14.2"
+            "com.vanniktech.maven.publish"      : "0.14.2",
     ]
 }

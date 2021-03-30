@@ -9,7 +9,9 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
+import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
+import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
 @Suppress("unused")
@@ -34,7 +36,10 @@ class RootCoveragePlugin : Plugin<Project> {
             project.plugins.apply(JacocoPlugin::class.java)
         }
 
-        project.afterEvaluate { createCoverageTaskForRoot(it) }
+        project.afterEvaluate {
+            it.applyConfiguration()
+            createCoverageTaskForRoot(it)
+        }
     }
 
     private fun getFileFilterPatterns(): List<String> = listOf(
@@ -157,7 +162,7 @@ class RootCoveragePlugin : Plugin<Project> {
         task.reports.html.destination = project.file("${project.buildDir}/reports/jacoco")
         task.reports.xml.destination = project.file("${project.buildDir}/reports/jacoco.xml")
         task.reports.csv.destination = project.file("${project.buildDir}/reports/jacoco.csv")
-
+        
         // Add some run-time checks.
         task.doFirst {
             it.project.allprojects.forEach { subProject ->
@@ -175,6 +180,7 @@ class RootCoveragePlugin : Plugin<Project> {
         // Configure the root task with sub-tasks for the sub-projects.
         task.project.subprojects.forEach {
             it.afterEvaluate { subProject ->
+                subProject.applyConfiguration()
                 task.addSubProject(subProject)
                 createSubProjectCoverageTask(subProject)
             }
@@ -280,5 +286,22 @@ class RootCoveragePlugin : Plugin<Project> {
         sourceDirectories.from(subProject.files(sourceFiles))
         classDirectories.from(subProject.files(javaClassTrees, kotlinClassTree))
         executionData.from(getExecutionDataFileTree(subProject))
+    }
+
+    /**
+     * Apply configuration from [RootCoveragePluginExtension] to the project.
+     */
+    private fun Project.applyConfiguration() {
+        tasks.withType(Test::class.java) { testTask ->
+            testTask.extensions.findByType(JacocoTaskExtension::class.java)?.apply{
+                isIncludeNoLocationClasses = rootProjectExtension.includeNoLocationClasses
+                if(isIncludeNoLocationClasses) {
+                    // This Plugin is used for Android development and should support the Robolectric + Jacoco use-case 
+                    // flawlessly, therefore this "bugfix" is included in the plugin codebase:
+                    // See: https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
+                    excludes = listOf("jdk.internal.*")
+                }
+            }
+        }
     }
 }
