@@ -29,11 +29,8 @@ class RootCoveragePlugin : Plugin<Project> {
         rootProjectExtension = project.extensions.create("rootCoverage", RootCoveragePluginExtension::class.java)
 
         if (project.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-            project.logger.warn(
-                "Warning: Jacoco plugin was not found for project: '${project.name}', it has been" +
-                        " applied automatically, but you should do this manually. Build file: ${project.buildFile}"
-            )
             project.plugins.apply(JacocoPlugin::class.java)
+            project.logJacocoHasBeenApplied()
         }
 
         project.afterEvaluate {
@@ -162,7 +159,7 @@ class RootCoveragePlugin : Plugin<Project> {
         task.reports.html.destination = project.file("${project.buildDir}/reports/jacoco")
         task.reports.xml.destination = project.file("${project.buildDir}/reports/jacoco.xml")
         task.reports.csv.destination = project.file("${project.buildDir}/reports/jacoco.csv")
-        
+
         // Add some run-time checks.
         task.doFirst {
             it.project.allprojects.forEach { subProject ->
@@ -223,12 +220,8 @@ class RootCoveragePlugin : Plugin<Project> {
                 extension.libraryVariants.all { variant ->
                     if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
                         if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-                            subProject.logger.info(
-                                "Jacoco plugin was not found for project: '${subProject.name}', it" +
-                                        " has been applied automatically but you should do this manually. Build file:" +
-                                        " ${subProject.buildFile}"
-                            )
                             subProject.plugins.apply(JacocoPlugin::class.java)
+                            subProject.logJacocoHasBeenApplied()
                         }
                         addSubProjectVariant(subProject, variant)
                     }
@@ -238,12 +231,8 @@ class RootCoveragePlugin : Plugin<Project> {
                 extension.applicationVariants.all { variant ->
                     if (variant.buildType.isTestCoverageEnabled && variant.name.capitalize() == buildVariant.capitalize()) {
                         if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-                            subProject.logger.info(
-                                "Jacoco plugin was not found for project: '${subProject.name}', it" +
-                                        " has been applied automatically but you should do this manually. Build file:" +
-                                        " ${subProject.buildFile}"
-                            )
                             subProject.plugins.apply(JacocoPlugin::class.java)
+                            subProject.logJacocoHasBeenApplied()
                         }
                         addSubProjectVariant(subProject, variant)
                     }
@@ -293,9 +282,9 @@ class RootCoveragePlugin : Plugin<Project> {
      */
     private fun Project.applyConfiguration() {
         tasks.withType(Test::class.java) { testTask ->
-            testTask.extensions.findByType(JacocoTaskExtension::class.java)?.apply{
+            testTask.extensions.findByType(JacocoTaskExtension::class.java)?.apply {
                 isIncludeNoLocationClasses = rootProjectExtension.includeNoLocationClasses
-                if(isIncludeNoLocationClasses) {
+                if (isIncludeNoLocationClasses) {
                     // This Plugin is used for Android development and should support the Robolectric + Jacoco use-case 
                     // flawlessly, therefore this "bugfix" is included in the plugin codebase:
                     // See: https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
@@ -303,5 +292,12 @@ class RootCoveragePlugin : Plugin<Project> {
                 }
             }
         }
+    }
+
+    private fun Project.logJacocoHasBeenApplied() {
+        project.logger.info(
+            "Jacoco plugin was not found for project: '${project.name}', it has been applied automatically:" +
+                    " ${project.buildFile}"
+        )
     }
 }
