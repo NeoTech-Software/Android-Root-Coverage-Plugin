@@ -88,8 +88,9 @@ buildscript {
    > `testCoverageEnabled true` for the desired coverage variant (default: `debug`) will be ignored.
 
 2. Run one of the automatically configured Gradle tasks to generate a Jacoco report:
-   - **For combined coverage:** `./gradlew :coverageReport`
-   - **For module specific coverage:** `./gradlew :yourModule:coverageReport`
+   - **For combined coverage:** `./gradlew :rootCoverageReport`
+   - **For module specific coverage (all modules):** `./gradlew coverageReport`
+   - **For module specific coverage (single module):** `./gradlew :yourModule:coverageReport`
 
    > Resulting reports can be found in `/build/reports/` and `yourModule/build/reports/`
 
