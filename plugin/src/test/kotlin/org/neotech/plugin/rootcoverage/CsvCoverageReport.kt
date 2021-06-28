@@ -1,11 +1,11 @@
 package org.neotech.plugin.rootcoverage
 
-import junit.framework.Assert.assertEquals
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import java.io.File
 import java.nio.charset.StandardCharsets
+import kotlin.test.assertEquals
 
 class CoverageReport private constructor(
         private val instructionMissedColumn: Int,

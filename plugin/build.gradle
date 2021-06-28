@@ -4,7 +4,6 @@ plugins {
 
     // For publishing to Plugin Portal & Maven Central
     id "com.gradle.plugin-publish"
-    id "com.github.dcendents.android-maven"
     id "org.jetbrains.dokka"
     id "com.vanniktech.maven.publish" apply false
 }
@@ -89,6 +88,7 @@ dependencies {
     compileOnly gradleApi()
     implementation projectDependency.androidGradlePlugin
     implementation projectDependency.kotlinStdlibJdk8
+    implementation projectDependency.kotlinReflect
 
     testImplementation projectDependency.kotlinStdlibJdk8
     testImplementation projectDependency.kotlinTest
