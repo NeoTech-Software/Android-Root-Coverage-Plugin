@@ -142,26 +142,30 @@ rootCoverage {
 
 
 # 4. Compatibility
-| Version       | Android Gradle plugin version | Gradle version    |
-| ------------- | ----------------------------- | ----------------- |
-| **1.4.0**     | 4.1+                          | 6.5+              |
-| **1.3.1**     | 4.0<br/>3.6                   | 6.1.1+<br/>5.6.4+ |
-| **1.2.1**     | 3.5                           | 5.4.1+            |
-| **1.1.2**     | 3.4                           | 5.1.1+            |
-| **1.1.1**     | 3.3                           | 4.10.1+           |
-| **1.0.2**     | 3.2                           | 4.6+              |
+| Version            | [Android Gradle plugin version](https://developer.android.com/studio/releases/gradle-plugin#updating-gradle) | Gradle version    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------ | ----------------- |
+| **1.5.0-SNAPSHOT** | 7.2-alpha06                                                                                                  | 7.3+              |
+| **See note 2**     | 7.0-7.2-alpha05                                                                                              | n.a.              |
+| **1.4.0**          | 4.2<br/>4.1                                                                                                  | 6.7.1+<br/>6.5+   |
+| **1.3.1**          | 4.0<br/>3.6                                                                                                  | 6.1.1+<br/>5.6.4+ |
+| **1.2.1**          | 3.5                                                                                                          | 5.4.1+            |
+| **1.1.2**          | 3.4                                                                                                          | 5.1.1+            |
+| **1.1.1**          | 3.3                                                                                                          | 4.10.1+           |
+| **1.0.2**          | 3.2                                                                                                          | 4.6+              |
 
 > *Note 1: Plugin versions below 1.3.1, such as 1.3.0, are only available on the Gradle Plugin Portal
 (`maven { url "https://plugins.gradle.org/m2/"}`) and not on Maven Central. These versions use the
 group ID `org.neotech.plugin` and plugin ID `org.neotech.plugin.rootcoverage`!*
 
-> *Note 2: This plugin normally supports the same Gradle versions as the Android Gradle plugin, for more information
-> see:* <https://developer.android.com/studio/releases/gradle-plugin#updating-gradle>
+> *Note 2: Android Gradle Plugin version 7 till 7.2.0-alpha05 suffered from a
+[bug](https://issuetracker.google.com/issues/195860510) that caused instrumented coverage in Android library modules to fail, this has only been
+[fixed](https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/issues/36#issuecomment-977241070)
+in Android Gradle Plugin 7.2.0-alpha06. This means there is no stable working plugin version available for these AGP versions.*
 
-> Note 3: Android Gradle Plugin versions before `3.4.0-alpha05` are affected by a bug that in certain conditions can
+> *Note 3: Android Gradle Plugin versions before `3.4.0-alpha05` are affected by a bug that in certain conditions can 
 cause Jacoco instrumentation to fail in combination with inline kotlin methods shared across modules. For more information
 see: <https://issuetracker.google.com/issues/109771903> and <https://issuetracker.google.com/issues/110763361>.
-If your project is affected by this upgrade to an Android Gradle Plugin version of at least `3.4.0-alpha05`.
+If your project is affected by this upgrade to an Android Gradle Plugin version of at least `3.4.0-alpha05`.*
 
 
 # 5. Development
