@@ -34,6 +34,7 @@ apply from: "dependencies.gradle"
 
 resolutionStrategy {
     eachPlugin {
+        // pluginVersions must be added in dependencies.gradle as extension to this project.
         def version = pluginVersions[requested.id.id]
         if (requested.version == null && version != null) {
             useVersion version
