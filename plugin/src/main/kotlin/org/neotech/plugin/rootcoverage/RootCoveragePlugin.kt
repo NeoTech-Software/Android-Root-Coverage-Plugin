@@ -144,9 +144,6 @@ class RootCoveragePlugin : Plugin<Project> {
 
 
     private fun createSubProjectCoverageTask(subProject: Project) {
-        // Aggregates jacoco results from the app sub-project and bankingright sub-project and generates a report.
-        // The report can be found at the root of the project in /build/reports/jacoco, so don't look in
-        // /app/build/reports/jacoco you will only find the app sub-project report there.
         val task = subProject.tasks.create("coverageReport", JacocoReport::class.java)
         task.group = "reporting"
         task.description = "Generates a Jacoco for this Gradle module."
@@ -173,10 +170,6 @@ class RootCoveragePlugin : Plugin<Project> {
     }
 
     private fun createCoverageTaskForRoot(project: Project) {
-        // Aggregates jacoco results from the app sub-project and bankingright sub-project and generates a report.
-        // The report can be found at the root of the project in /build/reports/jacoco, so don't look in
-        // /app/build/reports/jacoco you will only find the app sub-project report there.
-
         val task = project.tasks.create("rootCoverageReport", JacocoReport::class.java)
         task.group = "reporting"
         task.description = "Generates a Jacoco report with combined results from all the subprojects."
