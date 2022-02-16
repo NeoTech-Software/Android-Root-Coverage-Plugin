@@ -1,31 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
-buildscript {
-
-    // Import versions
-    apply from: "../../../../../gradle/dependencies.gradle"
-
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath projectDependency.androidGradlePlugin
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
 plugins {
     id 'jacoco'
     id 'nl.neotech.plugin.rootcoverage'
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
+subprojects {
+
+    // Make sure all sub project have access to the dependencies
+    apply from: "${it.rootDir.path}/../../../../../gradle/dependencies.gradle"
+
     tasks.withType(Test) {
         testLogging {
             exceptionFormat "full"

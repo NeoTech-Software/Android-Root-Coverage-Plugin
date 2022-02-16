@@ -1,19 +1,18 @@
 ext {
     projectVersion = [
-            minSdk    : 19,
-            targetSdk : 31,
-            compileSdk: 31,
-            kotlin    : "1.5.20",
+            minSdk             : 19,
+            targetSdk          : 31,
+            compileSdk         : 31,
+            kotlin             : "1.5.31",
+            androidGradlePlugin: "7.2.0-beta01"
     ]
     projectDependency = [
 
             // Gradle Plugins
             kotlinPlugin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:${projectVersion.kotlin}",
-            androidGradlePlugin: "com.android.tools.build:gradle:7.2.0-alpha06",
+            androidGradlePlugin: "com.android.tools.build:gradle:${projectVersion.androidGradlePlugin}",
 
             // Dependencies
-            kotlinStdlibJdk8   : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${projectVersion.kotlin}",
-            kotlinReflect      : "org.jetbrains.kotlin:kotlin-reflect:${projectVersion.kotlin}",
             appCompat          : "androidx.appcompat:appcompat:1.4.0",
 
             // Test dependencies
@@ -25,14 +24,5 @@ ext {
             commonsCsv         : "org.apache.commons:commons-csv:1.8",
             kotlinTest         : "org.jetbrains.kotlin:kotlin-test:${projectVersion.kotlin}",
             robolectric        : "org.robolectric:robolectric:4.7.3",
-    ]
-
-    // Used by the plugin-version-handler.gradle
-    pluginVersions = [
-            "org.jetbrains.kotlin.android": "${projectVersion.kotlin}",
-            "org.jetbrains.kotlin.jvm"    : "${projectVersion.kotlin}",
-            "com.gradle.plugin-publish"   : "0.15.0",
-            "org.jetbrains.dokka"         : "1.5.0",
-            "com.vanniktech.maven.publish": "0.14.2",
     ]
 }

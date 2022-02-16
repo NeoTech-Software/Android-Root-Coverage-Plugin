@@ -1,7 +1,14 @@
-// See plugin-version-handler.gradle for an explanation why this is here.
 pluginManagement {
-    apply from: "gradle/plugin-version-handler.gradle", to: pluginManagement
-}
 
+    apply from: "gradle/dependencies.gradle", to: pluginManagement
+
+    plugins {
+        id "org.jetbrains.kotlin.android" version projectVersion.kotlin
+        id "org.jetbrains.kotlin.jvm" version projectVersion.kotlin
+        id "com.gradle.plugin-publish" version "0.15.0"
+        id "org.jetbrains.dokka" version "1.5.0"
+        id "com.vanniktech.maven.publish" version "0.18.0"
+    }
+}
 
 include ':plugin'
