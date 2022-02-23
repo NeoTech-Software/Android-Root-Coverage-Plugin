@@ -5,10 +5,6 @@ plugins {
 }
 
 subprojects {
-
-    // Make sure all sub project have access to the dependencies
-    apply from: "${it.rootDir.path}/../../../../../gradle/dependencies.gradle"
-
     tasks.withType(Test) {
         testLogging {
             exceptionFormat "full"

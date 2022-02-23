@@ -1,11 +1,12 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm"
+    // Core Gradle plugins
     id "java-gradle-plugin"
 
-    // For publishing to Plugin Portal & Maven Central
-    id "com.gradle.plugin-publish"
-    id "org.jetbrains.dokka"
-    id "com.vanniktech.maven.publish"
+    // Third-party plugins
+    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinDokka)
+    alias(libs.plugins.pluginPortalPublish)
+    alias(libs.plugins.mavenPublish)
 }
 
 // To upload new plugin artifact Gradle Portal:
@@ -64,11 +65,8 @@ test {
 
 dependencies {
     compileOnly gradleApi()
-    implementation projectDependency.androidGradlePlugin
+    implementation libs.androidGradlePlugin
 
-    testImplementation projectDependency.kotlinTest
+    testImplementation libs.bundles.jvmTest
     testImplementation gradleTestKit()
-    testImplementation projectDependency.junit
-    testImplementation projectDependency.truth
-    testImplementation projectDependency.commonsCsv
 }

@@ -1,20 +1,18 @@
 pluginManagement {
-
-    apply from: "../../../../../gradle/dependencies.gradle", to: pluginManagement
-
-    plugins {
-        id "org.jetbrains.kotlin.android" version projectVersion.kotlin
-        id "com.android.application" version projectVersion.androidGradlePlugin
-        id "com.android.library" version projectVersion.androidGradlePlugin
-    }
-
     repositories {
         gradlePluginPortal()
         google()
         mavenCentral()
     }
 }
+enableFeaturePreview("VERSION_CATALOGS")
+
 dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            from(files("../../../../../gradle/libs.versions.toml"))
+        }
+    }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()

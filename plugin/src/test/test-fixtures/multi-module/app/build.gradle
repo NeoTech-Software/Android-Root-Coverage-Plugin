@@ -1,16 +1,19 @@
 plugins {
-    id 'com.android.application'
-    id "org.jetbrains.kotlin.android"
     id 'jacoco'
+
+    // Cannot be applied using `alias(libs.plugins.androidApp)` since this test-fixture will run in
+    // such a way that this plugin will already be available on the classpath
+    id 'com.android.application'
+    alias(libs.plugins.kotlinAndroid)
 }
 
 android {
 
-    compileSdkVersion projectVersion.compileSdk
+    compileSdkVersion libs.versions.androidCompileSdk.get().toInteger()
     defaultConfig {
         applicationId "org.neotech.app"
-        minSdkVersion projectVersion.minSdk
-        targetSdkVersion projectVersion.compileSdk
+        minSdkVersion libs.versions.androidMinSdk.get().toInteger()
+        targetSdkVersion libs.versions.androidTargetSdk.get().toInteger()
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -45,11 +48,8 @@ android {
 dependencies {
     implementation project(":library_android")
 
-    implementation projectDependency.appCompat
+    implementation libs.appCompat
 
-    testImplementation projectDependency.androidJUnit
-    testImplementation projectDependency.robolectric
-    androidTestImplementation projectDependency.supportTestRunner
-    androidTestImplementation projectDependency.espressoCore
-    androidTestImplementation projectDependency.androidJUnit
+    testImplementation libs.bundles.androidTest
+    androidTestImplementation libs.bundles.androidInstrumentedTest
 }

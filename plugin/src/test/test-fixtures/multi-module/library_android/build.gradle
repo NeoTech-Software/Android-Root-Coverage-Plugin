@@ -1,15 +1,18 @@
 plugins {
-    id 'com.android.library'
-    id "org.jetbrains.kotlin.android"
     id 'jacoco'
+
+    // Cannot be applied using `alias(libs.plugins.androidLibrary)` since this test-fixture will run in
+    // such a way that this plugin will already be available on the classpath
+    id 'com.android.library'
+    alias(libs.plugins.kotlinAndroid)
 }
 
 android {
 
-    compileSdkVersion projectVersion.compileSdk
+    compileSdkVersion libs.versions.androidCompileSdk.get().toInteger()
     defaultConfig {
-        minSdkVersion projectVersion.minSdk
-        targetSdkVersion projectVersion.compileSdk
+        minSdkVersion libs.versions.androidMinSdk.get().toInteger()
+        targetSdkVersion libs.versions.androidTargetSdk.get().toInteger()
         versionCode 1
         versionName "1.0"
 
@@ -37,10 +40,8 @@ android {
 }
 
 dependencies {
-    implementation projectDependency.appCompat
+    implementation libs.appCompat
 
-    testImplementation projectDependency.junit
-    androidTestImplementation projectDependency.supportTestRunner
-    androidTestImplementation projectDependency.espressoCore
-    androidTestImplementation projectDependency.androidJUnit
+    testImplementation libs.bundles.androidTest
+    androidTestImplementation libs.bundles.androidInstrumentedTest
 }
