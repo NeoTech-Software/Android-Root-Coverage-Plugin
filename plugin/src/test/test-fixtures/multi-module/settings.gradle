@@ -1,6 +1,23 @@
-// See plugin-version-handler.gradle for an explanation why this is here.
 pluginManagement {
-    apply from: "../../../../../gradle/plugin-version-handler.gradle", to: pluginManagement
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+enableFeaturePreview("VERSION_CATALOGS")
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            from(files("../../../../../gradle/libs.versions.toml"))
+        }
+    }
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
 
 include ':app', ':library_android', ':library_java'

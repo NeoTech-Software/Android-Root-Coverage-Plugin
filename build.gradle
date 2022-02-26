@@ -1,34 +1,12 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply plugin: "com.github.ben-manes.versions"
-
-buildscript {
-
-    // Import versions
-    apply from: "gradle/dependencies.gradle"
-
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.38.0"
-    }
+plugins {
+    alias(libs.plugins.versionCheck)
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
-        // For Dokka/KotlinX
-        maven { url = "https://dl.bintray.com/kotlin/kotlinx/" }
-        jcenter {
-            content {
-                // https://youtrack.jetbrains.com/issue/IDEA-261387
-                includeModule("org.jetbrains.trove4j", "trove4j")
-            }
-        }
     }
 }
 
