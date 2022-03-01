@@ -3,7 +3,7 @@ androidMinSdk       = "19"
 androidTargetSdk    = "31"
 androidCompileSdk   = "31"
 kotlin              = "1.5.31"
-androidGradlePlugin = "7.2.0-beta01"
+androidGradlePlugin = "7.2.0-beta03"
 
 [libraries]
 appCompat           = { module = "androidx.appcompat:appcompat",            version = "1.4.0" }
