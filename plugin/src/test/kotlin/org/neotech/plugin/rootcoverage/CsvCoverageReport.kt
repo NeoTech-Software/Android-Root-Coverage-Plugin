@@ -20,6 +20,10 @@ class CoverageReport private constructor(
         assertEquals(missedBranches, this[branchMissedColumn]?.toInt())
     }
 
+    fun assertNotInReport(packageName: String, className: String) = assert(find(packageName, className) == null) {
+        "Found $packageName.$className in report while not expected to be there."
+    }
+
     fun assertCoverage(packageName: String, className: String, missedBranches: Int = 0, missedInstructions: Int = 0) {
         find(packageName, className).assertCoverage(missedBranches, missedInstructions)
     }

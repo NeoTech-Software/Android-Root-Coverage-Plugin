@@ -72,6 +72,7 @@ class IntegrationTest(
 
         val report = CoverageReport.from(File(projectRoot, "app/build/reports/jacoco.csv"))
 
+        report.assertNotInReport("org.neotech.app", "MustBeExcluded")
         report.assertCoverage("org.neotech.app", "AppJava")
         report.assertCoverage("org.neotech.app", "AppKotlin")
         report.assertCoverage("org.neotech.app", "RobolectricTestedActivity")

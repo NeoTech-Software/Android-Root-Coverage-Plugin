@@ -9,14 +9,13 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
-import org.gradle.api.plugins.AppliedPlugin
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
+import org.neotech.plugin.rootcoverage.utilities.afterAndroidPluginApplied
+import org.neotech.plugin.rootcoverage.utilities.fileTree
 
-@ExperimentalStdlibApi
-@Suppress("unused")
 class RootCoveragePlugin : Plugin<Project> {
 
     private lateinit var rootProjectExtension: RootCoveragePluginExtension
@@ -84,7 +83,7 @@ class RootCoveragePlugin : Plugin<Project> {
             // }
 
             // These are legacy paths for older now unsupported AGP version, they are just here for
-            // legacy and are not added to prevent existing files from polluting results
+            // reference and are not added to prevent existing files from polluting results
             //
             // buildFolderPatterns.add("jacoco/test*UnitTest.exec")
             // rootFolderPatterns.add("jacoco.exec") // Note this is not a build folder pattern and is based off project.projectDir
@@ -95,7 +94,7 @@ class RootCoveragePlugin : Plugin<Project> {
         if (rootProjectExtension.includeAndroidTestResults()) {
 
             // These are legacy paths for older now unsupported AGP version, they are just here for
-            // legacy and are not added to prevent existing files from polluting results
+            // reference and are not added to prevent existing files from polluting results
             //
             // Android Build Tools Plugin 3.2
             // buildFolderPatterns.add("outputs/code-coverage/connected/*coverage.ec")
@@ -120,6 +119,10 @@ class RootCoveragePlugin : Plugin<Project> {
             var didFindBuildVariant = false
             val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
             androidComponents.onVariants {
+
+                // TODO check test coverage
+                // buildType.isTestCoverageEnabled
+
                 if (it.name.replaceFirstChar(Char::titlecase) == buildVariant.replaceFirstChar(Char::titlecase)) {
                     didFindBuildVariant = true
                 }
@@ -259,7 +262,11 @@ class RootCoveragePlugin : Plugin<Project> {
         }
 
         sourceDirectories.from(variant.sources.java.all)
-        classDirectories.from(variant.artifacts.getAll(MultipleArtifact.ALL_CLASSES_DIRS))
+        classDirectories.from(variant.artifacts.getAll(MultipleArtifact.ALL_CLASSES_DIRS).map {
+            it.map { directory ->
+                subProject.fileTree(directory.asFile, excludes = getFileFilterPatterns())
+            }
+        })
         executionData.from(getExecutionDataFileTree(subProject))
     }
 
@@ -282,25 +289,8 @@ class RootCoveragePlugin : Plugin<Project> {
 
     private fun Project.logJacocoHasBeenApplied() {
         project.logger.info(
-            "Jacoco plugin was not found for project: '${project.name}', it has been applied automatically:" +
-                    " ${project.buildFile}"
+            "Note: Jacoco plugin was not found for project '${project.name}', it has been applied automatically: ${project.buildFile}"
         )
     }
-
-    private fun Project.afterAndroidPluginApplied(notFoundAction: () -> Unit = {}, action: (AppliedPlugin) -> Unit) {
-        var didExecuteBlock = false
-        pluginManager.withPlugin("com.android.application") {
-            didExecuteBlock = true
-            action(it)
-        }
-        pluginManager.withPlugin("com.android.library") {
-            didExecuteBlock = true
-            action(it)
-        }
-        afterEvaluate {
-            if (!didExecuteBlock) {
-                notFoundAction()
-            }
-        }
-    }
 }
+

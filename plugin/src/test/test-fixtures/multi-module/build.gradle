@@ -30,4 +30,7 @@ rootCoverage {
     includeUnitTestResults true
     includeAndroidTestResults true
     includeNoLocationClasses true
+
+    excludes = ["**/MustBeExcluded.class"]
+
 }
