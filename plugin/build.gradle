@@ -13,13 +13,15 @@ plugins {
 // > ./gradlew publishPlugins
 //
 // To upload new plugin artifact to Maven Central Repository:
-// > ./gradlew publishPluginMavenPublicationToMavenCentralRepository --no-daemon --no-parallel
+// > ./gradlew publish --no-daemon --no-parallel
 //
 // To test the plugin:
 // > ./gradlew clean test
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 plugins.withId("com.vanniktech.maven.publish") {
     mavenPublish {
