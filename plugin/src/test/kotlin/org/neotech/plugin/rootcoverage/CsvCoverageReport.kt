@@ -34,7 +34,7 @@ class CoverageReport private constructor(
 
     companion object {
 
-        fun from(file: File): CoverageReport = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.DEFAULT.withHeader()).use {
+        fun from(file: File): CoverageReport = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.DEFAULT.builder().setHeader().build()).use {
             CoverageReport(
                     it.headerMap["INSTRUCTION_MISSED"]!!,
                     it.headerMap["BRANCH_MISSED"]!!,
