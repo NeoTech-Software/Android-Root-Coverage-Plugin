@@ -119,7 +119,7 @@ class RootCoveragePlugin : Plugin<Project> {
     private fun JacocoReport.addSubProject(subProject: Project) {
         subProject.afterAndroidPluginApplied(
             notFoundAction = {
-                subProject.logger.warn("Note: Skipping code coverage for module '${subProject.name}', reason: not an Android module.")
+                subProject.logger.info("Note: Skipping code coverage for module '${subProject.name}', reason: not an Android module.")
             },
             action = {
                 subProject.applyJacocoPluginIfRequired()

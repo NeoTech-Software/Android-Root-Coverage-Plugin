@@ -31,5 +31,4 @@ rootCoverage {
     includeNoLocationClasses true
 
     excludes = ["**/MustBeExcluded.class"]
-
 }

@@ -1,6 +1,5 @@
 package org.neotech.plugin.rootcoverage.utilities
 
-import com.android.build.api.dsl.BuildType
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import org.gradle.api.Project

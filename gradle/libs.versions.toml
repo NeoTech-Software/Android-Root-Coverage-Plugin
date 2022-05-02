@@ -6,8 +6,9 @@ kotlin              = "1.5.31"
 androidGradlePlugin = "7.2.0-rc01"
 
 [libraries]
-appCompat           = { module = "androidx.appcompat:appcompat",            version = "1.4.0" }
-androidGradlePlugin = { module = "com.android.tools.build:gradle",          version.ref = "androidGradlePlugin" }
+appCompat              = { module = "androidx.appcompat:appcompat",            version = "1.4.0" }
+androidGradlePlugin    = { module = "com.android.tools.build:gradle",      version.ref = "androidGradlePlugin" }
+androidGradlePluginApi = { module = "com.android.tools.build:gradle-api",      version.ref = "androidGradlePlugin" }
 
 # Test dependencies
 junit               = { module = "junit:junit",                             version = "4.13.2" }

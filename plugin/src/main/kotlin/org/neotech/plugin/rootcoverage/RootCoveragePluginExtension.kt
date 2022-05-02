@@ -1,9 +1,5 @@
 package org.neotech.plugin.rootcoverage
 
-import com.android.builder.model.TestVariantBuildOutput
-import org.gradle.api.Project
-import org.slf4j.LoggerFactory
-
 open class RootCoveragePluginExtension {
 
     var generateCsv: Boolean = false
@@ -15,18 +11,6 @@ open class RootCoveragePluginExtension {
     var excludes: List<String> = mutableListOf()
     
     var includeNoLocationClasses: Boolean = false
-
-    /**
-     * Same as executeTests inverted.
-     *
-     * @see executeTests
-     */
-    @Deprecated("Please use `executeTests` instead.")
-    var skipTestExecution: Boolean
-        set(value) {
-            executeTests = !value
-        }
-        get() = !executeTests
 
     /**
      * Same as executeTests except that this only disables/enables the instrumented Android tests.
@@ -81,45 +65,7 @@ open class RootCoveragePluginExtension {
      */
     var includeUnitTestResults = true
 
-    @Deprecated("This setting has been replaced with `includeUnitTestResults` and `includeAndroidTestResults`.")
-    var testTypes: List<TestVariantBuildOutput.TestType> =
-        mutableListOf(TestVariantBuildOutput.TestType.ANDROID_TEST, TestVariantBuildOutput.TestType.UNIT)
+    internal fun shouldExecuteAndroidTests() = executeTests && executeAndroidTests && includeAndroidTestResults
 
-    @Suppress("DEPRECATION")
-    internal fun shouldExecuteAndroidTests() = executeTests && executeAndroidTests && includeAndroidTestResults()
-
-    @Suppress("DEPRECATION")
-    internal fun shouldExecuteUnitTests() = executeTests && executeUnitTests && includeUnitTestResults()
-
-    @Suppress("DEPRECATION")
-    internal fun includeAndroidTestResults(): Boolean {
-        return if (!testTypes.contains(TestVariantBuildOutput.TestType.ANDROID_TEST)) {
-            if (includeAndroidTestResults) {
-                LoggerFactory.getLogger(Project::class.java).warn(
-                    "Warning: Inconsistent settings, `testTypes` does not include TestType.ANDROID_TEST but " +
-                            "`includeAndroidTestResults` is true. The setting `includeAndroidTestResults` will be ignored, to fix this " +
-                            "issue please do not use the deprecated `testTypes` setting!"
-                )
-            }
-            false
-        } else {
-            includeAndroidTestResults
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    internal fun includeUnitTestResults(): Boolean {
-        return if (!testTypes.contains(TestVariantBuildOutput.TestType.UNIT)) {
-            if (includeUnitTestResults) {
-                LoggerFactory.getLogger(Project::class.java).warn(
-                    "Warning: Inconsistent settings, `testTypes` does not include TestType.UNIT but " +
-                            "`includeUnitTestResults` is true. The setting `includeUnitTestResults` will be ignored, to fix this issue " +
-                            "please do not use the deprecated `testTypes` setting!"
-                )
-            }
-            false
-        } else {
-            includeUnitTestResults
-        }
-    }
+    internal fun shouldExecuteUnitTests() = executeTests && executeUnitTests && includeUnitTestResults
 }

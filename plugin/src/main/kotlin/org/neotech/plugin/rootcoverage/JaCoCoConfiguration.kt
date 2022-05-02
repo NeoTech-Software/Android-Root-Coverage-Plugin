@@ -37,7 +37,7 @@ internal fun RootCoveragePluginExtension.getBuildVariantFor(project: Project): S
 
 internal fun RootCoveragePluginExtension.getExecutionDataFileTree(project: Project): FileTree {
     val buildFolderPatterns = mutableListOf<String>()
-    if (includeUnitTestResults()) {
+    if (includeUnitTestResults) {
         // TODO instead of hardcoding this, obtain the location from the test tasks, something like this:
         // tasks.withType(Test::class.java).all { testTask ->
         //     testTask.extensions.findByType(JacocoTaskExtension::class.java)?.apply {
@@ -54,7 +54,7 @@ internal fun RootCoveragePluginExtension.getExecutionDataFileTree(project: Proje
         // Android Build Tools Plugin 7.0+
         buildFolderPatterns.add("outputs/unit_test_code_coverage/*/*.exec")
     }
-    if (includeAndroidTestResults()) {
+    if (includeAndroidTestResults) {
 
         // These are legacy paths for older now unsupported AGP version, they are just here for
         // reference and are not added to prevent existing files from polluting results

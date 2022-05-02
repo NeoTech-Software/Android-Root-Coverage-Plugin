@@ -1,7 +1,5 @@
 plugins {
-    // Cannot be applied using `alias(libs.plugins.androidLibrary)` since this test-fixture will run in
-    // such a way that this plugin will already be available on the classpath
-    id 'com.android.library'
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
 }
 
