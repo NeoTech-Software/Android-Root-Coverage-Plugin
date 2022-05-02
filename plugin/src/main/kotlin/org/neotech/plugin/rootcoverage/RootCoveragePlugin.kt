@@ -8,13 +8,13 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.neotech.plugin.rootcoverage.utilities.afterAndroidPluginApplied
 import org.neotech.plugin.rootcoverage.utilities.fileTree
+import org.neotech.plugin.rootcoverage.utilities.onVariant
 
 class RootCoveragePlugin : Plugin<Project> {
 
@@ -29,10 +29,8 @@ class RootCoveragePlugin : Plugin<Project> {
         }
         rootProjectExtension = project.extensions.create("rootCoverage", RootCoveragePluginExtension::class.java)
 
-        if (project.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-            project.plugins.apply(JacocoPlugin::class.java)
-            project.logJacocoHasBeenApplied()
-        }
+        // Always apply JaCoCo to the project this plugin is applied to.
+        project.applyJacocoPluginIfRequired()
 
         project.afterEvaluate {
             it.applyConfiguration()
@@ -40,103 +38,9 @@ class RootCoveragePlugin : Plugin<Project> {
         createCoverageTaskForRoot(project)
     }
 
-    private fun getFileFilterPatterns(): List<String> = listOf(
-        "**/AutoValue_*.*", // Filter to remove generated files from: https://github.com/google/auto
-        //"**/*JavascriptBridge.class",
-
-        // Android Databinding
-        "**/*databinding",
-        "**/*binders",
-        "**/*layouts",
-        "**/BR.class", // Filter to remove generated databinding files
-
-        // Core Android generated class filters
-        "**/R.class",
-        "**/R$*.class",
-        "**/Manifest*.*",
-        "**/BuildConfig.class",
-        "android/**/*.*",
-
-        "**/*\$ViewBinder*.*",
-        "**/*\$ViewInjector*.*",
-        "**/Lambda$*.class",
-        "**/Lambda.class",
-        "**/*Lambda.class",
-        "**/*Lambda*.class",
-        "**/*\$InjectAdapter.class",
-        "**/*\$ModuleAdapter.class",
-        "**/*\$ViewInjector*.class"
-    ) + rootProjectExtension.excludes
-
-    private fun getBuildVariantFor(project: Project): String =
-        rootProjectExtension.buildVariantOverrides[project.path]
-            ?: rootProjectExtension.buildVariant
-
-    private fun getExecutionDataFileTree(project: Project): FileTree {
-        val buildFolderPatterns = mutableListOf<String>()
-        if (rootProjectExtension.includeUnitTestResults()) {
-            // TODO instead of hardcoding this, obtain the location from the test tasks, something like this:
-            // tasks.withType(Test::class.java).all { testTask ->
-            //     testTask.extensions.findByType(JacocoTaskExtension::class.java)?.apply {
-            //         destinationFile
-            //     }
-            // }
-
-            // These are legacy paths for older now unsupported AGP version, they are just here for
-            // reference and are not added to prevent existing files from polluting results
-            //
-            // buildFolderPatterns.add("jacoco/test*UnitTest.exec")
-            // rootFolderPatterns.add("jacoco.exec") // Note this is not a build folder pattern and is based off project.projectDir
-
-            // Android Build Tools Plugin 7.0+
-            buildFolderPatterns.add("outputs/unit_test_code_coverage/*/*.exec")
-        }
-        if (rootProjectExtension.includeAndroidTestResults()) {
-
-            // These are legacy paths for older now unsupported AGP version, they are just here for
-            // reference and are not added to prevent existing files from polluting results
-            //
-            // Android Build Tools Plugin 3.2
-            // buildFolderPatterns.add("outputs/code-coverage/connected/*coverage.ec")
-            //
-            // Android Build Tools Plugin 3.3-7.0
-            // buildFolderPatterns.add("outputs/code_coverage/*/connected/*coverage.ec")
-
-            // Android Build Tools Plugin 7.1+
-            buildFolderPatterns.add("outputs/code_coverage/*/connected/*/coverage.ec")
-        }
-
-        return project.fileTree(project.buildDir, includes = buildFolderPatterns)
-    }
-
-    /**
-     * Throws a GradleException if the given Android buildVariant is not found in this project.
-     */
-    private fun Project.assertAndroidCodeCoverageVariantExists() {
-        afterAndroidPluginApplied {
-            val buildVariant = getBuildVariantFor(this)
-
-            var didFindBuildVariant = false
-            val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
-            androidComponents.onVariants {
-
-                // TODO check test coverage
-                // buildType.isTestCoverageEnabled
-
-                if (it.name.replaceFirstChar(Char::titlecase) == buildVariant.replaceFirstChar(Char::titlecase)) {
-                    didFindBuildVariant = true
-                }
-            }
-            afterEvaluate {
-                if (!didFindBuildVariant) {
-                    throw GradleException(
-                        "Build variant `$buildVariant` required for module `${project.name}` does not exist. Make sure to use" +
-                                " a proper build variant configuration using rootCoverage.buildVariant and" +
-                                " rootCoverage.buildVariantOverrides."
-                    )
-                }
-            }
-
+    private fun Project.applyJacocoPluginIfRequired() {
+        if (plugins.withType(JacocoPlugin::class.java).isEmpty()) {
+            plugins.apply(JacocoPlugin::class.java)
         }
     }
 
@@ -218,6 +122,7 @@ class RootCoveragePlugin : Plugin<Project> {
                 subProject.logger.warn("Note: Skipping code coverage for module '${subProject.name}', reason: not an Android module.")
             },
             action = {
+                subProject.applyJacocoPluginIfRequired()
                 addSubProjectInternal(subProject)
             }
         )
@@ -228,7 +133,7 @@ class RootCoveragePlugin : Plugin<Project> {
         val androidComponents = subProject.extensions.getByType(AndroidComponentsExtension::class.java)
 
         // Get the exact required build variant for the current sub-project.
-        val buildVariant = getBuildVariantFor(subProject)
+        val buildVariant = rootProjectExtension.getBuildVariantFor(subProject)
 
 
         lateinit var buildTypes: NamedDomainObjectContainer<out BuildType>
@@ -264,10 +169,10 @@ class RootCoveragePlugin : Plugin<Project> {
         sourceDirectories.from(variant.sources.java.all)
         classDirectories.from(variant.artifacts.getAll(MultipleArtifact.ALL_CLASSES_DIRS).map {
             it.map { directory ->
-                subProject.fileTree(directory.asFile, excludes = getFileFilterPatterns())
+                subProject.fileTree(directory.asFile, excludes = rootProjectExtension.getFileFilterPatterns())
             }
         })
-        executionData.from(getExecutionDataFileTree(subProject))
+        executionData.from(rootProjectExtension.getExecutionDataFileTree(subProject))
     }
 
     /**
@@ -282,6 +187,25 @@ class RootCoveragePlugin : Plugin<Project> {
                     // flawlessly, therefore this "bugfix" is included in the plugin codebase:
                     // See: https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
                     excludes = listOf("jdk.internal.*")
+                }
+            }
+        }
+    }
+
+    /**
+     * Throws a GradleException if the given Android buildVariant is not found in this project.
+     */
+    private fun Project.assertAndroidCodeCoverageVariantExists() {
+        afterAndroidPluginApplied {
+            val buildVariant = rootProjectExtension.getBuildVariantFor(this)
+            onVariant(buildVariant) { variant ->
+                if (variant == null) {
+                    // TODO only throw if testCoverage is enabled
+                    throw GradleException(
+                        "Build variant `$buildVariant` required for module `${project.name}` does not exist. Make sure to use" +
+                                " a proper build variant configuration using rootCoverage.buildVariant and" +
+                                " rootCoverage.buildVariantOverrides."
+                    )
                 }
             }
         }
