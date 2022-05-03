@@ -20,6 +20,10 @@ class CoverageReport private constructor(
         assertEquals(missedBranches, this[branchMissedColumn]?.toInt())
     }
 
+    fun assertNotInReport(packageName: String, className: String) = assert(find(packageName, className) == null) {
+        "Found $packageName.$className in report while not expected to be there."
+    }
+
     fun assertCoverage(packageName: String, className: String, missedBranches: Int = 0, missedInstructions: Int = 0) {
         find(packageName, className).assertCoverage(missedBranches, missedInstructions)
     }
@@ -30,7 +34,7 @@ class CoverageReport private constructor(
 
     companion object {
 
-        fun from(file: File): CoverageReport = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.DEFAULT.withHeader()).use {
+        fun from(file: File): CoverageReport = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.DEFAULT.builder().setHeader().build()).use {
             CoverageReport(
                     it.headerMap["INSTRUCTION_MISSED"]!!,
                     it.headerMap["BRANCH_MISSED"]!!,

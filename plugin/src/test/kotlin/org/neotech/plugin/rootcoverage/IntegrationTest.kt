@@ -72,6 +72,7 @@ class IntegrationTest(
 
         val report = CoverageReport.from(File(projectRoot, "app/build/reports/jacoco.csv"))
 
+        report.assertNotInReport("org.neotech.app", "MustBeExcluded")
         report.assertCoverage("org.neotech.app", "AppJava")
         report.assertCoverage("org.neotech.app", "AppKotlin")
         report.assertCoverage("org.neotech.app", "RobolectricTestedActivity")
@@ -107,7 +108,7 @@ class IntegrationTest(
 
             val testFixtures = File("src/test/test-fixtures").listFiles()?.filter { it.isDirectory }
                 ?: error("Could not list test fixture directories")
-            val gradleVersions = arrayOf("7.3.3", "7.4")
+            val gradleVersions = arrayOf("7.3.3", "7.4", "7.4.2")
             return testFixtures.flatMap { file ->
                 gradleVersions.map { gradleVersion ->
                     arrayOf("${file.name}-$gradleVersion", file, gradleVersion)

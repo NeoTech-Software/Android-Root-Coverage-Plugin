@@ -1,6 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id 'jacoco'
     id 'nl.neotech.plugin.rootcoverage'
 }
 
@@ -30,4 +29,6 @@ rootCoverage {
     includeUnitTestResults true
     includeAndroidTestResults true
     includeNoLocationClasses true
+
+    excludes = ["**/MustBeExcluded.class"]
 }

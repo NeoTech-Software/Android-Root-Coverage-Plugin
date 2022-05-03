@@ -144,7 +144,7 @@ rootCoverage {
 # 4. Compatibility
 | Version            | [Android Gradle plugin version](https://developer.android.com/studio/releases/gradle-plugin#updating-gradle) | Gradle version    |
 | ------------------ | ------------------------------------------------------------------------------------------------------------ | ----------------- |
-| **1.5.0-SNAPSHOT** | 7.2-alpha06                                                                                                  | 7.3+              |
+| **1.5.0-SNAPSHOT** | 7.2-rc01                                                                                                     | 7.3+              |
 | **See note 2**     | 7.0-7.2-alpha05                                                                                              | n.a.              |
 | **1.4.0**          | 4.2<br/>4.1                                                                                                  | 6.7.1+<br/>6.5+   |
 | **1.3.1**          | 4.0<br/>3.6                                                                                                  | 6.1.1+<br/>5.6.4+ |

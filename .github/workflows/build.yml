@@ -11,7 +11,6 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          # Robolectric requires Java 11 to compile at Android API level 31
           java-version: '11'
       - name: test
         uses: reactivecircus/android-emulator-runner@v2
