@@ -15,6 +15,7 @@ import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.neotech.plugin.rootcoverage.utilities.afterAndroidPluginApplied
 import org.neotech.plugin.rootcoverage.utilities.fileTree
 import org.neotech.plugin.rootcoverage.utilities.onVariant
+import java.io.File
 
 class RootCoveragePlugin : Plugin<Project> {
 
@@ -119,7 +120,11 @@ class RootCoveragePlugin : Plugin<Project> {
     private fun JacocoReport.addSubProject(subProject: Project) {
         subProject.afterAndroidPluginApplied(
             notFoundAction = {
-                subProject.logger.info("Note: Skipping code coverage for module '${subProject.name}', reason: not an Android module.")
+                // Only log if a build.gradle file was found in the project directory, if not it could just be an empty project that holds
+                // child-projects
+                if (File(subProject.projectDir, Project.DEFAULT_BUILD_FILE).exists()) {
+                    subProject.logger.info("Note: Skipping code coverage for module '${subProject.name}', reason: not an Android module.")
+                }
             },
             action = {
                 subProject.applyJacocoPluginIfRequired()

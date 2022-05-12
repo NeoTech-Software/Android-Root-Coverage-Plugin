@@ -19,4 +19,4 @@ dependencyResolutionManagement {
     }
 }
 
-include ':app', ':library_android', ':library_java'
+include ':app', ':library_android', ':library_java', ':library_nested:java'
