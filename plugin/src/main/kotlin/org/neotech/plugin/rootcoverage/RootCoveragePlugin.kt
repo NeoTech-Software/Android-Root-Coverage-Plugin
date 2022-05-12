@@ -1,5 +1,6 @@
 package org.neotech.plugin.rootcoverage
 
+import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.artifact.MultipleArtifact
 import com.android.build.api.dsl.BuildType
 import com.android.build.api.variant.AndroidComponentsExtension
@@ -13,11 +14,14 @@ import org.gradle.testing.jacoco.plugins.JacocoPlugin
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.neotech.plugin.rootcoverage.utilities.afterAndroidPluginApplied
+import org.neotech.plugin.rootcoverage.utilities.assertMinimumRequiredAGPVersion
 import org.neotech.plugin.rootcoverage.utilities.fileTree
 import org.neotech.plugin.rootcoverage.utilities.onVariant
 import java.io.File
 
 class RootCoveragePlugin : Plugin<Project> {
+
+    private val minimumRequiredAgpVersion = AndroidPluginVersion(7, 2).alpha(6)
 
     private lateinit var rootProjectExtension: RootCoveragePluginExtension
 
@@ -136,6 +140,7 @@ class RootCoveragePlugin : Plugin<Project> {
     private fun JacocoReport.addSubProjectInternal(subProject: Project) {
         // Only Android modules are supported
         val androidComponents = subProject.extensions.getByType(AndroidComponentsExtension::class.java)
+        androidComponents.assertMinimumRequiredAGPVersion(minimumRequiredAgpVersion)
 
         // Get the exact required build variant for the current sub-project.
         val buildVariant = rootProjectExtension.getBuildVariantFor(subProject)

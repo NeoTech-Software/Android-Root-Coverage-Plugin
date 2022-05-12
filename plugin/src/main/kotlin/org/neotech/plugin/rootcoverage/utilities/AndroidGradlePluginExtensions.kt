@@ -1,9 +1,19 @@
 package org.neotech.plugin.rootcoverage.utilities
 
+import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.plugins.AppliedPlugin
+
+fun AndroidComponentsExtension<*, *, *>.assertMinimumRequiredAGPVersion(requiredVersion: AndroidPluginVersion) {
+    if (pluginVersion < requiredVersion) {
+        throw GradleException(
+            "This version of the RootCoveragePlugin requires a minimum Android Gradle Plugin version of $requiredVersion"
+        )
+    }
+}
 
 fun Project.onVariant(variantName: String, action: (variant: Variant?) -> Unit){
     var variant: Variant? = null
