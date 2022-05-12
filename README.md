@@ -18,27 +18,6 @@ plugin automatically configures Jacoco for you, so you don't have to.
 - Custom package/class filters
 - Support for mixed build-types
 
-> Notice: Due to the [shutdown of Bintray/JCenter](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)
-> the Android-Root-Coverage-Plugin has been migrated
-> to Sonatype's Maven Central repository. Unfortunately this also meant that the group ID used by
-> the Android-Root-Coverage-Plugin had to be changed from `org.neotech.plugin` to
-> `nl.neotech.plugin`. The plugin ID has also changed from `org.neotech.plugin.rootcoverage` to
-> `nl.neotech.plugin.rootcoverage`.
->
-> Soon current release (1.3.0) and older versions will no longer be available through
-> Bintray/JCenter, however since these versions have also been released to the Gradle Plugin Portal,
-> you can use that repository instead:
-> ```groovy
-> maven {
->     url "https://plugins.gradle.org/m2/"
-> }
-> ```
->
-> Version 1.3.0 has been re-released (as 1.3.1) with the new group ID and plugin ID to Maven Central and
-> the Gradle Plugin Portal. Upcoming versions will also be released to these repositories. Check the
-> [setup](#1-setup) section on how to use this plugin with the updated group ID and plugin ID.
-
-
 # 1. Setup
 Apply the plugin to your top-level (root project) `build.gradle` file using one of the
 following methods:
@@ -49,7 +28,7 @@ following methods:
   ```groovy
   // Below buildscript {}
   plugins {
-      id "nl.neotech.plugin.rootcoverage" version "1.4.0"
+      id "nl.neotech.plugin.rootcoverage" version "1.5.0"
   }
   ```
 </details>
@@ -59,12 +38,12 @@ following methods:
 
    ```groovy
    apply plugin: 'nl.neotech.plugin.rootcoverage'
-
-buildscript {
-   dependencies {
-      classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.4.0'
+   
+   buildscript {
+      dependencies {
+         classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.5.0'
+      }
    }
-}
    ```
 </details>
 
@@ -144,7 +123,7 @@ rootCoverage {
 # 4. Compatibility
 | Version            | [Android Gradle plugin version](https://developer.android.com/studio/releases/gradle-plugin#updating-gradle) | Gradle version    |
 | ------------------ | ------------------------------------------------------------------------------------------------------------ | ----------------- |
-| **1.5.0-SNAPSHOT** | 7.2-rc01                                                                                                     | 7.3+              |
+| **1.5.0**          | 7.2                                                                                                  | 7.3+              |
 | **See note 2**     | 7.0-7.2-alpha05                                                                                              | n.a.              |
 | **1.4.0**          | 4.2<br/>4.1                                                                                                  | 6.7.1+<br/>6.5+   |
 | **1.3.1**          | 4.0<br/>3.6                                                                                                  | 6.1.1+<br/>5.6.4+ |
@@ -166,6 +145,26 @@ in Android Gradle Plugin 7.2.0-alpha06. This means there is no stable working pl
 cause Jacoco instrumentation to fail in combination with inline kotlin methods shared across modules. For more information
 see: <https://issuetracker.google.com/issues/109771903> and <https://issuetracker.google.com/issues/110763361>.
 If your project is affected by this upgrade to an Android Gradle Plugin version of at least `3.4.0-alpha05`.*
+
+
+# 4. Bintray/JCenter shutdown
+Due to the [shutdown of Bintray/JCenter](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)
+the Android-Root-Coverage-Plugin has been migrated to Sonatype's Maven Central repository. Unfortunately this also
+meant that the group ID used by the Android-Root-Coverage-Plugin had to be changed from `org.neotech.plugin` to
+`nl.neotech.plugin`. The plugin ID has also changed from `org.neotech.plugin.rootcoverage` to `nl.neotech.plugin.rootcoverage`.
+
+ JCenter is supposed to stay available as read-only repository, however it is probably better to migrate to
+ the Gradle Plugin Portal, since all version of this plugin are also available there:
+```groovy
+pluginManagement {
+   repositories {
+      gradlePluginPortal()
+   }
+}
+```
+Version 1.3.0 has been re-released (as 1.3.1) with the new group ID and plugin ID to Maven Central and the
+Gradle Plugin Portal. Upcoming versions will also be released to Maven Central and the Gradle Plugin Portal.
+Check the [setup](#1-setup) section on how to use this plugin with the updated group ID and plugin ID.
 
 
 # 5. Development
