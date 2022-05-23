@@ -67,7 +67,7 @@ test {
 
 dependencies {
     compileOnly gradleApi()
-    implementation libs.androidGradlePluginApi
+    implementation libs.androidGradlePlugin
 
     // Without depending on the full Android Gradle Plugin, the test fixture is unable to locate the Android Gradle Plugin.
     // Not sure why this is, but for now this is a quick fx to add it to the TestKit classpath.
