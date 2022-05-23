@@ -12,7 +12,9 @@ public final class AppJava {
     }
 
     private AppJava() {
-
+        // Check if the BuildConfig file is available, this is here to prevent regression on:
+        // https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/issues/54
+        System.out.println(org.neotech.app.BuildConfig.DEBUG);
     }
 
     public String touchedByJavaInstrumentedTestInApp() {
