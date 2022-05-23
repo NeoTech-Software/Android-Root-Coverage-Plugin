@@ -19,6 +19,7 @@ androidJUnit        = { module = "androidx.test.ext:junit",                 vers
 commonsCsv          = { module = "org.apache.commons:commons-csv",          version = "1.9.0" }
 kotlinTest          = { module = "org.jetbrains.kotlin:kotlin-test",        version.ref = "kotlin" }
 robolectric         = { module = "org.robolectric:robolectric",             version = "4.7.3" }
+mockk               = { module = "io.mockk:mockk",                          version = "1.12.4" }
 
 [bundles]
 androidInstrumentedTest = ["supportTestRunner", "espressoCore", "androidJUnit"]
