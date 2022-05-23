@@ -153,10 +153,6 @@ class RootCoveragePlugin : Plugin<Project> {
         androidComponents.onVariants { variant ->
             val buildType = buildTypes.find { it.name == variant.buildType }!!
             if (buildType.isTestCoverageEnabled && variant.name.replaceFirstChar(Char::titlecase) == buildVariant.replaceFirstChar(Char::titlecase)) {
-                if (subProject.plugins.withType(JacocoPlugin::class.java).isEmpty()) {
-                    subProject.plugins.apply(JacocoPlugin::class.java)
-                    subProject.logJacocoHasBeenApplied()
-                }
                 addSubProjectVariant(subProject, variant)
             }
         }
@@ -219,12 +215,6 @@ class RootCoveragePlugin : Plugin<Project> {
                 }
             }
         }
-    }
-
-    private fun Project.logJacocoHasBeenApplied() {
-        project.logger.info(
-            "Note: Jacoco plugin was not found for project '${project.name}', it has been applied automatically: ${project.buildFile}"
-        )
     }
 }
 
