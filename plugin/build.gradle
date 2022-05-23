@@ -74,4 +74,5 @@ dependencies {
     testImplementation libs.androidGradlePlugin
     testImplementation libs.bundles.jvmTest
     testImplementation gradleTestKit()
+    testImplementation libs.mockk
 }
