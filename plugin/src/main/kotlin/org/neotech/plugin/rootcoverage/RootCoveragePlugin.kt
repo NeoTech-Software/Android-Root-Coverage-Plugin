@@ -189,8 +189,7 @@ class RootCoveragePlugin : Plugin<Project> {
                     return
             }
         }
-        baseVariant.forEach {
-            subProject.logger.warn("Name: $name, BaseName: ${it.baseName}")
+        baseVariant.all {
             if(name.contentEquals(it.baseName, ignoreCase = true)) {
                 val sourceFiles = it.getSourceFolders(SourceKind.JAVA).map { file -> file.dir }
                 sourceDirectories.from(subProject.files(sourceFiles))
