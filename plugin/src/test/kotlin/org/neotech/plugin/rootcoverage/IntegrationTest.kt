@@ -45,20 +45,22 @@ class IntegrationTest(
         assertThat(result.output).contains("BUILD SUCCESSFUL")
 
         // Assert whether the combined coverage report is what we expected
-        result.assertRootCoverageReport()
+        result.assertRootCoverageReport(File(projectRoot, "build/reports/jacoco.csv"))
 
         // Assert whether the per module coverage reports are what we expect
         result.assertAppCoverageReport()
         result.assertAndroidLibraryCoverageReport()
+
+        assertSourceFilesHaveBeenAddedToReport(File(projectRoot, "build/reports/jacoco"))
     }
 
-    private fun BuildResult.assertRootCoverageReport() {
+    private fun BuildResult.assertRootCoverageReport(file: File) {
         assertEquals(task(":rootCoverageReport")!!.outcome, TaskOutcome.SUCCESS)
 
         // Also check if the old task name is still exe
         assertEquals(task(":rootCodeCoverageReport")!!.outcome, TaskOutcome.SUCCESS)
 
-        val report = CoverageReport.from(File(projectRoot, "build/reports/jacoco.csv"))
+        val report = CoverageReport.from(file)
 
         report.assertCoverage("org.neotech.library.android", "LibraryAndroidJava")
         report.assertCoverage("org.neotech.library.android", "LibraryAndroidKotlin")
@@ -97,6 +99,18 @@ class IntegrationTest(
             missedBranches = 0,
             missedInstructions = 8
         )
+    }
+
+    private fun assertSourceFilesHaveBeenAddedToReport(htmlReportRoot: File) {
+        htmlReportRoot.walkTopDown()
+            .filter {
+                it.isFile && it.extension == "html"
+            }
+            .forEach { file ->
+                file.forEachLine {
+                    assertThat(it).doesNotContainMatch("Source file &quot;.*&quot; was not found during generation of report\\.")
+                }
+            }
     }
 
     companion object {
