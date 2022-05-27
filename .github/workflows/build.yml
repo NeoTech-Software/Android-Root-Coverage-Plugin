@@ -17,3 +17,7 @@ jobs:
         with:
           api-level: 28
           script: ./gradlew clean test --stacktrace
+      - name: upload coverage
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./plugin/build/reports/jacoco/test/jacocoTestReport.xml
