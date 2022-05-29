@@ -1,6 +1,7 @@
 plugins {
     // Core Gradle plugins
     id "java-gradle-plugin"
+    id "jacoco"
 
     // Third-party plugins
     alias(libs.plugins.kotlinJvm)
@@ -21,6 +22,13 @@ plugins {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = false
+    }
 }
 
 plugins.withId("com.vanniktech.maven.publish") {
@@ -75,4 +83,48 @@ dependencies {
     testImplementation libs.bundles.jvmTest
     testImplementation gradleTestKit()
     testImplementation libs.mockk
+}
+
+// Setup Jacoco for Gradle TestKit
+pluginManager.withPlugin("jacoco") {
+
+    // Extracts the JaCoCo runtime jar from the configured JaCoCo Agent
+    def extractJacocoRuntimeTask = tasks.register("extractJacocoTestKitRuntime", Copy) {
+        from {
+            zipTree(project.configurations.getByName(JacocoPlugin.AGENT_CONFIGURATION_NAME).asPath).matching { include 'jacocoagent.jar' }.singleFile
+        }
+        into file("${buildDir}/testkit")
+    }
+
+    def javaTestTask = tasks.named(JavaPlugin.TEST_TASK_NAME)
+
+    def destinationFileProvider = javaTestTask.map {
+        (it.extensions.getByType(JacocoTaskExtension.class) as JacocoTaskExtension).destinationFile
+    }
+
+    // Generates a gradle.properties file that contains the correct JVM arguments to run with the extracted JaCoCo agent
+    def generateGradlePropertiesTask = tasks.register("generateJacocoTestKitGradleProperties", WriteProperties.class) {
+        it.group = "reporting"
+        it.description = "Generates testkit-gradle.properties file which can be read and added to a TestKit build as gradle.properties"
+        it.dependsOn(extractJacocoRuntimeTask)
+        it.outputFile = new File(buildDir, "testkit/${javaTestTask.name}/gradle.properties")
+        it.property("org.gradle.jvmargs", "\"-javaagent:${buildDir}/testkit/jacocoagent.jar=destfile=${destinationFileProvider.get()}\"")
+    }
+
+    // Make the generated gradle.properties file available on the test classpath as resource
+    dependencies.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, files(new File(buildDir, "testkit/${javaTestTask.name}")))
+
+    // "Fixes": https://github.com/gradle/gradle/issues/16603
+    def jacocoTestReport = tasks.named("jacocoTestReport")
+    jacocoTestReport.configure {
+        it.doFirst {
+            sleep(1000)
+        }
+    }
+
+    // Setup task dependencies
+    javaTestTask.configure {
+        it.dependsOn(generateGradlePropertiesTask)
+        it.finalizedBy(jacocoTestReport)
+    }
 }

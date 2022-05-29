@@ -20,6 +20,18 @@ internal fun createGradlePropertiesFile(root: File, properties: Properties) {
     File(root, "gradle.properties").outputStream().use { properties.store(it, null) }
 }
 
+internal fun Properties.put(properties: Properties) {
+    properties.forEach {
+        put(it.key, it.value)
+    }
+}
+
+internal fun File.getProperties(): Properties = inputStream().use {
+        Properties().apply {
+            load(it)
+        }
+    }
+
 /**
  * Tries to resolve the Android SDK directory. This function first tries the ANDROID_HOME system
  * environment variable if this variable does not exist it tries to find and parse the

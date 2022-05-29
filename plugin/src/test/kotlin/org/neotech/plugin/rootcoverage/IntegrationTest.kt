@@ -10,6 +10,7 @@ import org.junit.runners.Parameterized
 import org.neotech.plugin.rootcoverage.util.SystemOutputWriter
 import org.neotech.plugin.rootcoverage.util.createGradlePropertiesFile
 import org.neotech.plugin.rootcoverage.util.createLocalPropertiesFile
+import org.neotech.plugin.rootcoverage.util.put
 import java.io.File
 import java.util.Properties
 import kotlin.test.assertEquals
@@ -27,6 +28,10 @@ class IntegrationTest(
         createLocalPropertiesFile(projectRoot)
         createGradlePropertiesFile(projectRoot, properties = Properties().apply {
             put("android.useAndroidX", "true")
+            put(Properties().apply {
+                val resource = GradleRunner::class.java.classLoader.getResourceAsStream("gradle.properties")
+                load(resource)
+            })
         })
 
         val runner = GradleRunner.create()
