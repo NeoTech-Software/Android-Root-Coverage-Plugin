@@ -165,7 +165,7 @@ class RootCoveragePlugin : Plugin<Project> {
         val name = variant.name.replaceFirstChar(Char::titlecase)
 
         // Gets the relative path from this task to the subProject
-        val path = project.relativePath(subProject.path).removeSuffix(":")
+        val path = project.relativeProjectPath(subProject.path)
 
         // Add dependencies to the test tasks of the subProject
         if (rootProjectExtension.shouldExecuteUnitTests()) {
