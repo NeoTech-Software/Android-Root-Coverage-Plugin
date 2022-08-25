@@ -175,30 +175,7 @@ class RootCoveragePlugin : Plugin<Project> {
             dependsOn("$path:connected${name}AndroidTest")
         }
 
-
-        // Start temporary fix for AGP 7.2
-        // For some reason `variant.sources.java.all` causes BuildConfig files to go missing
-        // See: https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/issues/54
-        val baseVariant = when(val androidExtension = subProject.extensions.findByName("android")) {
-            is LibraryExtension -> androidExtension.libraryVariants
-            is AppExtension -> androidExtension.applicationVariants
-            else -> {
-                subProject.logger.warn(
-                    "Note: Skipping code coverage for module '${subProject.name}', currently the" +
-                            " RootCoveragePlugin only supports Android Library and App Modules.")
-                    return
-            }
-        }
-        baseVariant.all {
-            if(name.contentEquals(it.baseName, ignoreCase = true)) {
-                val sourceFiles = it.getSourceFolders(SourceKind.JAVA).map { file -> file.dir }
-                sourceDirectories.from(subProject.files(sourceFiles))
-            }
-        }
-        // End temporary fix for AGP 7.2
-
-        // Working code in AGP 7.3-beta01:
-        // sourceDirectories.from(variant.sources.java?.all)
+        sourceDirectories.from(variant.sources.java?.all)
 
         classDirectories.from(variant.artifacts.getAll(MultipleArtifact.ALL_CLASSES_DIRS).map {
             it.map { directory ->
