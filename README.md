@@ -99,9 +99,6 @@ rootCoverage {
    generateHtml true
    generateXml false
 
-   // Since 1.2: When false the plugin does not execute any tests, useful when you run the tests manually or remote (Firebase Test Lab)
-   executeTests true
-
    // Since 1.2: Same as executeTests except that this only affects the instrumented Android tests
    executeAndroidTests true
 
