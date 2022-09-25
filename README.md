@@ -29,7 +29,7 @@ following methods:
   ```groovy
   // Below buildscript {}
   plugins {
-      id "nl.neotech.plugin.rootcoverage" version "1.5.3"
+      id "nl.neotech.plugin.rootcoverage" version "1.6.0"
   }
   ```
 </details>
@@ -42,7 +42,7 @@ following methods:
    
    buildscript {
       dependencies {
-         classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.5.3'
+         classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.6.0'
       }
    }
    ```
@@ -130,6 +130,7 @@ rootCoverage {
 # 4. Compatibility
 | Version        | [Android Gradle plugin version](https://developer.android.com/studio/releases/gradle-plugin#updating-gradle) | Gradle version    |
 |----------------|--------------------------------------------------------------------------------------------------------------|-------------------|
+| **1.6.0**      | 7.3                                                                                                          | 7.4+              |
 | **1.5.3**      | 7.2                                                                                                          | 7.3+              |
 | **See note 2** | 7.0-7.2-alpha05                                                                                              | n.a.              |
 | **1.4.0**      | 4.2<br/>4.1                                                                                                  | 6.7.1+<br/>6.5+   |
