@@ -51,12 +51,20 @@ following methods:
 
 # 2. How to use
 
-1. Enable running tests with coverage in the desired modules:
+1. Enable running tests with code coverage
+   This is required so that code will be instrumented, but also to tell this plugin to include
+   modules that have at least on of these properties enabled in the final report (or individual
+   reports)
 
    ```groovy
    android {
        buildTypes {
            debug {
+               // AGP 7.3+ (at least one should be true for this module to be included in the reporting)
+               enableUnitTestCoverage true
+               enableAndroidTestCoverage true
+   
+               // AGP before 7.3
                testCoverageEnabled true
            }
        }
@@ -64,8 +72,9 @@ following methods:
    ```
 
    > Only Android modules (`com.android.application` or `com.android.library`) are supported, this plugin will not execute
-   tests and generate coverage reports for non-android modules. Also any Android module that does not have
-   > `testCoverageEnabled true` for the desired coverage variant (default: `debug`) will be ignored.
+   tests and generate coverage reports for non-android modules. Also keep in mind that by default
+   this plugin is configured to create reports for the `debug` variant, so coverage must be
+   enabled for the `debug` variant, unless you change this ([Configuration](#3-configuration)).
 
 2. Run one of the automatically configured Gradle tasks to generate a Jacoco report:
    - **For combined coverage:** `./gradlew :rootCoverageReport`
@@ -170,9 +179,5 @@ Want to contribute? Great! Just clone the repo, code away and create a pull-requ
 sure to follow the code-style as found in the rest of the project.
 
 **How to test your changes/additions?**
-The plugin comes with an integration test. You can run this test either by executing
+The plugin comes with an integration test and unit tests. You can run these tests either by executing
 `./gradlew clean test` or run the test directly from Android Studio (or IntelliJ IDEA).
-
-
-# 6. Honorable mentions
-Many thanks to [Hans van Dam](https://github.com/hansvdam) for helping with testing and the initial idea.
