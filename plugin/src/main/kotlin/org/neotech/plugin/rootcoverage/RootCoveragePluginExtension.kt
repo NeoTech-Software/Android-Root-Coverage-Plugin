@@ -13,7 +13,15 @@ open class RootCoveragePluginExtension {
     var includeNoLocationClasses: Boolean = false
 
     /**
-     * Same as executeTests except that this only disables/enables the instrumented Android tests.
+     * When disabled the plugin will skip the execution of all (instrumented) Android tests (by not depending on the Gradle test tasks).
+     * If disabled this does not automatically imply that already existing code coverage results will not be included in the final coverage
+     * report, instead this is expected to happen as this can be useful when you run the tests manually or remote (Firebase Test Lab).
+     *
+     * When using this setting in combination with remote test execution make sure you fetch the `build/outputs` folder from the remote (or
+     * any other place) and put them into the local build so that this plugin can use them to configure code coverage correctly. Also make
+     * sure that when executing remotely coverage is enabled.
+     *
+     * Same as executeUnitTests except that this only disables/enables the instrumented Android tests.
      *
      * Default: true
      *
@@ -22,7 +30,15 @@ open class RootCoveragePluginExtension {
     var executeAndroidTests: Boolean = true
 
     /**
-     * Same as executeTests except that this only disables/enables the unit tests.
+     * When disabled the plugin will skip the execution of all unit tests (by not depending on the Gradle test tasks). If disabled this does
+     * not automatically imply that already existing code coverage results will not be included in the final coverage report, instead this
+     * is expected to happen as this can be useful when you run the tests manually or remote (Firebase Test Lab).
+     *
+     * When using this setting in combination with remote test execution make sure you fetch the `build/outputs` folder from the remote (or
+     * any other place) and put them into the local build so that this plugin can use them to configure code coverage correctly. Also make
+     * sure that when executing remotely coverage is enabled.
+     *
+     * Same as executeUnitTests except that this only disables/enables the instrumented Android tests.
      *
      * Default: true
      *
@@ -31,23 +47,15 @@ open class RootCoveragePluginExtension {
     var executeUnitTests: Boolean = true
 
     /**
-     * When disabled the Android-Root-Coverage-Plugin will skip the execution of all tests (unit and instrumented Android tests). This can
-     * be useful when you run the tests manually or remote (Firebase Test Lab). When using this setting make sure you fetch the
-     * `build/outputs` and `build/jacoco/` folders the remote (or any other place) and put them into the local build so that this plugin can
-     * use them.
-     *
-     * Default: true
-     *
-     * Note: if false this will override any value in `executeAndroidTests` and `executeUnitTests`.
-     *
      * @see executeAndroidTests
      * @see executeUnitTests
      */
+    @Deprecated("Instead use executeAndroidTests and/or executeUnitTests")
     var executeTests: Boolean = true
 
     /**
      * Whether to include results from instrumented Android tests into the final coverage report. If disabled this also causes the plugin to
-     * not automatically execute instrumented Android tests (if not already disabled by either `executeTests` or `executeAndroidTests`).
+     * not automatically execute instrumented Android tests (if not already disabled by `executeAndroidTests`).
      *
      * Default: true
      *
@@ -57,7 +65,7 @@ open class RootCoveragePluginExtension {
 
     /**
      * Whether to include results from unit tests into the final coverage report. If disabled this also causes the plugin to not
-     * automatically execute unit tests (if not already disabled by either `executeTests` or `executeUnitTests`).
+     * automatically execute unit tests (if not already disabled by `executeUnitTests`).
      *
      * Default: true
      *
