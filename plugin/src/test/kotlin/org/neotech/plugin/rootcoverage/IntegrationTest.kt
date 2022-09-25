@@ -13,7 +13,6 @@ import org.neotech.plugin.rootcoverage.util.createLocalPropertiesFile
 import org.neotech.plugin.rootcoverage.util.put
 import java.io.File
 import java.util.Properties
-import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
 class IntegrationTest(
@@ -60,10 +59,10 @@ class IntegrationTest(
     }
 
     private fun BuildResult.assertRootCoverageReport(file: File) {
-        assertEquals(task(":rootCoverageReport")!!.outcome, TaskOutcome.SUCCESS)
+        assertThat(task(":rootCoverageReport")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
 
         // Also check if the old task name is still exe
-        assertEquals(task(":rootCodeCoverageReport")!!.outcome, TaskOutcome.SUCCESS)
+        assertThat(task(":rootCodeCoverageReport")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
 
         val report = CoverageReport.from(file)
 
@@ -75,7 +74,7 @@ class IntegrationTest(
     }
 
     private fun BuildResult.assertAppCoverageReport() {
-        assertEquals(task(":app:coverageReport")!!.outcome, TaskOutcome.SUCCESS)
+        assertThat(task(":app:coverageReport")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
 
         val report = CoverageReport.from(File(projectRoot, "app/build/reports/jacoco.csv"))
 
@@ -86,7 +85,7 @@ class IntegrationTest(
     }
 
     private fun BuildResult.assertAndroidLibraryCoverageReport() {
-        assertEquals(task(":library_android:coverageReport")!!.outcome, TaskOutcome.SUCCESS)
+        assertThat(task(":library_android:coverageReport")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
 
         val report = CoverageReport.from(File(projectRoot, "library_android/build/reports/jacoco.csv"))
 
@@ -127,7 +126,7 @@ class IntegrationTest(
 
             val testFixtures = File("src/test/test-fixtures").listFiles()?.filter { it.isDirectory }
                 ?: error("Could not list test fixture directories")
-            val gradleVersions = arrayOf("7.3.3", "7.4", "7.4.2", "7.5-rc-1")
+            val gradleVersions = arrayOf("7.4", "7.4.2", "7.5.1")
             return testFixtures.flatMap { file ->
                 gradleVersions.map { gradleVersion ->
                     arrayOf("${file.name}-$gradleVersion", file, gradleVersion)

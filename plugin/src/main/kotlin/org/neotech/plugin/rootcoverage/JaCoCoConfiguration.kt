@@ -35,7 +35,7 @@ internal fun RootCoveragePluginExtension.getFileFilterPatterns(): List<String> =
 internal fun RootCoveragePluginExtension.getBuildVariantFor(project: Project): String =
     buildVariantOverrides[project.path] ?: buildVariant
 
-internal fun RootCoveragePluginExtension.getExecutionDataFileTree(project: Project): FileTree {
+internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, includeAndroidTestResults: Boolean): FileTree? {
     val buildFolderPatterns = mutableListOf<String>()
     if (includeUnitTestResults) {
         // TODO instead of hardcoding this, obtain the location from the test tasks, something like this:
@@ -68,5 +68,9 @@ internal fun RootCoveragePluginExtension.getExecutionDataFileTree(project: Proje
         // Android Build Tools Plugin 7.1+
         buildFolderPatterns.add("outputs/code_coverage/*/connected/*/coverage.ec")
     }
-    return project.fileTree(project.buildDir, includes = buildFolderPatterns)
+    return if(buildFolderPatterns.isEmpty()) {
+        null
+    } else {
+        fileTree(buildDir, includes = buildFolderPatterns)
+    }
 }

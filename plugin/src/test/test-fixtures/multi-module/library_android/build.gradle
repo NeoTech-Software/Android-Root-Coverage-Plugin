@@ -5,7 +5,9 @@ plugins {
 
 android {
 
+    namespace "org.neotech.library.a"
     compileSdkVersion libs.versions.androidCompileSdk.get().toInteger()
+
     defaultConfig {
         minSdkVersion libs.versions.androidMinSdk.get().toInteger()
         targetSdkVersion libs.versions.androidTargetSdk.get().toInteger()
@@ -17,6 +19,7 @@ android {
 
     buildTypes {
         debug {
+
             testCoverageEnabled true
         }
         release {
