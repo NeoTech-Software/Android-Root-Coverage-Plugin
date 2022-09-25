@@ -5,7 +5,9 @@ plugins {
 
 android {
 
+    namespace "org.neotech.app"
     compileSdkVersion libs.versions.androidCompileSdk.get().toInteger()
+
     defaultConfig {
         applicationId "org.neotech.app"
         minSdkVersion libs.versions.androidMinSdk.get().toInteger()
@@ -17,7 +19,8 @@ android {
 
     buildTypes {
         debug {
-            testCoverageEnabled true
+            enableUnitTestCoverage true
+            enableAndroidTestCoverage true
         }
         release {
             minifyEnabled false

@@ -28,8 +28,6 @@ fun Project.onVariant(variantName: String, action: (variant: Variant?) -> Unit){
     }
 }
 
-
-
 fun Project.afterAndroidPluginApplied(notFoundAction: () -> Unit = {}, action: (AppliedPlugin) -> Unit) {
     var didExecuteBlock = false
     pluginManager.withPlugin(ANDROID_APPLICATION_PLUGIN_ID) {

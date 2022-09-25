@@ -148,30 +148,33 @@ class RootCoveragePlugin : Plugin<Project> {
         // Get the exact required build variant for the current sub-project.
         val buildVariant = rootProjectExtension.getBuildVariantFor(subProject)
 
-
         lateinit var buildTypes: NamedDomainObjectContainer<out BuildType>
         androidComponents.finalizeDsl { extension ->
             buildTypes = extension.buildTypes
         }
         androidComponents.onVariants { variant ->
             val buildType = buildTypes.find { it.name == variant.buildType }!!
-            if (buildType.isTestCoverageEnabled && variant.name.replaceFirstChar(Char::titlecase) == buildVariant.replaceFirstChar(Char::titlecase)) {
-                addSubProjectVariant(subProject, variant)
+            if (variant.name.replaceFirstChar(Char::titlecase) == buildVariant.replaceFirstChar(Char::titlecase)) {
+                if (buildType.enableAndroidTestCoverage || buildType.enableUnitTestCoverage || buildType.isTestCoverageEnabled) {
+                    addSubProjectVariant(subProject, variant, buildType)
+                } else {
+                    subProject.logger.info("Note: Skipping code coverage for module '${subProject.name}', reason: BuildType $buildType has enableAndroidTestCoverage, enableUnitTestCoverage and testCoverageEnabled set to false, at least one of these must be true for code coverage to work.")
+                }
             }
         }
     }
 
-    private fun JacocoReport.addSubProjectVariant(subProject: Project, variant: Variant) {
+    private fun JacocoReport.addSubProjectVariant(subProject: Project, variant: Variant, buildType: BuildType) {
         val name = variant.name.replaceFirstChar(Char::titlecase)
 
         // Gets the relative path from this task to the subProject
         val path = project.relativeProjectPath(subProject.path)
 
         // Add dependencies to the test tasks of the subProject
-        if (rootProjectExtension.shouldExecuteUnitTests()) {
+        if (rootProjectExtension.shouldExecuteUnitTests() && (buildType.enableUnitTestCoverage || buildType.isTestCoverageEnabled)) {
             dependsOn("$path:test${name}UnitTest")
         }
-        if (rootProjectExtension.shouldExecuteAndroidTests()) {
+        if (rootProjectExtension.shouldExecuteAndroidTests() && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled)) {
             dependsOn("$path:connected${name}AndroidTest")
         }
 
@@ -182,7 +185,12 @@ class RootCoveragePlugin : Plugin<Project> {
                 subProject.fileTree(directory.asFile, excludes = rootProjectExtension.getFileFilterPatterns())
             }
         })
-        executionData.from(rootProjectExtension.getExecutionDataFileTree(subProject))
+        executionData.from(
+            subProject.getExecutionDataFileTree(
+                includeUnitTestResults = rootProjectExtension.includeUnitTestResults && (buildType.enableUnitTestCoverage || buildType.isTestCoverageEnabled),
+                includeAndroidTestResults = rootProjectExtension.includeAndroidTestResults && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled)
+            )
+        )
     }
 
     /**
