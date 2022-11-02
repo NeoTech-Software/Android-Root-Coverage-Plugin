@@ -6,6 +6,7 @@ import com.android.build.api.dsl.BuildType
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.AppExtension
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.SourceKind
 import org.gradle.api.GradleException
@@ -176,6 +177,10 @@ class RootCoveragePlugin : Plugin<Project> {
         }
         if (rootProjectExtension.shouldExecuteAndroidTests() && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled)) {
             dependsOn("$path:connected${name}AndroidTest")
+
+            if (subProject.extensions.getByType(BaseExtension::class.java).testOptions.managedDevices.devices.isNotEmpty()) {
+                dependsOn("$path:allDevices${name}AndroidTest")
+            }
         }
 
         sourceDirectories.from(variant.sources.java?.all)

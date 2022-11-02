@@ -67,6 +67,8 @@ internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, i
 
         // Android Build Tools Plugin 7.1+
         buildFolderPatterns.add("outputs/code_coverage/*/connected/*/coverage.ec")
+        // Gradle Managed Devices
+        buildFolderPatterns.add("outputs/managed_device_code_coverage/*/coverage.ec")
     }
     return if(buildFolderPatterns.isEmpty()) {
         null

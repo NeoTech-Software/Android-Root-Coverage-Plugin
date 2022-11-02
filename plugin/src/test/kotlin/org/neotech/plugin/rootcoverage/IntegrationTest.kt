@@ -76,6 +76,9 @@ class IntegrationTest(
     private fun BuildResult.assertAppCoverageReport() {
         assertThat(task(":app:coverageReport")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
 
+        // Assert that the tests have been run on  Gradle Managed Devices
+        assertThat(task(":app:allDevicesDebugAndroidTest")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
+
         val report = CoverageReport.from(File(projectRoot, "app/build/reports/jacoco.csv"))
 
         report.assertNotInReport("org.neotech.app", "MustBeExcluded")
