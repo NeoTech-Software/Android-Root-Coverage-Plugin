@@ -53,7 +53,7 @@ following methods:
 
 1. Enable running tests with code coverage
    This is required so that code will be instrumented, but also to tell this plugin to include
-   modules that have at least on of these properties enabled in the final report (or individual
+   modules that have at least one of these properties enabled in the final report (or individual
    reports)
 
    ```groovy
