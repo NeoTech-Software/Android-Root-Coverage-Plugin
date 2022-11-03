@@ -50,30 +50,9 @@ class RootCoveragePlugin : Plugin<Project> {
         }
     }
 
+
     private fun createSubProjectCoverageTask(subProject: Project) {
-        val task = subProject.tasks.create("coverageReport", JacocoReport::class.java)
-
-        // Make sure to only read from the rootProjectExtension after the project has been evaluated
-        subProject.afterEvaluate {
-            task.reports.html.required.set(rootProjectExtension.generateHtml)
-            task.reports.xml.required.set(rootProjectExtension.generateXml)
-            task.reports.csv.required.set(rootProjectExtension.generateCsv)
-        }
-
-        // Make sure to configure this JacocoReport task after the JaCoCoPlugin itself has been fully applied, otherwise the JaCoCoPlugin
-        // may override settings in configureJacocoReportsDefaults()
-        // https://github.com/gradle/gradle/blob/c177053ff95a1582c7919befe67993e0f1677f53/subprojects/jacoco/src/main/java/org/gradle/testing/jacoco/plugins/JacocoPlugin.java#L211
-        subProject.pluginManager.withPlugin("jacoco") {
-            task.group = "reporting"
-            task.description = "Generates a Jacoco for this Gradle module."
-
-            task.reports.html.outputLocation.set(subProject.getReportOutputFile("jacoco"))
-            task.reports.xml.outputLocation.set(subProject.getReportOutputFile("jacoco.xml"))
-            task.reports.csv.outputLocation.set(subProject.getReportOutputFile("jacoco.csv"))
-        }
-
-        //subProject.assertAndroidCodeCoverageVariantExists()
-
+        val task = subProject.createJacocoReportTask(rootProjectExtension)
         task.addSubProject(task.project)
     }
 
