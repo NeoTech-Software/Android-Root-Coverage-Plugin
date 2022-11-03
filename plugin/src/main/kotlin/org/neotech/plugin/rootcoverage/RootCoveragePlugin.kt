@@ -17,6 +17,7 @@ import org.neotech.plugin.rootcoverage.utilities.afterAndroidPluginApplied
 import org.neotech.plugin.rootcoverage.utilities.assertMinimumRequiredAGPVersion
 import org.neotech.plugin.rootcoverage.utilities.fileTree
 import org.neotech.plugin.rootcoverage.utilities.onVariant
+import org.neotech.plugin.rootcoverage.utilities.getReportOutputFile
 import java.io.File
 
 class RootCoveragePlugin : Plugin<Project> {
@@ -66,9 +67,9 @@ class RootCoveragePlugin : Plugin<Project> {
             task.group = "reporting"
             task.description = "Generates a Jacoco for this Gradle module."
 
-            task.reports.html.outputLocation.set(subProject.file("${subProject.buildDir}/reports/jacoco"))
-            task.reports.xml.outputLocation.set(subProject.file("${subProject.buildDir}/reports/jacoco.xml"))
-            task.reports.csv.outputLocation.set(subProject.file("${subProject.buildDir}/reports/jacoco.csv"))
+            task.reports.html.outputLocation.set(subProject.getReportOutputFile("jacoco"))
+            task.reports.xml.outputLocation.set(subProject.getReportOutputFile("jacoco.xml"))
+            task.reports.csv.outputLocation.set(subProject.getReportOutputFile("jacoco.csv"))
         }
 
         //subProject.assertAndroidCodeCoverageVariantExists()
@@ -92,9 +93,9 @@ class RootCoveragePlugin : Plugin<Project> {
         project.pluginManager.withPlugin("jacoco") {
             task.group = "reporting"
             task.description = "Generates a Jacoco report with combined results from all the subprojects."
-            task.reports.html.outputLocation.set(project.file("${project.buildDir}/reports/jacoco"))
-            task.reports.xml.outputLocation.set(project.file("${project.buildDir}/reports/jacoco.xml"))
-            task.reports.csv.outputLocation.set(project.file("${project.buildDir}/reports/jacoco.csv"))
+            task.reports.html.outputLocation.set(project.getReportOutputFile("jacoco"))
+            task.reports.xml.outputLocation.set(project.getReportOutputFile("jacoco.xml"))
+            task.reports.csv.outputLocation.set(project.getReportOutputFile("jacoco.csv"))
         }
 
         project.allprojects.forEach { subProject ->
