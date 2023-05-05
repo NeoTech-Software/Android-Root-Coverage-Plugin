@@ -161,7 +161,7 @@ class IntegrationTest(
 
             val testFixtures =
                 File("src/test/test-fixtures").listFiles()?.filter { it.isDirectory } ?: error("Could not list test fixture directories")
-            val gradleVersions = arrayOf("7.4", "7.4.2", "7.5.1")
+            val gradleVersions = arrayOf("7.5", "7.5.1", "7.6", "7.6.1")
             return testFixtures.flatMap { fixture ->
                 val configurations = File(fixture, "configurations").listFiles() ?: error("Configurations folder not found in $fixture")
                 configurations.flatMap { configuration ->
