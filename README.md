@@ -124,11 +124,11 @@ rootCoverage {
    // which usually requires this attribute to be true
    includeNoLocationClasses false
 
-   // Upcoming in 1.7: If set to true instrumented tests will be attempt to run on
+   // Since 1.7 (experimental): If set to true instrumented tests will be attempt to run on
    // Gradle Managed Devices before trying devices connected through other means (ADB).
    runOnGradleManagedDevices false
    
-   // Upcoming in 1.7: The name of the Gradle Managed device to run instrumented tests on.
+   // Since 1.7 (experimental): The name of the Gradle Managed device to run instrumented tests on.
    // This is only used if `runOnGradleManagedDevices` is set to true. If not given tests will be
    // run on all available Gradle Managed Devices
    gradleManagedDeviceName "nexusoneapi30"
@@ -139,6 +139,7 @@ rootCoverage {
 # 4. Compatibility
 | Version        | [Android Gradle plugin version](https://developer.android.com/studio/releases/gradle-plugin#updating-gradle) | Gradle version    |
 |----------------|--------------------------------------------------------------------------------------------------------------|-------------------|
+| **1.7.0**      | 7.4                                                                                                          | 7.5+              |
 | **1.6.0**      | 7.3                                                                                                          | 7.4+              |
 | **1.5.3**      | 7.2                                                                                                          | 7.3+              |
 | **See note 2** | 7.0-7.2-alpha05                                                                                              | n.a.              |

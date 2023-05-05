@@ -22,7 +22,7 @@ import java.io.File
 
 class RootCoveragePlugin : Plugin<Project> {
 
-    private val minimumRequiredAgpVersion = AndroidPluginVersion(7, 2).alpha(6)
+    private val minimumRequiredAgpVersion = AndroidPluginVersion(7, 4)
 
     private lateinit var rootProjectExtension: RootCoveragePluginExtension
 
