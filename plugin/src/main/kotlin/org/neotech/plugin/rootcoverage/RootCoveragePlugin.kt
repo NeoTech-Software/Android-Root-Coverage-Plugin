@@ -18,7 +18,6 @@ import org.neotech.plugin.rootcoverage.utilities.afterAndroidPluginApplied
 import org.neotech.plugin.rootcoverage.utilities.assertMinimumRequiredAGPVersion
 import org.neotech.plugin.rootcoverage.utilities.fileTree
 import org.neotech.plugin.rootcoverage.utilities.onVariant
-import org.neotech.plugin.rootcoverage.utilities.getReportOutputFile
 import java.io.File
 
 class RootCoveragePlugin : Plugin<Project> {
@@ -53,30 +52,23 @@ class RootCoveragePlugin : Plugin<Project> {
 
 
     private fun createSubProjectCoverageTask(subProject: Project) {
-        val task = subProject.createJacocoReportTask(rootProjectExtension)
+        val task = subProject.createJacocoReportTask(
+            taskName = "coverageReport",
+            taskGroup = "reporting",
+            taskDescription = "Generates a Jacoco for this Gradle module.",
+            rootProjectExtension = rootProjectExtension
+        )
+        // subProject.assertAndroidCodeCoverageVariantExists()
         task.addSubProject(task.project)
     }
 
     private fun createCoverageTaskForRoot(project: Project) {
-        val task = project.tasks.create("rootCoverageReport", JacocoReport::class.java)
-
-        // Make sure to only read from the rootProjectExtension after the project has been evaluated
-        project.afterEvaluate {
-            task.reports.html.required.set(rootProjectExtension.generateHtml)
-            task.reports.xml.required.set(rootProjectExtension.generateXml)
-            task.reports.csv.required.set(rootProjectExtension.generateCsv)
-        }
-
-        // Make sure to configure this JacocoReport task after the JaCoCoPlugin itself has been fully applied, otherwise the JaCoCoPlugin
-        // may override settings in configureJacocoReportsDefaults()
-        // https://github.com/gradle/gradle/blob/c177053ff95a1582c7919befe67993e0f1677f53/subprojects/jacoco/src/main/java/org/gradle/testing/jacoco/plugins/JacocoPlugin.java#L211
-        project.pluginManager.withPlugin("jacoco") {
-            task.group = "reporting"
-            task.description = "Generates a Jacoco report with combined results from all the subprojects."
-            task.reports.html.outputLocation.set(project.getReportOutputFile("jacoco"))
-            task.reports.xml.outputLocation.set(project.getReportOutputFile("jacoco.xml"))
-            task.reports.csv.outputLocation.set(project.getReportOutputFile("jacoco.csv"))
-        }
+        val task = project.createJacocoReportTask(
+            taskName = "rootCoverageReport",
+            taskGroup = "reporting",
+            taskDescription = "Generates a Jacoco report with combined results from all the subprojects.",
+            rootProjectExtension = rootProjectExtension
+        )
 
         project.allprojects.forEach { subProject ->
             subProject.assertAndroidCodeCoverageVariantExists()
