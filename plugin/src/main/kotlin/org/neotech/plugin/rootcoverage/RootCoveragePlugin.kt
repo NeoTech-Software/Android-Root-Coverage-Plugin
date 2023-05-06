@@ -1,28 +1,29 @@
 package org.neotech.plugin.rootcoverage
 
 import com.android.build.api.AndroidPluginVersion
-import com.android.build.api.artifact.MultipleArtifact
+import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.dsl.BuildType
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.neotech.plugin.rootcoverage.utilities.afterAndroidPluginApplied
 import org.neotech.plugin.rootcoverage.utilities.assertMinimumRequiredAGPVersion
-import org.neotech.plugin.rootcoverage.utilities.fileTree
 import org.neotech.plugin.rootcoverage.utilities.onVariant
 import java.io.File
 
 class RootCoveragePlugin : Plugin<Project> {
 
-    private val minimumRequiredAgpVersion = AndroidPluginVersion(7, 4)
+    private val minimumRequiredAgpVersion = AndroidPluginVersion(8, 3, 0).alpha(5)
 
     private lateinit var rootProjectExtension: RootCoveragePluginExtension
 
@@ -151,7 +152,7 @@ class RootCoveragePlugin : Plugin<Project> {
             // - All Gradle Managed Devices if any is available.
             // - All through ADB connected devices.
             val gradleManagedDevices = subProject.extensions.getByType(BaseExtension::class.java).testOptions.managedDevices.devices
-            if(rootProjectExtension.runOnGradleManagedDevices && !rootProjectExtension.gradleManagedDeviceName.isNullOrEmpty()) {
+            if (rootProjectExtension.runOnGradleManagedDevices && !rootProjectExtension.gradleManagedDeviceName.isNullOrEmpty()) {
                 dependsOn("$path:${rootProjectExtension.gradleManagedDeviceName}${name}AndroidTest")
             } else if (rootProjectExtension.runOnGradleManagedDevices && gradleManagedDevices.isNotEmpty()) {
                 dependsOn("$path:allDevices${name}AndroidTest")
@@ -167,11 +168,15 @@ class RootCoveragePlugin : Plugin<Project> {
 
         sourceDirectories.from(variant.sources.java?.all)
 
-        classDirectories.from(variant.artifacts.getAll(MultipleArtifact.ALL_CLASSES_DIRS).map {
-            it.map { directory ->
-                subProject.fileTree(directory.asFile, excludes = rootProjectExtension.getFileFilterPatterns())
-            }
-        })
+
+        val taskProvider = variant.artifacts.forScope(ScopedArtifacts.Scope.PROJECT).use(
+            project.tasks.named(this.name) as TaskProvider<CustomJacocoReportTask>
+        )
+        taskProvider.toGet(
+            ScopedArtifact.CLASSES,
+            CustomJacocoReportTask::allJars,
+            CustomJacocoReportTask::allDirectories,
+        )
 
         executionData.from(
             subProject.getExecutionDataFileTree(
