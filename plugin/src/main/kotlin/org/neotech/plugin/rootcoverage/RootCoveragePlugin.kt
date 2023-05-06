@@ -5,6 +5,7 @@ import com.android.build.api.artifact.MultipleArtifact
 import com.android.build.api.dsl.BuildType
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
+import com.android.build.gradle.BaseExtension
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
@@ -152,7 +153,24 @@ class RootCoveragePlugin : Plugin<Project> {
             dependsOn("$path:test${name}UnitTest")
         }
         if (rootProjectExtension.shouldExecuteAndroidTests() && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled)) {
-            dependsOn("$path:connected${name}AndroidTest")
+
+            // Attempt to run on instrumented tests, giving priority to the following devices in this order:
+            // - A user provided Gradle Managed Device.
+            // - All Gradle Managed Devices if any is available.
+            // - All through ADB connected devices.
+            val gradleManagedDevices = subProject.extensions.getByType(BaseExtension::class.java).testOptions.managedDevices.devices
+            if(rootProjectExtension.runOnGradleManagedDevices && !rootProjectExtension.gradleManagedDeviceName.isNullOrEmpty()) {
+                dependsOn("$path:${rootProjectExtension.gradleManagedDeviceName}${name}AndroidTest")
+            } else if (rootProjectExtension.runOnGradleManagedDevices && gradleManagedDevices.isNotEmpty()) {
+                dependsOn("$path:allDevices${name}AndroidTest")
+            } else {
+                dependsOn("$path:connected${name}AndroidTest")
+            }
+        } else {
+            // If this plugin should not run instrumented tests on it's own, at least make sure it runs after those tasks (if they are
+            // selected to run as well).
+            mustRunAfter("$path:allDevices${name}AndroidTest")
+            mustRunAfter("$path:connected${name}AndroidTest")
         }
 
         sourceDirectories.from(variant.sources.java?.all)
@@ -162,6 +180,7 @@ class RootCoveragePlugin : Plugin<Project> {
                 subProject.fileTree(directory.asFile, excludes = rootProjectExtension.getFileFilterPatterns())
             }
         })
+
         executionData.from(
             subProject.getExecutionDataFileTree(
                 includeUnitTestResults = rootProjectExtension.includeUnitTestResults && (buildType.enableUnitTestCoverage || buildType.isTestCoverageEnabled),

@@ -123,6 +123,15 @@ rootCoverage {
    // Since 1.4: Sets jacoco.includeNoLocationClasses, so you don't have to. Helpful when using Robolectric
    // which usually requires this attribute to be true
    includeNoLocationClasses false
+
+   // Upcoming in 1.7: If set to true instrumented tests will be attempt to run on
+   // Gradle Managed Devices before trying devices connected through other means (ADB).
+   runOnGradleManagedDevices false
+   
+   // Upcoming in 1.7: The name of the Gradle Managed device to run instrumented tests on.
+   // This is only used if `runOnGradleManagedDevices` is set to true. If not given tests will be
+   // run on all available Gradle Managed Devices
+   gradleManagedDeviceName "nexusoneapi30"
 }
 ```
 

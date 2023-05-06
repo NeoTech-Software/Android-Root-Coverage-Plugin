@@ -73,6 +73,18 @@ open class RootCoveragePluginExtension {
      */
     var includeUnitTestResults = true
 
+    /**
+     * The name of the Gradle Managed device to run instrumented tests on, if null tests will be attempted to run on any
+     * connected emulator.
+     */
+    var gradleManagedDeviceName: String? = null
+
+    /**
+     * If set to true (default is false) this plugin will attempt to run on Gradle Managed Devices before trying devices
+     * connected through other means (Non Gradle Managed Devices).
+     */
+    var runOnGradleManagedDevices: Boolean = false
+    
     internal fun shouldExecuteAndroidTests() = executeTests && executeAndroidTests && includeAndroidTestResults
 
     internal fun shouldExecuteUnitTests() = executeTests && executeUnitTests && includeUnitTestResults

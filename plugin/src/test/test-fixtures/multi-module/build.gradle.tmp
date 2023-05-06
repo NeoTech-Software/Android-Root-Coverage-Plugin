@@ -21,14 +21,8 @@ jacoco {
 }
 
 rootCoverage {
-    generateHtml true
-    generateXml false
-    generateCsv true
-    buildVariant "debug"
-    executeTests true
-    includeUnitTestResults true
-    includeAndroidTestResults true
-    includeNoLocationClasses true
 
     excludes = ["**/MustBeExcluded.class"]
+
+    {{configuration}}
 }

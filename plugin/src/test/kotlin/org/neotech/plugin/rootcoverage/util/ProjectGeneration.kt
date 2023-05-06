@@ -27,10 +27,19 @@ internal fun Properties.put(properties: Properties) {
 }
 
 internal fun File.getProperties(): Properties = inputStream().use {
-        Properties().apply {
-            load(it)
-        }
+    Properties().apply {
+        load(it)
     }
+}
+
+internal fun Properties.toGroovyString(): String = map {
+    val stringValue = it.value as String
+    if (stringValue.toBooleanStrictOrNull() != null) {
+        "${it.key} ${it.value}"
+    } else {
+        "${it.key} \"${it.value}\""
+    }
+}.joinToString(separator = System.lineSeparator())
 
 /**
  * Tries to resolve the Android SDK directory. This function first tries the ANDROID_HOME system

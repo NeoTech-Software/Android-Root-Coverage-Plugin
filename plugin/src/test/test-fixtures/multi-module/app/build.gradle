@@ -37,8 +37,17 @@ android {
         unitTests {
             includeAndroidResources = true
         }
+        managedDevices {
+            devices {
+                nexusoneapi30 (com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Nexus One"
+                    apiLevel = 30
+                    systemImageSource = "aosp-atd"
+                }
+            }
+        }
     }
-    
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
