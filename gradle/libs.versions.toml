@@ -31,7 +31,7 @@ kotlinJvm           = { id = "org.jetbrains.kotlin.jvm",        version.ref = "k
 kotlinAndroid       = { id = "org.jetbrains.kotlin.android",    version.ref = "kotlin" }
 kotlinDokka         = { id = "org.jetbrains.dokka",             version = "1.7.20" }
 pluginPortalPublish = { id = "com.gradle.plugin-publish",       version = "0.21.0" }
-mavenPublish        = { id = "com.vanniktech.maven.publish",    version = "0.25.2" }
+mavenPublish        = { id = "com.vanniktech.maven.publish",    version = "0.23.2" }
 versionCheck        = { id = "com.github.ben-manes.versions",   version = "0.46.0" }
 androidApp          = { id = "com.android.application",         version.ref = "androidGradlePlugin"}
 androidLibrary      = { id = "com.android.library",             version.ref = "androidGradlePlugin"}
