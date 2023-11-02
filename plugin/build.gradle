@@ -19,6 +19,9 @@ plugins {
 // To test the plugin:
 // > ./gradlew clean test
 
+version = VERSION_NAME
+group = GROUP
+
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
