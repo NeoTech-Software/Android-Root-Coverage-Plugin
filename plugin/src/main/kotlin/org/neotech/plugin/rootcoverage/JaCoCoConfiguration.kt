@@ -38,7 +38,7 @@ internal fun RootCoveragePluginExtension.getBuildVariantFor(project: Project): S
 internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, includeAndroidTestResults: Boolean): FileTree? {
     val buildFolderPatterns = mutableListOf<String>()
     if (includeUnitTestResults) {
-        // TODO instead of hardcoding this, obtain the location from the test tasks, something like this:
+        // TODO instead of hardcoding this, obtain the location from the test tasks, something like this?
         // tasks.withType(Test::class.java).all { testTask ->
         //     testTask.extensions.findByType(JacocoTaskExtension::class.java)?.apply {
         //         destinationFile
@@ -67,12 +67,16 @@ internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, i
 
         // Android Build Tools Plugin 7.1+
         buildFolderPatterns.add("outputs/code_coverage/*/connected/*/coverage.ec")
-        // Gradle Managed Devices
-        buildFolderPatterns.add("outputs/managed_device_code_coverage/*/coverage.ec")
+
+        // Gradle Managed Devices 7.4
+        // buildFolderPatterns.add("outputs/managed_device_code_coverage/*/coverage.ec")
+
+        // Gradle Managed Devices 8.3+
+        buildFolderPatterns.add("outputs/managed_device_code_coverage/*/*/coverage.ec")
     }
     return if(buildFolderPatterns.isEmpty()) {
         null
     } else {
-        fileTree(buildDir, includes = buildFolderPatterns)
+        fileTree(layout.buildDirectory, includes = buildFolderPatterns)
     }
 }

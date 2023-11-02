@@ -11,11 +11,7 @@ public final class LibraryAndroidJava {
         return INSTANCE;
     }
 
-    private LibraryAndroidJava() {
-        // Check if the BuildConfig file is available, this is here to prevent regression on:
-        // https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/issues/54
-        System.out.println(org.neotech.library.a.BuildConfig.DEBUG);
-    }
+    private LibraryAndroidJava() { }
 
     public String touchedByJavaInstrumentedTestInAndroidLibrary() {
         return "touchedByJavaInstrumentedTestInAndroidLibrary";

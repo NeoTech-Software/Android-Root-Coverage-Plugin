@@ -1,7 +1,6 @@
 package org.neotech.plugin.rootcoverage
 
 import org.gradle.api.Project
-import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.neotech.plugin.rootcoverage.utilities.getReportOutputFile
 
 private const val JACOCO_PLUGIN_NAME = "jacoco"
@@ -11,11 +10,12 @@ internal fun Project.createJacocoReportTask(
     taskGroup: String,
     taskDescription: String,
     rootProjectExtension: RootCoveragePluginExtension
-): JacocoReport {
-    val task = tasks.create(taskName, JacocoReport::class.java)
+): CustomJacocoReportTask {
+    val task = tasks.create(taskName, CustomJacocoReportTask::class.java)
 
     // Make sure to only read from the rootProjectExtension after the project has been evaluated
     afterEvaluate {
+        task.excludePatterns.set(rootProjectExtension.getFileFilterPatterns())
         task.reports.apply {
             html.required.set(rootProjectExtension.generateHtml)
             xml.required.set(rootProjectExtension.generateXml)
