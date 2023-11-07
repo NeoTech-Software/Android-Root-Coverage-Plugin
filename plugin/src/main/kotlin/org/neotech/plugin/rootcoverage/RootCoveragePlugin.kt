@@ -144,6 +144,9 @@ class RootCoveragePlugin : Plugin<Project> {
         if (rootProjectExtension.shouldExecuteUnitTests() && (buildType.enableUnitTestCoverage || buildType.isTestCoverageEnabled)) {
             dependsOn("$path:test${name}UnitTest")
         }
+
+        var runsOnGradleManagedDevices = false
+
         if (rootProjectExtension.shouldExecuteAndroidTests() && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled)) {
 
             // Attempt to run on instrumented tests, giving priority to the following devices in this order:
@@ -151,17 +154,27 @@ class RootCoveragePlugin : Plugin<Project> {
             // - All Gradle Managed Devices if any is available.
             // - All through ADB connected devices.
             val gradleManagedDevices = subProject.extensions.getByType(BaseExtension::class.java).testOptions.managedDevices.devices
-            if(rootProjectExtension.runOnGradleManagedDevices && !rootProjectExtension.gradleManagedDeviceName.isNullOrEmpty()) {
+            if (rootProjectExtension.runOnGradleManagedDevices && !rootProjectExtension.gradleManagedDeviceName.isNullOrEmpty()) {
+                runsOnGradleManagedDevices = true
                 dependsOn("$path:${rootProjectExtension.gradleManagedDeviceName}${name}AndroidTest")
             } else if (rootProjectExtension.runOnGradleManagedDevices && gradleManagedDevices.isNotEmpty()) {
+                runsOnGradleManagedDevices = true
                 dependsOn("$path:allDevices${name}AndroidTest")
             } else {
                 dependsOn("$path:connected${name}AndroidTest")
             }
         } else {
             // If this plugin should not run instrumented tests on it's own, at least make sure it runs after those tasks (if they are
-            // selected to run as well).
-            mustRunAfter("$path:allDevices${name}AndroidTest")
+            // selected to run as well and exists).
+            //
+            // In theory we don't need to do this if `rootProjectExtension.includeAndroidTestResults` is false, so we could check that, but
+            // it also does not hurt.
+
+            val executeAndroidTestsOnGradleManagedDevicesTask = project.tasks.findByPath("$path:allDevices${name}AndroidTest")
+            if(executeAndroidTestsOnGradleManagedDevicesTask != null) {
+                // This task only exists if a Gradle Managed Device is configured, which may not be the case.
+                mustRunAfter("$path:allDevices${name}AndroidTest")
+            }
             mustRunAfter("$path:connected${name}AndroidTest")
         }
 
@@ -176,7 +189,8 @@ class RootCoveragePlugin : Plugin<Project> {
         executionData.from(
             subProject.getExecutionDataFileTree(
                 includeUnitTestResults = rootProjectExtension.includeUnitTestResults && (buildType.enableUnitTestCoverage || buildType.isTestCoverageEnabled),
-                includeAndroidTestResults = rootProjectExtension.includeAndroidTestResults && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled)
+                includeConnectedDevicesResults = rootProjectExtension.includeAndroidTestResults && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled) && !runsOnGradleManagedDevices,
+                includeGradleManagedDevicesResults = rootProjectExtension.includeAndroidTestResults && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled) && runsOnGradleManagedDevices
             )
         )
     }

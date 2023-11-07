@@ -35,7 +35,7 @@ internal fun RootCoveragePluginExtension.getFileFilterPatterns(): List<String> =
 internal fun RootCoveragePluginExtension.getBuildVariantFor(project: Project): String =
     buildVariantOverrides[project.path] ?: buildVariant
 
-internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, includeAndroidTestResults: Boolean): FileTree? {
+internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, includeConnectedDevicesResults: Boolean, includeGradleManagedDevicesResults: Boolean): FileTree? {
     val buildFolderPatterns = mutableListOf<String>()
     if (includeUnitTestResults) {
         // TODO instead of hardcoding this, obtain the location from the test tasks, something like this:
@@ -54,7 +54,7 @@ internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, i
         // Android Build Tools Plugin 7.0+
         buildFolderPatterns.add("outputs/unit_test_code_coverage/*/*.exec")
     }
-    if (includeAndroidTestResults) {
+    if (includeConnectedDevicesResults) {
 
         // These are legacy paths for older now unsupported AGP version, they are just here for
         // reference and are not added to prevent existing files from polluting results
@@ -67,7 +67,9 @@ internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, i
 
         // Android Build Tools Plugin 7.1+
         buildFolderPatterns.add("outputs/code_coverage/*/connected/*/coverage.ec")
-        // Gradle Managed Devices
+    }
+    if(includeGradleManagedDevicesResults) {
+        // Gradle Managed Devices 7.4
         buildFolderPatterns.add("outputs/managed_device_code_coverage/*/coverage.ec")
     }
     return if(buildFolderPatterns.isEmpty()) {

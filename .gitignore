@@ -16,3 +16,4 @@ build/
 */out/*/classes/*
 plugin/src/test/test-fixtures/multi-module/gradle.properties
 plugin/src/test/test-fixtures/multi-module/build.gradle
+plugin/src/test/test-fixtures/multi-module/app/build.gradle

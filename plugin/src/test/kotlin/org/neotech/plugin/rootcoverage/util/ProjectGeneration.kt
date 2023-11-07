@@ -1,5 +1,9 @@
 package org.neotech.plugin.rootcoverage.util
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import org.neotech.plugin.rootcoverage.IntegrationTest
 import java.io.File
 import java.util.*
 
@@ -26,18 +30,17 @@ internal fun Properties.put(properties: Properties) {
     }
 }
 
-internal fun File.getProperties(): Properties = inputStream().use {
-    Properties().apply {
-        load(it)
-    }
+inline fun <reified T> File.readYaml(): T {
+    val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
+    return mapper.readValue(this, T::class.java)
 }
 
-internal fun Properties.toGroovyString(): String = map {
-    val stringValue = it.value as String
+internal fun List<IntegrationTest.TestConfiguration.PluginConfiguration.Property>.toGroovyString(): String = map {
+    val stringValue = it.value
     if (stringValue.toBooleanStrictOrNull() != null) {
-        "${it.key} ${it.value}"
+        "${it.name} ${it.value}"
     } else {
-        "${it.key} \"${it.value}\""
+        "${it.name} \"${it.value}\""
     }
 }.joinToString(separator = System.lineSeparator())
 
