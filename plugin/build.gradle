@@ -87,6 +87,8 @@ dependencies {
     testImplementation libs.bundles.jvmTest
     testImplementation gradleTestKit()
     testImplementation libs.mockk
+    testImplementation libs.jacksonYaml
+    testImplementation libs.jacksonKotlin
 }
 
 // Setup Jacoco for Gradle TestKit
