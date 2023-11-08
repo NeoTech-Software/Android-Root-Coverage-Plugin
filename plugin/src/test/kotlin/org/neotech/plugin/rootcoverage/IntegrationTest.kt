@@ -37,6 +37,8 @@ class IntegrationTest(
         val isGradleManagedDeviceTest =
             configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices")?.toBoolean() ?: false
         Assume.assumeFalse(System.getenv("GITHUB_ACTIONS") != null && isGradleManagedDeviceTest)
+
+        Assume.assumeFalse(configuration.ignore)
     }
 
     @Test
@@ -67,6 +69,14 @@ class IntegrationTest(
                     ""
                 }
             )
+
+            putValue("defaultConfig.clearPackageData", "testInstrumentationRunnerArguments clearPackageData: 'true'".takeIf { configuration.projectConfiguration.clearPackageData })
+
+            val testOrchestrator = configuration.projectConfiguration.testOrchestrator
+
+            putValue("defaultConfig.testOrchestrator", "testInstrumentationRunnerArguments useTestStorageService: 'true'".takeIf { testOrchestrator })
+            putValue("testOptions.testOrchestrator", "execution 'ANDROIDX_TEST_ORCHESTRATOR'".takeIf { testOrchestrator })
+            putValue("dependencies.testOrchestrator", "androidTestUtil libs.testOrchestrator".takeIf { testOrchestrator })
         }
         File(projectRoot, "app/build.gradle.tmp").inputStream().use {
             File(projectRoot, "app/build.gradle").writeText(templateAppBuildGradleFile.process(it, Charsets.UTF_8))
@@ -212,6 +222,7 @@ class IntegrationTest(
     }
 
     data class TestConfiguration(
+        val ignore: Boolean = false,
         val projectConfiguration: ProjectConfiguration,
         val pluginConfiguration: PluginConfiguration
     ) {
@@ -225,6 +236,10 @@ class IntegrationTest(
             data class Property(val name: String, val value: String)
         }
 
-        data class ProjectConfiguration(val addGradleManagedDevice: Boolean = true)
+        data class ProjectConfiguration(
+            val addGradleManagedDevice: Boolean = true,
+            val clearPackageData: Boolean = false,
+            val testOrchestrator: Boolean = false,
+        )
     }
 }
