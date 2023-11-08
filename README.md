@@ -29,7 +29,7 @@ following methods:
   ```groovy
   // Below buildscript {}
   plugins {
-      id "nl.neotech.plugin.rootcoverage" version "1.7.0"
+      id "nl.neotech.plugin.rootcoverage" version "1.7.1"
   }
   ```
 </details>
@@ -42,7 +42,7 @@ following methods:
    
    buildscript {
       dependencies {
-         classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.7.0'
+         classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.7.1'
       }
    }
    ```
@@ -141,7 +141,7 @@ rootCoverage {
 |--------------------|--------------------------------------------------------------------------------------------------------------|-------------------|
 | **1.8.0-SNAPSHOT** | 8.3.0-alpha05                                                                                                | 8.4+ *(note 1)*   |
 | **Note 2**         | 8.0-8.3.0-alpha04                                                                                            | n.a.              |
-| **1.7.0**          | 7.4                                                                                                          | 7.5+              |
+| **1.7.1**          | 7.4                                                                                                          | 7.5+              |
 | **1.6.0**          | 7.3                                                                                                          | 7.4+              |
 | **1.5.3**          | 7.2                                                                                                          | 7.3+              |
 | **Note 3**         | 7.0-7.2.0-alpha05                                                                                            | n.a.              |

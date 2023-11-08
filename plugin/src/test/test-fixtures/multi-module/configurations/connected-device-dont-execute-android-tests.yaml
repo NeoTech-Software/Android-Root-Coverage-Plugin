@@ -1,0 +1,35 @@
+# This test was added in reaction to fixing:
+# https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/issues/90
+#
+# When no Gradle Managed Devices are configured in combination with not allowing the plugin to
+# execute androidTests (executeAndroidTests=false), the plugin would cause a Gradle error like:
+#
+# > Task with path ':app:allDevicesDebugAndroidTest' not found in project ':app'
+#
+# This test makes sure this configuration combination does not result in any errors.
+projectConfiguration:
+  addGradleManagedDevice: false
+pluginConfiguration:
+  properties:
+    - name: generateHtml
+      value: true
+    - name: generateXml
+      value: false
+    - name: generateCsv
+      value: true
+
+    - name: buildVariant
+      value: debug
+
+    - name: executeUnitTests
+      value: true
+    - name: includeUnitTestResults
+      value: true
+
+    - name: executeAndroidTests
+      value: false
+    - name: includeAndroidTestResults
+      value: true
+
+    - name: includeNoLocationClasses
+      value: true
