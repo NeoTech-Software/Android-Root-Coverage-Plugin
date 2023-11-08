@@ -1,10 +1,8 @@
 package org.neotech.plugin.rootcoverage
 
 import com.google.common.truth.Truth.assertThat
-import groovy.text.SimpleTemplateEngine
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Assume
 import org.junit.Before
 import org.junit.Test
@@ -12,10 +10,12 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.neotech.plugin.rootcoverage.util.SimpleTemplate
 import org.neotech.plugin.rootcoverage.util.SystemOutputWriter
+import org.neotech.plugin.rootcoverage.util.assertSuccessful
+import org.neotech.plugin.rootcoverage.util.assertTaskSuccess
 import org.neotech.plugin.rootcoverage.util.createGradlePropertiesFile
 import org.neotech.plugin.rootcoverage.util.createLocalPropertiesFile
-import org.neotech.plugin.rootcoverage.util.getProperties
 import org.neotech.plugin.rootcoverage.util.put
+import org.neotech.plugin.rootcoverage.util.readYaml
 import org.neotech.plugin.rootcoverage.util.toGroovyString
 import java.io.File
 import java.util.Properties
@@ -29,23 +29,47 @@ class IntegrationTest(
     private val gradleVersion: String,
 ) {
 
-    private val configuration = configurationFile.getProperties()
+    private val configuration: TestConfiguration = configurationFile.readYaml()
 
     @Before
-    fun before(){
+    fun before() {
         // Ignore tests that require Gradle Managed Devices on CI (because GitHub Actions does not seem to support these well).
-        val isGradleManagedDeviceTest = configuration.getProperty("runOnGradleManagedDevices", "false").toBoolean()
+        val isGradleManagedDeviceTest =
+            configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices")?.toBoolean() ?: false
         Assume.assumeFalse(System.getenv("GITHUB_ACTIONS") != null && isGradleManagedDeviceTest)
     }
 
     @Test
     fun execute() {
-        val template = SimpleTemplate().apply {
-            putValue("configuration", configuration.toGroovyString())
+
+        val templateRootBuildGradleFile = SimpleTemplate().apply {
+            putValue("configuration", configuration.pluginConfiguration.properties.toGroovyString())
+        }
+        File(projectRoot, "build.gradle.tmp").inputStream().use {
+            File(projectRoot, "build.gradle").writeText(templateRootBuildGradleFile.process(it, Charsets.UTF_8))
         }
 
-        File(projectRoot, "build.gradle.tmp").inputStream().use {
-            File(projectRoot, "build.gradle").writeText(template.process(it, Charsets.UTF_8))
+        val templateAppBuildGradleFile = SimpleTemplate().apply {
+            putValue(
+                "managedDevices", if (configuration.projectConfiguration.addGradleManagedDevice) {
+                    """
+                    managedDevices {
+                        devices {
+                            nexusoneapi30 (com.android.build.api.dsl.ManagedVirtualDevice) {
+                                device = "Nexus One"
+                                apiLevel = 30
+                                systemImageSource = "aosp-atd"
+                            }
+                        }
+                    }
+                    """.trimIndent()
+                } else {
+                    ""
+                }
+            )
+        }
+        File(projectRoot, "app/build.gradle.tmp").inputStream().use {
+            File(projectRoot, "app/build.gradle").writeText(templateAppBuildGradleFile.process(it, Charsets.UTF_8))
         }
 
         createLocalPropertiesFile(projectRoot)
@@ -57,23 +81,31 @@ class IntegrationTest(
             })
         })
 
+        // Note: rootCodeCoverageReport is the old and deprecated name of the rootCoverageReport task, it is
+        // used to check whether the old name properly aliases to the new task name.
+        val gradleCommands = if (configuration.pluginConfiguration.getPropertyValue("executeAndroidTests") == "false") {
+            listOf("clean", "connectedDebugAndroidTest", "coverageReport", "rootCodeCoverageReport", "--stacktrace")
+        } else {
+            listOf("clean", "coverageReport", "rootCodeCoverageReport", "--stacktrace")
+        }
+
         val runner = GradleRunner.create()
             .withProjectDir(projectRoot)
             .withGradleVersion(gradleVersion)
             .withPluginClasspath()
             .forwardStdOutput(SystemOutputWriter.out())
             .forwardStdError(SystemOutputWriter.err())
-
-            // Note: rootCodeCoverageReport is the old and deprecated name of the rootCoverageReport task, it is
-            // used to check whether the old name properly aliases to the new task name.
-            .withArguments("clean", "coverageReport", "rootCodeCoverageReport", "--stacktrace")
+            .withArguments(gradleCommands)
 
         val result = runner.build()
 
-        assertThat(result.output).contains("BUILD SUCCESSFUL")
+        result.assertSuccessful()
+
+        // Assert whether the correct Android Test tasks are executed
+        result.assertCorrectAndroidTestTasksAreExecuted()
 
         // Assert whether the combined coverage report is what we expected
-        result.assertRootCoverageReport(File(projectRoot, "build/reports/jacoco.csv"))
+        result.assertRootCoverageReport()
 
         // Assert whether the per module coverage reports are what we expect
         result.assertAppCoverageReport()
@@ -82,13 +114,27 @@ class IntegrationTest(
         assertSourceFilesHaveBeenAddedToReport(File(projectRoot, "build/reports/jacoco"))
     }
 
-    private fun BuildResult.assertRootCoverageReport(file: File) {
-        assertThat(task(":rootCoverageReport")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    private fun BuildResult.assertCorrectAndroidTestTasksAreExecuted() {
+        if (configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices", "false").toBoolean()) {
+            // Assert that the tests have been run on Gradle Managed Devices
+            val device = configuration.pluginConfiguration.getPropertyValue("gradleManagedDeviceName", "allDevices")
+            assertTaskSuccess(":app:${device}DebugAndroidTest")
+            assertTaskSuccess(":library_android:${device}DebugAndroidTest")
 
-        // Also check if the old task name is still exe
-        assertThat(task(":rootCodeCoverageReport")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        } else {
+            // Assert that the tests have been run on connected devices
+            assertTaskSuccess(":app:connectedDebugAndroidTest")
+            assertTaskSuccess(":library_android:connectedDebugAndroidTest")
+        }
+    }
 
-        val report = CoverageReport.from(file)
+    private fun BuildResult.assertRootCoverageReport() {
+        assertTaskSuccess(":rootCoverageReport")
+
+        // Also check if the old task name is still executed
+        assertTaskSuccess(":rootCodeCoverageReport")
+
+        val report = CoverageReport.from(File(projectRoot, "build/reports/jacoco.csv"))
 
         report.assertCoverage("org.neotech.library.android", "LibraryAndroidJava")
         report.assertCoverage("org.neotech.library.android", "LibraryAndroidKotlin")
@@ -98,19 +144,7 @@ class IntegrationTest(
     }
 
     private fun BuildResult.assertAppCoverageReport() {
-        assertThat(task(":app:coverageReport")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
-
-        if (configuration.getProperty("runOnGradleManagedDevices", "false").toBoolean()) {
-            // Assert that the tests have been run on Gradle Managed Devices
-            val device = configuration.getProperty("gradleManagedDeviceName", "allDevices")
-            assertThat(task(":app:${device}DebugAndroidTest")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(task(":library_android:${device}DebugAndroidTest")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
-        } else {
-            // Assert that the tests have been run on connected devices
-            assertThat(task(":app:connectedDebugAndroidTest")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(task(":library_android:connectedDebugAndroidTest")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
-        }
-
+        assertTaskSuccess(":app:coverageReport")
         val report = CoverageReport.from(File(projectRoot, "app/build/reports/jacoco.csv"))
 
         report.assertNotInReport("org.neotech.app", "MustBeExcluded")
@@ -120,7 +154,7 @@ class IntegrationTest(
     }
 
     private fun BuildResult.assertAndroidLibraryCoverageReport() {
-        assertThat(task(":library_android:coverageReport")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertTaskSuccess(":library_android:coverageReport")
 
         val report = CoverageReport.from(File(projectRoot, "library_android/build/reports/jacoco.csv"))
 
@@ -159,22 +193,38 @@ class IntegrationTest(
         @JvmStatic
         fun parameters(): List<Array<Any>> {
 
-            val testFixtures =
-                File("src/test/test-fixtures").listFiles()?.filter { it.isDirectory } ?: error("Could not list test fixture directories")
+            val fixture = File("src/test/test-fixtures/multi-module")
+
             val gradleVersions = arrayOf("7.5", "7.5.1", "7.6", "7.6.1")
-            return testFixtures.flatMap { fixture ->
-                val configurations = File(fixture, "configurations").listFiles() ?: error("Configurations folder not found in $fixture")
-                configurations.flatMap { configuration ->
-                    gradleVersions.map { gradleVersion ->
-                        arrayOf(
-                            "${fixture.name}-${configuration.nameWithoutExtension}-$gradleVersion",
-                            fixture,
-                            configuration,
-                            gradleVersion
-                        )
-                    }
+
+            val configurations = File(fixture, "configurations").listFiles() ?: error("Configurations folder not found in $fixture")
+            return configurations.flatMap { configuration ->
+                gradleVersions.map { gradleVersion ->
+                    arrayOf(
+                        "${fixture.name}-${configuration.nameWithoutExtension}-$gradleVersion",
+                        fixture,
+                        configuration,
+                        gradleVersion
+                    )
                 }
             }
         }
+    }
+
+    data class TestConfiguration(
+        val projectConfiguration: ProjectConfiguration,
+        val pluginConfiguration: PluginConfiguration
+    ) {
+        data class PluginConfiguration(val properties: List<Property> = emptyList()) {
+
+            fun getPropertyValue(name: String, defaultValue: String): String = getPropertyValue(name) ?: defaultValue
+
+            fun getPropertyValue(name: String): String? = properties.find { it.name == name }?.value
+
+
+            data class Property(val name: String, val value: String)
+        }
+
+        data class ProjectConfiguration(val addGradleManagedDevice: Boolean = true)
     }
 }
