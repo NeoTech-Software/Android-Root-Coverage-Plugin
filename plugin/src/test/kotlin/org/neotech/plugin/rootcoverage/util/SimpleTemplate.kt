@@ -9,9 +9,9 @@ import java.nio.charset.Charset
  */
 internal class SimpleTemplate {
 
-    private val map = mutableMapOf<String, String>()
+    private val map = mutableMapOf<String, String?>()
 
-    fun putValue(key: String, value: String) {
+    fun putValue(key: String, value: String?) {
         map[key] = value
     }
 
@@ -43,7 +43,7 @@ internal class SimpleTemplate {
                     }
 
                     // Get the replacement string and indent it
-                    val replacement = mapWithBrackets[indexOf.second]!!.prependWhitespaceIndentExceptFirstLine(indent)
+                    val replacement = mapWithBrackets[indexOf.second] ?: "".prependWhitespaceIndentExceptFirstLine(indent)
 
                     adjustedLine.replace(indexOf.first, indexOf.first + indexOf.second.length, replacement)
                     startIndex += replacement.length

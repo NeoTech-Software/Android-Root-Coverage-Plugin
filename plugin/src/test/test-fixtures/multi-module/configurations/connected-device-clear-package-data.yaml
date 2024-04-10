@@ -1,0 +1,38 @@
+# This test was added in reaction to:
+# https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/issues/83
+#
+# Currently this test case fails, but probably not because of this plugin as it seems to be
+# an Android tooling issue:
+# - https://issuetracker.google.com/issues/126258801
+# - https://issuetracker.google.com/issues/123987001
+#
+# For now this test configuration is ignored (until Google fixes this)
+ignore: true
+projectConfiguration:
+  addGradleManagedDevice: false
+  clearPackageData: true
+  testOrchestrator: true
+pluginConfiguration:
+  properties:
+    - name: generateHtml
+      value: true
+    - name: generateXml
+      value: false
+    - name: generateCsv
+      value: true
+
+    - name: buildVariant
+      value: debug
+
+    - name: executeUnitTests
+      value: true
+    - name: includeUnitTestResults
+      value: true
+
+    - name: executeAndroidTests
+      value: false
+    - name: includeAndroidTestResults
+      value: true
+
+    - name: includeNoLocationClasses
+      value: true

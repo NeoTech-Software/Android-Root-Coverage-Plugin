@@ -15,6 +15,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        {{defaultConfig.clearPackageData}}
+
+        {{defaultConfig.testOrchestrator}}
     }
 
     buildFeatures {
@@ -42,8 +46,9 @@ android {
             includeAndroidResources = true
         }
 
-        {{managedDevices}}
+        {{testOptions.testOrchestrator}}
 
+        {{managedDevices}}
     }
 
     kotlinOptions {
@@ -57,5 +62,11 @@ dependencies {
     implementation libs.appCompat
 
     testImplementation libs.bundles.androidTest
+
+    {{dependencies.testOrchestrator}}
+
+    androidTestUtil "androidx.test.services:test-services:1.4.2"
+
     androidTestImplementation libs.bundles.androidInstrumentedTest
+
 }
