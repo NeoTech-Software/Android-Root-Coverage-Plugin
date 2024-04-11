@@ -1,3 +1,7 @@
+import com.vanniktech.maven.publish.GradlePlugin
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     // Core Gradle plugins
     id "java-gradle-plugin"
@@ -34,11 +38,15 @@ jacocoTestReport {
     }
 }
 
-plugins.withId("com.vanniktech.maven.publish") {
-    mavenPublishing {
-        publishToMavenCentral("S01")
-        signAllPublications()
-    }
+mavenPublishing {
+    // Override default configuration: by default `com.vanniktech.maven.publish` uses
+    // `new GradlePublishPlugin()` because it detects that we use `com.gradle.plugin-publish`.
+    // However since we also publish to Maven Central the default publication created by
+    // `com.gradle.plugin-publish` is not suitable (Maven Central publication requires sources
+    // and Javadoc).
+    configure(new GradlePlugin(new JavadocJar.Dokka("dokkaHtml")))
+    publishToMavenCentral(SonatypeHost.S01)
+    signAllPublications()
 }
 
 gradlePlugin {
