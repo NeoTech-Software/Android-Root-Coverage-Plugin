@@ -11,6 +11,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
@@ -52,7 +53,7 @@ class RootCoveragePlugin : Plugin<Project> {
     }
 
 
-    private fun createSubProjectCoverageTask(subProject: Project) {
+    private fun createSubProjectCoverageTask(subProject: Project): Task {
         val task = subProject.createJacocoReportTask(
             taskName = "coverageReport",
             taskGroup = "reporting",
@@ -61,10 +62,11 @@ class RootCoveragePlugin : Plugin<Project> {
         )
         // subProject.assertAndroidCodeCoverageVariantExists()
         task.addSubProject(task.project)
+        return task
     }
 
     private fun createCoverageTaskForRoot(project: Project) {
-        val task = project.createJacocoReportTask(
+        val rootCoverageTask = project.createJacocoReportTask(
             taskName = "rootCoverageReport",
             taskGroup = "reporting",
             taskDescription = "Generates a Jacoco report with combined results from all the subprojects.",
@@ -76,12 +78,14 @@ class RootCoveragePlugin : Plugin<Project> {
         }
 
         // Configure the root task with sub-tasks for the sub-projects.
-        task.project.subprojects.forEach {
+        rootCoverageTask.project.subprojects.forEach {
             it.afterEvaluate { subProject ->
                 subProject.applyConfiguration()
             }
-            task.addSubProject(it)
-            createSubProjectCoverageTask(it)
+            rootCoverageTask.addSubProject(it)
+
+            val subProjectCoverageTask = createSubProjectCoverageTask(it)
+            rootCoverageTask.dependsOn(subProjectCoverageTask)
         }
 
         project.tasks.create("rootCodeCoverageReport").apply {
@@ -136,47 +140,33 @@ class RootCoveragePlugin : Plugin<Project> {
     }
 
     private fun JacocoReport.addSubProjectVariant(subProject: Project, variant: Variant, buildType: BuildType) {
-        val name = variant.name.replaceFirstChar(Char::titlecase)
+        val variantName = variant.name.replaceFirstChar(Char::titlecase)
 
         // Gets the relative path from this task to the subProject
         val path = project.relativeProjectPath(subProject.path)
 
         // Add dependencies to the test tasks of the subProject
         if (rootProjectExtension.shouldExecuteUnitTests() && (buildType.enableUnitTestCoverage || buildType.isTestCoverageEnabled)) {
-            dependsOn("$path:test${name}UnitTest")
+            dependsOn("$path:test${variantName}UnitTest")
         }
 
-        var runsOnGradleManagedDevices = false
+        val androidTestTask = getAndroidTestTask(subProject, variant)
+        val runsOnGradleManagedDevices = androidTestTask.runsOnGradleManagedDevices
 
         if (rootProjectExtension.shouldExecuteAndroidTests() && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled)) {
-
-            // Attempt to run on instrumented tests, giving priority to the following devices in this order:
-            // - A user provided Gradle Managed Device.
-            // - All Gradle Managed Devices if any is available.
-            // - All through ADB connected devices.
-            val gradleManagedDevices = subProject.extensions.getByType(BaseExtension::class.java).testOptions.managedDevices.devices
-            if (rootProjectExtension.runOnGradleManagedDevices && !rootProjectExtension.gradleManagedDeviceName.isNullOrEmpty()) {
-                runsOnGradleManagedDevices = true
-                dependsOn("$path:${rootProjectExtension.gradleManagedDeviceName}${name}AndroidTest")
-            } else if (rootProjectExtension.runOnGradleManagedDevices && gradleManagedDevices.isNotEmpty()) {
-                runsOnGradleManagedDevices = true
-                dependsOn("$path:allDevices${name}AndroidTest")
-            } else {
-                dependsOn("$path:connected${name}AndroidTest")
-            }
+            dependsOn(androidTestTask.taskPath)
         } else {
             // If this plugin should not run instrumented tests on it's own, at least make sure it runs after those tasks (if they are
             // selected to run as well and exists).
             //
             // In theory we don't need to do this if `rootProjectExtension.includeAndroidTestResults` is false, so we could check that, but
             // it also does not hurt.
-
-            val executeAndroidTestsOnGradleManagedDevicesTask = project.tasks.findByPath("$path:allDevices${name}AndroidTest")
-            if(executeAndroidTestsOnGradleManagedDevicesTask != null) {
-                // This task only exists if a Gradle Managed Device is configured, which may not be the case.
-                mustRunAfter("$path:allDevices${name}AndroidTest")
+            subProject.tasks.configureEach { task ->
+                if (task.path == androidTestTask.taskPath) {
+                    dependsOn(task.path)
+                }
             }
-            mustRunAfter("$path:connected${name}AndroidTest")
+            mustRunAfter("$path:connected${variantName}AndroidTest")
         }
 
         sourceDirectories.from(variant.sources.java?.all)
@@ -198,6 +188,41 @@ class RootCoveragePlugin : Plugin<Project> {
                 includeGradleManagedDevicesResults = rootProjectExtension.includeAndroidTestResults && (buildType.enableAndroidTestCoverage || buildType.isTestCoverageEnabled) && runsOnGradleManagedDevices
             )
         )
+    }
+
+    private class AndroidTestTask(
+        val taskPath: String,
+        val runsOnGradleManagedDevices: Boolean
+    )
+
+    private fun JacocoReport.getAndroidTestTask(subProject: Project, variant: Variant): AndroidTestTask {
+        // Gets the relative path from this task to the subProject
+        val path = project.relativeProjectPath(subProject.path)
+        val variantName = variant.name.replaceFirstChar(Char::titlecase)
+
+
+        // Attempt to run on instrumented tests, giving priority to the following devices in this order:
+        // - A user provided Gradle Managed Device.
+        // - All Gradle Managed Devices if any is available.
+        // - All through ADB connected devices.
+        val gradleManagedDevices = subProject.extensions.getByType(BaseExtension::class.java).testOptions.managedDevices.devices
+
+        if (rootProjectExtension.runOnGradleManagedDevices && !rootProjectExtension.gradleManagedDeviceName.isNullOrEmpty()) {
+            return AndroidTestTask(
+                taskPath = "$path:${rootProjectExtension.gradleManagedDeviceName}${variantName}AndroidTest",
+                runsOnGradleManagedDevices = true
+            )
+        } else if (rootProjectExtension.runOnGradleManagedDevices && gradleManagedDevices.isNotEmpty()) {
+            return AndroidTestTask(
+                taskPath = "$path:allDevices${variantName}AndroidTest",
+                runsOnGradleManagedDevices = true
+            )
+        } else {
+            return AndroidTestTask(
+                taskPath = "$path:connected${variantName}AndroidTest",
+                runsOnGradleManagedDevices = false
+            )
+        }
     }
 
     /**
