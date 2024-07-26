@@ -89,7 +89,12 @@ class IntegrationTest(
         // Note: rootCodeCoverageReport is the old and deprecated name of the rootCoverageReport task, it is
         // used to check whether the old name properly aliases to the new task name.
         val gradleCommands = if (configuration.pluginConfiguration.getPropertyValue("executeAndroidTests") == "false") {
-            listOf("clean", "connectedDebugAndroidTest", "coverageReport", "rootCodeCoverageReport", "--stacktrace")
+            val runOnGradleManagedDevices = configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices") ?: "false"
+            if (runOnGradleManagedDevices == "false") {
+                listOf("clean", "connectedDebugAndroidTest", "coverageReport", "rootCodeCoverageReport", "--stacktrace")
+            } else {
+                listOf("clean", "nexusoneapi30DebugAndroidTest", "coverageReport", "rootCodeCoverageReport", "--stacktrace")
+            }
         } else {
             listOf("clean", "coverageReport", "rootCodeCoverageReport", "--stacktrace")
         }
