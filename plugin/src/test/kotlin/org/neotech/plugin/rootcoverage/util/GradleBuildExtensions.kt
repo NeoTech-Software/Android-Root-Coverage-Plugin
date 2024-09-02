@@ -11,3 +11,7 @@ fun BuildResult.assertSuccessful() {
 fun BuildResult.assertTaskSuccess(taskPath: String) {
     assertThat(task(taskPath)!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
 }
+
+fun BuildResult.assertTaskNotExecuted(taskPath: String) {
+    assertThat(task(taskPath)).isNull()
+}

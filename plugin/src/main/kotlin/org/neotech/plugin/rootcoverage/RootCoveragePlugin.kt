@@ -53,7 +53,7 @@ class RootCoveragePlugin : Plugin<Project> {
     }
 
 
-    private fun createSubProjectCoverageTask(subProject: Project): Task {
+    private fun createSubProjectCoverageTask(subProject: Project) {
         val task = subProject.createJacocoReportTask(
             taskName = "coverageReport",
             taskGroup = "reporting",
@@ -62,7 +62,6 @@ class RootCoveragePlugin : Plugin<Project> {
         )
         // subProject.assertAndroidCodeCoverageVariantExists()
         task.addSubProject(task.project)
-        return task
     }
 
     private fun createCoverageTaskForRoot(project: Project) {
@@ -84,8 +83,7 @@ class RootCoveragePlugin : Plugin<Project> {
             }
             rootCoverageTask.addSubProject(it)
 
-            val subProjectCoverageTask = createSubProjectCoverageTask(it)
-            rootCoverageTask.dependsOn(subProjectCoverageTask)
+            createSubProjectCoverageTask(it)
         }
 
         project.tasks.create("rootCodeCoverageReport").apply {
@@ -161,12 +159,7 @@ class RootCoveragePlugin : Plugin<Project> {
             //
             // In theory we don't need to do this if `rootProjectExtension.includeAndroidTestResults` is false, so we could check that, but
             // it also does not hurt.
-            subProject.tasks.configureEach { task ->
-                if (task.path == androidTestTask.taskPath) {
-                    dependsOn(task.path)
-                }
-            }
-            mustRunAfter("$path:connected${variantName}AndroidTest")
+            mustRunAfter(androidTestTask.taskPath)
         }
 
         sourceDirectories.from(variant.sources.java?.all)
