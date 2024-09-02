@@ -33,11 +33,6 @@ class IntegrationTest(
 
     @Before
     fun before() {
-        // Ignore tests that require Gradle Managed Devices on CI (because GitHub Actions does not seem to support these well).
-        val isGradleManagedDeviceTest =
-            configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices")?.toBoolean() ?: false
-        Assume.assumeFalse(System.getenv("GITHUB_ACTIONS") != null && isGradleManagedDeviceTest)
-
         Assume.assumeFalse(configuration.ignore)
     }
 
