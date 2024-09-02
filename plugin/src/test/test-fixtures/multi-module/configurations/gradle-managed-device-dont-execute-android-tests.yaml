@@ -1,0 +1,30 @@
+projectConfiguration:
+  addGradleManagedDevice: true
+pluginConfiguration:
+  properties:
+    - name: generateHtml
+      value: true
+    - name: generateXml
+      value: false
+    - name: generateCsv
+      value: true
+
+    - name: buildVariant
+      value: debug
+
+    - name: executeUnitTests
+      value: true
+    - name: executeAndroidTests
+      value: false
+
+    - name: includeUnitTestResults
+      value: true
+    - name: includeAndroidTestResults
+      value: true
+    - name: includeNoLocationClasses
+      value: true
+
+    - name: runOnGradleManagedDevices
+      value: true
+    - name: gradleManagedDeviceName
+      value: nexusoneapi30
