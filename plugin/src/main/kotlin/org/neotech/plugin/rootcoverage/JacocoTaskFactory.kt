@@ -1,6 +1,7 @@
 package org.neotech.plugin.rootcoverage
 
 import org.gradle.api.Project
+import org.neotech.plugin.rootcoverage.utilities.getReportOutputDir
 import org.neotech.plugin.rootcoverage.utilities.getReportOutputFile
 
 private const val JACOCO_PLUGIN_NAME = "jacoco"
@@ -30,7 +31,7 @@ internal fun Project.createJacocoReportTask(
         task.group = taskGroup
         task.description = taskDescription
         task.reports.apply {
-            html.outputLocation.set(getReportOutputFile("jacoco"))
+            html.outputLocation.set(getReportOutputDir("jacoco"))
             xml.outputLocation.set(getReportOutputFile("jacoco.xml"))
             csv.outputLocation.set(getReportOutputFile("jacoco.csv"))
         }

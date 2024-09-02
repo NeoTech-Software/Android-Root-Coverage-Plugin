@@ -230,7 +230,7 @@ class IntegrationTest(
 
             val fixture = File("src/test/test-fixtures/multi-module")
 
-            val gradleVersions = arrayOf("8.4")
+            val gradleVersions = arrayOf("8.7", "8.10")
 
             val configurations = File(fixture, "configurations").listFiles() ?: error("Configurations folder not found in $fixture")
             return configurations.flatMap { configuration ->

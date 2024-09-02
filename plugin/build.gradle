@@ -50,30 +50,16 @@ mavenPublishing {
 }
 
 gradlePlugin {
+    setWebsite(POM_URL)
+    setVcsUrl(POM_SCM_URL)
     plugins {
         rootCoverage {
             id = 'nl.neotech.plugin.rootcoverage'
             implementationClass = 'org.neotech.plugin.rootcoverage.RootCoveragePlugin'
-        }
-    }
-}
-
-pluginBundle {
-    setWebsite(POM_URL)
-    vcsUrl = POM_SCM_URL
-    setDescription(POM_DESCRIPTION)
-    tags = ['android', 'coverage', 'jacoco', 'code-coverage', 'coverage-report', 'aggregated-report']
-
-    plugins {
-        rootCoverage {
             displayName = 'Android-Root-Coverage-Plugin'
+            description = POM_DESCRIPTION
+            tags.set(['android', 'coverage', 'jacoco', 'code-coverage', 'coverage-report', 'aggregated-report'])
         }
-    }
-
-    mavenCoordinates {
-        groupId = GROUP
-        artifactId = POM_ARTIFACT_ID
-        version = VERSION_NAME
     }
 }
 
