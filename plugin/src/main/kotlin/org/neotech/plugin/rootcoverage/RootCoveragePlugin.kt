@@ -5,6 +5,7 @@ import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.dsl.BuildType
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ScopedArtifacts
+import com.android.build.api.variant.ScopedArtifactsOperation
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.GradleException
@@ -12,6 +13,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
@@ -163,7 +165,6 @@ class RootCoveragePlugin : Plugin<Project> {
         }
 
         sourceDirectories.from(variant.sources.java?.all)
-
 
         val taskProvider = variant.artifacts.forScope(ScopedArtifacts.Scope.PROJECT).use(
             project.tasks.named(this.name) as TaskProvider<CustomJacocoReportTask>
