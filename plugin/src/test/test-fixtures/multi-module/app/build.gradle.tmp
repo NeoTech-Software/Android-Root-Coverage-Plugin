@@ -15,6 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        missingDimensionStrategy 'version', 'demo', 'full'
 
         {{defaultConfig.clearPackageData}}
 
@@ -29,8 +30,10 @@ android {
         debug {
             enableUnitTestCoverage true
             enableAndroidTestCoverage true
+            matchingFallbacks = ['demo']
         }
         release {
+            matchingFallbacks = ['full']
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -58,6 +61,7 @@ android {
 
 dependencies {
     implementation project(":library_android")
+    implementation project(":library_android_flavors")
 
     implementation libs.appCompat
 

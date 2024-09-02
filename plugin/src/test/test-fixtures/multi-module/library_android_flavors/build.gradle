@@ -1,0 +1,72 @@
+plugins {
+    id "com.android.library"
+    alias(libs.plugins.kotlinAndroid)
+}
+
+android {
+
+    namespace "org.neotech.library.flavors"
+    compileSdkVersion libs.versions.androidCompileSdk.get().toInteger()
+
+    defaultConfig {
+        minSdkVersion libs.versions.androidMinSdk.get().toInteger()
+        targetSdkVersion libs.versions.androidTargetSdk.get().toInteger()
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        buildConfig false
+    }
+
+    buildTypes {
+        debug {
+
+            testCoverageEnabled true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions = ["version"]
+    productFlavors {
+        demo {
+            dimension "version"
+        }
+        full {
+            dimension "version"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    testOptions {
+        managedDevices {
+            devices {
+                nexusoneapi30 (com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Nexus One"
+                    apiLevel = 30
+                    systemImageSource = "aosp-atd"
+                }
+            }
+        }
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+dependencies {
+    implementation libs.appCompat
+
+    testImplementation libs.bundles.androidTest
+    androidTestImplementation libs.bundles.androidInstrumentedTest
+}
