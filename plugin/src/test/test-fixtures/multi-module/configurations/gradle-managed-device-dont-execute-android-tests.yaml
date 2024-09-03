@@ -11,6 +11,9 @@ pluginConfiguration:
 
     - name: buildVariant
       value: debug
+    - name: buildVariantOverrides
+      value:
+        ":library_android_flavors": "demoDebug"
 
     - name: executeUnitTests
       value: true

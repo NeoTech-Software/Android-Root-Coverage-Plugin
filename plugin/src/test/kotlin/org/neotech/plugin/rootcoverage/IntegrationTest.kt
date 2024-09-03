@@ -87,19 +87,19 @@ class IntegrationTest(
             })
         })
 
-        val executeAndroidTests = configuration.pluginConfiguration.getPropertyValue("executeAndroidTests", "true").toBoolean()
+        val executeAndroidTests = configuration.pluginConfiguration.getPropertyValue("executeAndroidTests", true)
 
         // Note: rootCodeCoverageReport is the old and deprecated name of the rootCoverageReport task, it is
         // used to check whether the old name properly aliases to the new task name.
         val gradleCommands = if (!executeAndroidTests) {
-            val runOnGradleManagedDevices = configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices") ?: "false"
+            val runOnGradleManagedDevices = configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices", false)
 
             // Execute Android tests completely separately (as if run on some external service,
             // after which the resulting files have been imported)
-            if (runOnGradleManagedDevices == "false") {
-                executeGradleTasks(listOf("clean", "connectedDebugAndroidTest"))
+            if (!runOnGradleManagedDevices) {
+                executeGradleTasks(listOf("clean", "connectedDebugAndroidTest", "connectedDemoDebugAndroidTest"))
             } else {
-                executeGradleTasks(listOf("clean", "nexusoneapi30DebugAndroidTest"))
+                executeGradleTasks(listOf("clean", "nexusoneapi30DebugAndroidTest", "nexusoneapi30DemoDebugAndroidTest"))
             }
 
             listOf("coverageReport", "rootCodeCoverageReport", "--stacktrace")
@@ -129,7 +129,7 @@ class IntegrationTest(
     }
 
     private fun BuildResult.assertCorrectAndroidTestTasksAreExecuted() {
-        if (configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices", "false").toBoolean()) {
+        if (configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices", false)) {
             val device = configuration.pluginConfiguration.getPropertyValue("gradleManagedDeviceName", "allDevices")
             assertTaskSuccess(":app:${device}DebugAndroidTest")
             assertTaskSuccess(":library_android:${device}DebugAndroidTest")
@@ -141,14 +141,15 @@ class IntegrationTest(
     }
 
     private fun BuildResult.assertCorrectAndroidTestTasksAreNotExecuted() {
-        if (configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices", "false").toBoolean()) {
+        if (configuration.pluginConfiguration.getPropertyValue("runOnGradleManagedDevices", false)) {
             val device = configuration.pluginConfiguration.getPropertyValue("gradleManagedDeviceName", "allDevices")
             assertTaskNotExecuted(":app:${device}DebugAndroidTest")
             assertTaskNotExecuted(":library_android:${device}DebugAndroidTest")
-
+            assertTaskNotExecuted(":library_android_flavors:${device}DemoDebugAndroidTest")
         } else {
             assertTaskNotExecuted(":app:connectedDebugAndroidTest")
             assertTaskNotExecuted(":library_android:connectedDebugAndroidTest")
+            assertTaskNotExecuted(":library_android_flavors:connectedDemoDebugAndroidTest")
         }
     }
 
@@ -162,6 +163,7 @@ class IntegrationTest(
 
         report.assertCoverage("org.neotech.library.android", "LibraryAndroidJava")
         report.assertCoverage("org.neotech.library.android", "LibraryAndroidKotlin")
+        report.assertCoverage("org.neotech.library.android.flavors", "LibraryAndroidFlavorsKotlin")
         report.assertCoverage("org.neotech.app", "AppJava")
         report.assertCoverage("org.neotech.app", "AppKotlin")
         report.assertCoverage("org.neotech.app", "RobolectricTestedActivity")
@@ -253,12 +255,11 @@ class IntegrationTest(
     ) {
         data class PluginConfiguration(val properties: List<Property> = emptyList()) {
 
-            fun getPropertyValue(name: String, defaultValue: String): String = getPropertyValue(name) ?: defaultValue
+            fun <T> getPropertyValue(name: String, defaultValue: T): T = getPropertyValue(name) ?: defaultValue
 
-            fun getPropertyValue(name: String): String? = properties.find { it.name == name }?.value
+            fun <T> getPropertyValue(name: String): T? = properties.find { it.name == name }?.value as T?
 
-
-            data class Property(val name: String, val value: String)
+            data class Property(val name: String, val value: Any)
         }
 
         data class ProjectConfiguration(

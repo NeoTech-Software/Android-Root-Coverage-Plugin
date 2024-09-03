@@ -35,12 +35,15 @@ inline fun <reified T> File.readYaml(): T {
     return mapper.readValue(this, T::class.java)
 }
 
-internal fun List<IntegrationTest.TestConfiguration.PluginConfiguration.Property>.toGroovyString(): String = map {
-    val stringValue = it.value
-    if (stringValue.toBooleanStrictOrNull() != null) {
-        "${it.name} ${it.value}"
-    } else {
-        "${it.name} \"${it.value}\""
+internal fun List<IntegrationTest.TestConfiguration.PluginConfiguration.Property>.toGroovyString(): String = map { property ->
+    when(property.value) {
+        is Boolean -> "${property.name} ${property.value}"
+        is String -> "${property.name} \"${property.value}\""
+        is Map<*, *> -> {
+            val values = property.value.map { "\"${it.key}\": \"${it.value}\"" }.joinToString(separator = ", ")
+            "${property.name} $values"
+        }
+        else -> error("Unknown value type: ${property.value}")
     }
 }.joinToString(separator = System.lineSeparator())
 

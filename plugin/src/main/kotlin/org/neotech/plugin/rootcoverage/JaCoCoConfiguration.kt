@@ -74,6 +74,8 @@ internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, i
 
         // Gradle Managed Devices 8.3+
         buildFolderPatterns.add("outputs/managed_device_code_coverage/*/*/coverage.ec")
+        // In case of flavors coverage is nested an additional 2 folder deeper
+        buildFolderPatterns.add("outputs/managed_device_code_coverage/*/flavors/*/*/coverage.ec")
     }
     return if(buildFolderPatterns.isEmpty()) {
         null
