@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.GradlePlugin
-import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
@@ -39,12 +37,6 @@ jacocoTestReport {
 }
 
 mavenPublishing {
-    // Override default configuration: by default `com.vanniktech.maven.publish` uses
-    // `new GradlePublishPlugin()` because it detects that we use `com.gradle.plugin-publish`.
-    // However since we also publish to Maven Central the default publication created by
-    // `com.gradle.plugin-publish` is not suitable (Maven Central publication requires sources
-    // and Javadoc).
-    configure(new GradlePlugin(new JavadocJar.Dokka("dokkaHtml")))
     publishToMavenCentral(SonatypeHost.S01)
     signAllPublications()
 }
@@ -63,6 +55,19 @@ gradlePlugin {
     }
 }
 
+// Since version 1.0.0 com.gradle.plugin-publish creates it's own javadocs, these do not
+// seem to support Kotlin and end-up empty. The plugin does not provide an easy way to
+// use Dokka or modify it.
+// The code below disables the default javadoc task, and modifies the javadocJar task to use dokka
+// instead.
+tasks.named('javadoc') {
+    enabled = false
+}
+tasks.register('javadocJar', Jar) {
+    archiveClassifier.set('javadoc')
+    dependsOn tasks.dokkaHtml
+    from tasks.dokkaHtml
+}
 test {
     testLogging {
         events "passed", "skipped", "failed"
