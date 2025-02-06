@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
       - name: test
         uses: reactivecircus/android-emulator-runner@v2
         with:
