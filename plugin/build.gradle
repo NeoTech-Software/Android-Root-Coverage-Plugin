@@ -1,4 +1,5 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     // Core Gradle plugins
@@ -25,8 +26,14 @@ version = VERSION_NAME
 group = GROUP
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
 }
 
 jacocoTestReport {
@@ -65,8 +72,8 @@ tasks.named('javadoc') {
 }
 tasks.register('javadocJar', Jar) {
     archiveClassifier.set('javadoc')
-    dependsOn tasks.dokkaHtml
-    from tasks.dokkaHtml
+    dependsOn tasks.dokkaGeneratePublicationHtml
+    from tasks.dokkaGeneratePublicationHtml
 }
 test {
     testLogging {
