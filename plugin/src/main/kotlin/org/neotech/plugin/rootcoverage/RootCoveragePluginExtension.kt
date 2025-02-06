@@ -1,5 +1,11 @@
 package org.neotech.plugin.rootcoverage
 
+import org.gradle.api.Project
+
+fun Project.rootCoverage(configure: RootCoveragePluginExtension.() -> Unit) {
+    extensions.configure(RootCoveragePluginExtension::class.java, configure)
+}
+
 open class RootCoveragePluginExtension {
 
     var generateCsv: Boolean = false
