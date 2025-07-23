@@ -66,16 +66,16 @@ internal fun Project.getExecutionDataFileTree(includeUnitTestResults: Boolean, i
         // buildFolderPatterns.add("outputs/code_coverage/*/connected/*coverage.ec")
 
         // Android Build Tools Plugin 7.1+
-        buildFolderPatterns.add("outputs/code_coverage/*/connected/*/coverage.ec")
+        buildFolderPatterns.add("outputs/code_coverage/*/connected/*/*.ec")
     }
     if(includeGradleManagedDevicesResults) {
         // Gradle Managed Devices 7.4
         // buildFolderPatterns.add("outputs/managed_device_code_coverage/*/coverage.ec")
 
         // Gradle Managed Devices 8.3+
-        buildFolderPatterns.add("outputs/managed_device_code_coverage/*/*/coverage.ec")
+        buildFolderPatterns.add("outputs/managed_device_code_coverage/*/*/*.ec")
         // In case of flavors coverage is nested an additional 2 folder deeper
-        buildFolderPatterns.add("outputs/managed_device_code_coverage/*/flavors/*/*/coverage.ec")
+        buildFolderPatterns.add("outputs/managed_device_code_coverage/*/flavors/*/*/*.ec")
     }
     return if(buildFolderPatterns.isEmpty()) {
         null

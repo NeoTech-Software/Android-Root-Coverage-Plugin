@@ -1,7 +1,5 @@
-# This test was added in reaction to:
-# https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/issues/83
 projectConfiguration:
-  addGradleManagedDevice: false
+  addGradleManagedDevice: true
   clearPackageData: true
   testOrchestrator: true
 pluginConfiguration:
@@ -19,15 +17,17 @@ pluginConfiguration:
       value:
         ":library_android_flavors": "demoDebug"
 
-    - name: executeUnitTests
+    - name: executeTests
       value: true
+
     - name: includeUnitTestResults
       value: true
-
-    - name: executeAndroidTests
-      value: false
     - name: includeAndroidTestResults
       value: true
-
     - name: includeNoLocationClasses
       value: true
+
+    - name: runOnGradleManagedDevices
+      value: true
+    - name: gradleManagedDeviceName
+      value: nexusoneapi30
