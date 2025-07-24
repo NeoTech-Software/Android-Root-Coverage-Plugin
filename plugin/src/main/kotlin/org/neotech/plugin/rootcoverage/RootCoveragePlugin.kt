@@ -3,17 +3,15 @@ package org.neotech.plugin.rootcoverage
 import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.dsl.BuildType
-import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.ScopedArtifacts
-import com.android.build.api.variant.ScopedArtifactsOperation
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
@@ -53,7 +51,6 @@ class RootCoveragePlugin : Plugin<Project> {
             plugins.apply(JacocoPlugin::class.java)
         }
     }
-
 
     private fun createSubProjectCoverageTask(subProject: Project) {
         val task = subProject.createJacocoReportTask(
@@ -117,7 +114,12 @@ class RootCoveragePlugin : Plugin<Project> {
 
     private fun JacocoReport.addSubProjectInternal(subProject: Project) {
         // Only Android modules are supported
-        val androidComponents = subProject.extensions.getByType(AndroidComponentsExtension::class.java)
+        val androidComponents = subProject.extensions.findByType(ApplicationAndroidComponentsExtension::class.java) ?: subProject.extensions.findByType(LibraryAndroidComponentsExtension::class.java)
+
+        if(androidComponents == null) {
+            throw GradleException("No application or library extension found on project: ${project.path}!")
+        }
+
         androidComponents.assertMinimumRequiredAGPVersion(minimumRequiredAgpVersion)
 
         // Get the exact required build variant for the current sub-project.
