@@ -1,7 +1,7 @@
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/nl.neotech.plugin/android-root-coverage-plugin/maven-metadata.xml.svg?label=Gradle%20Plugin%20Portal)](https://plugins.gradle.org/plugin/nl.neotech.plugin.rootcoverage)
 [![Maven Central](https://img.shields.io/maven-central/v/nl.neotech.plugin/android-root-coverage-plugin?label=Maven%20Central)](https://search.maven.org/artifact/nl.neotech.plugin/android-root-coverage-plugin)
 [![Build](https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/NeoTech-Software/Android-Root-Coverage-Plugin/actions/workflows/build.yml)
-[![Coverage](https://img.shields.io/codecov/c/gh/NeoTech-Software/Android-Root-Coverage-Plugin/branch/master?token=4I3MXF2WLX)](https://app.codecov.io/gh/NeoTech-Software/Android-Root-Coverage-Plugin/branch/master)
+[![Coverage](https://img.shields.io/codecov/c/github/NeoTech-Software/Android-Root-Coverage-Plugin/master)](https://app.codecov.io/gh/NeoTech-Software/Android-Root-Coverage-Plugin/branch/master)
 
 # Android-Root-Coverage-Plugin
 **Automatically configures Jacoco code coverage tasks for both combined and per module coverage reports.**

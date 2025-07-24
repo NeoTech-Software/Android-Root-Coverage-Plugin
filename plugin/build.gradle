@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -44,7 +43,7 @@ jacocoTestReport {
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.S01)
+    publishToMavenCentral()
     signAllPublications()
 }
 
@@ -105,7 +104,7 @@ pluginManager.withPlugin("jacoco") {
         from {
             zipTree(project.configurations.getByName(JacocoPlugin.AGENT_CONFIGURATION_NAME).asPath).matching { include 'jacocoagent.jar' }.singleFile
         }
-        into file("${buildDir}/testkit")
+        into project.layout.buildDirectory.dir("testkit")
     }
 
     def javaTestTask = tasks.named(JavaPlugin.TEST_TASK_NAME)
