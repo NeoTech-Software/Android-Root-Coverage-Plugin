@@ -29,7 +29,7 @@ following methods:
   ```kotlin
   plugins {
       // Add the plugin to the plugin block
-      id("nl.neotech.plugin.rootcoverage") version "1.10.0"
+      id("nl.neotech.plugin.rootcoverage") version "1.11.0"
   }
   ```
 </details>
@@ -40,7 +40,7 @@ following methods:
   ```groovy
   plugins {
    // Add the plugin to the plugin block
-   id "nl.neotech.plugin.rootcoverage" version "1.10.0"
+   id "nl.neotech.plugin.rootcoverage" version "1.11.0"
   }
   ```
 </details>
@@ -56,7 +56,7 @@ following methods:
    
    buildscript {
       dependencies {
-         classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.10.0'
+         classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.11.0'
       }
    }
    ```
@@ -227,6 +227,7 @@ for specific modules:
 # 4. Compatibility
 | Version    | [Android Gradle plugin version](https://developer.android.com/studio/releases/gradle-plugin#updating-gradle) | Gradle version         |
 |------------|--------------------------------------------------------------------------------------------------------------|------------------------|
+| **1.11.0** | 8.11+                                                                                                        | 8.13+                  |
 | **1.10.0** | 8.8+                                                                                                         | 8.10.2+                |
 | **1.9.0**  | 8.6+                                                                                                         | 8.7+                   |
 | **1.8.0**  | 8.5.2<br/>8.4.2<br/>8.3.0-alpha05 - 8.3.2                                                                    | 8.6+<br/>8.5+<br/>8.4+ |
