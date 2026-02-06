@@ -15,8 +15,6 @@ pluginConfiguration:
       value:
         ":library_android_flavors": "demoDebug"
 
-    - name: executeTests
-      value: true
     - name: includeUnitTestResults
       value: true
     - name: includeAndroidTestResults

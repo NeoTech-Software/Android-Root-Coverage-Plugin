@@ -16,15 +16,13 @@ fun AndroidComponentsExtension<*, *, *>.assertMinimumRequiredAGPVersion(required
 }
 
 fun Project.onVariant(variantName: String, action: (variant: Variant?) -> Unit){
-    var variant: Variant? = null
     val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
-    androidComponents.onVariants {
-        if (it.name.replaceFirstChar(Char::titlecase) == variantName.replaceFirstChar(Char::titlecase)) {
-            variant = it
+    androidComponents.onVariants { variant ->
+        if (variant.name.replaceFirstChar(Char::titlecase) == variantName.replaceFirstChar(Char::titlecase)) {
+            afterEvaluate {
+                action(variant)
+            }
         }
-    }
-    afterEvaluate {
-        action(variant)
     }
 }
 

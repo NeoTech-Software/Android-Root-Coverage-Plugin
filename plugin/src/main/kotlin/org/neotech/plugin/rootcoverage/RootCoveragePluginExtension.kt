@@ -30,8 +30,6 @@ open class RootCoveragePluginExtension {
      * Same as executeUnitTests except that this only disables/enables the instrumented Android tests.
      *
      * Default: true
-     *
-     * @see executeTests
      */
     var executeAndroidTests: Boolean = true
 
@@ -47,17 +45,8 @@ open class RootCoveragePluginExtension {
      * Same as executeUnitTests except that this only disables/enables the instrumented Android tests.
      *
      * Default: true
-     *
-     * @see executeTests
      */
     var executeUnitTests: Boolean = true
-
-    /**
-     * @see executeAndroidTests
-     * @see executeUnitTests
-     */
-    @Deprecated("Instead use executeAndroidTests and/or executeUnitTests")
-    var executeTests: Boolean = true
 
     /**
      * Whether to include results from instrumented Android tests into the final coverage report. If disabled this also causes the plugin to
@@ -91,7 +80,7 @@ open class RootCoveragePluginExtension {
      */
     var runOnGradleManagedDevices: Boolean = false
     
-    internal fun shouldExecuteAndroidTests() = executeTests && executeAndroidTests && includeAndroidTestResults
+    internal fun shouldExecuteAndroidTests() = executeAndroidTests && includeAndroidTestResults
 
-    internal fun shouldExecuteUnitTests() = executeTests && executeUnitTests && includeUnitTestResults
+    internal fun shouldExecuteUnitTests() = executeUnitTests && includeUnitTestResults
 }
