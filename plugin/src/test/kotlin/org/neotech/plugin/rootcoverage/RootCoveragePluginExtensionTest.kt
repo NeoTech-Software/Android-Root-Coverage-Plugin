@@ -13,46 +13,4 @@ class RootCoveragePluginExtensionTest {
         assertEquals(true, config.shouldExecuteUnitTests())
         assertEquals(true, config.shouldExecuteAndroidTests())
     }
-
-    @Test
-    fun `executeTests=false overrules execute(Unit or Android)Tests`() {
-        val config = RootCoveragePluginExtension().apply {
-            executeTests = false
-        }
-
-        config.apply {
-            executeAndroidTests = true
-            executeUnitTests = true
-        }
-        assertEquals(false, config.shouldExecuteUnitTests())
-        assertEquals(false, config.shouldExecuteAndroidTests())
-
-        config.apply {
-            executeAndroidTests = false
-            executeUnitTests = false
-        }
-        assertEquals(false, config.shouldExecuteUnitTests())
-        assertEquals(false, config.shouldExecuteAndroidTests())
-    }
-
-    @Test
-    fun `executeTests=true does not overrule execute(Unit or AndroidInstrumented)Tests`() {
-        val config = RootCoveragePluginExtension().apply {
-            executeTests = true
-        }
-
-        config.apply {
-            executeAndroidTests = false
-            executeUnitTests = false
-        }
-        assertEquals(false, config.shouldExecuteUnitTests())
-        assertEquals(false, config.shouldExecuteAndroidTests())
-
-        config.apply {
-            executeAndroidTests = true
-            executeUnitTests = true
-        }
-        assertEquals(true, config.shouldExecuteUnitTests())
-        assertEquals(true, config.shouldExecuteAndroidTests())
-    }
 }

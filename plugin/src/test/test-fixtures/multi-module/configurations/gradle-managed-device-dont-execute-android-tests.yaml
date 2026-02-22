@@ -30,4 +30,4 @@ pluginConfiguration:
     - name: runOnGradleManagedDevices
       value: true
     - name: gradleManagedDeviceName
-      value: nexusoneapi30
+      value: smallphoneapi32

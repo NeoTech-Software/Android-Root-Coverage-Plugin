@@ -1,6 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id "com.android.library"
-    alias(libs.plugins.kotlinAndroid)
+    // Kotlin cannot be applied here again, as the plugin is already on the class path via withPluginClasspath()
 }
 
 android {
@@ -28,7 +30,7 @@ android {
         }
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -39,18 +41,20 @@ android {
 
     testOptions {
         managedDevices {
-            devices {
-                nexusoneapi30 (com.android.build.api.dsl.ManagedVirtualDevice) {
-                    device = "Nexus One"
-                    apiLevel = 30
-                    systemImageSource = "aosp-atd"
+            localDevices {
+                smallphoneapi32 {
+                    device = "Small Phone"
+                    apiLevel = 32
+                    systemImageSource = "aosp"
                 }
             }
         }
     }
+}
 
-    kotlinOptions {
-        jvmTarget = "21"
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 

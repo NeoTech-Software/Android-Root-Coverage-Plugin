@@ -52,11 +52,11 @@ class IntegrationTest(
                 "managedDevices", if (configuration.projectConfiguration.addGradleManagedDevice) {
                     """
                     managedDevices {
-                        devices {
-                            nexusoneapi30 (com.android.build.api.dsl.ManagedVirtualDevice) {
-                                device = "Nexus One"
-                                apiLevel = 30
-                                systemImageSource = "aosp-atd"
+                        localDevices {
+                            smallphoneapi32 {
+                                device = "Small Phone"
+                                apiLevel = 32
+                                systemImageSource = "aosp"
                             }
                         }
                     }
@@ -99,7 +99,7 @@ class IntegrationTest(
             if (!runOnGradleManagedDevices) {
                 executeGradleTasks(listOf("clean", "connectedDebugAndroidTest", "connectedDemoDebugAndroidTest"))
             } else {
-                executeGradleTasks(listOf("clean", "nexusoneapi30DebugAndroidTest", "nexusoneapi30DemoDebugAndroidTest"))
+                executeGradleTasks(listOf("clean", "smallphoneapi32DebugAndroidTest", "smallphoneapi32DemoDebugAndroidTest"))
             }
 
             listOf("coverageReport", "rootCodeCoverageReport", "--stacktrace")
@@ -232,7 +232,7 @@ class IntegrationTest(
 
             val fixture = File("src/test/test-fixtures/multi-module")
 
-            val gradleVersions = arrayOf("8.13", "8.14.3")
+            val gradleVersions = arrayOf("9.1.0", "9.2.1", "9.3.1")
 
             val configurations = File(fixture, "configurations").listFiles() ?: error("Configurations folder not found in $fixture")
             return configurations.flatMap { configuration ->

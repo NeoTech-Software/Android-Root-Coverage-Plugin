@@ -17,7 +17,7 @@ task clean(type: Delete) {
 
 jacoco {
     // https://www.jacoco.org/jacoco/trunk/doc/changes.html
-    toolVersion = "0.8.12"
+    toolVersion = "0.8.14"
 }
 
 rootCoverage {

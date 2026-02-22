@@ -1,6 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id "com.android.application"
-    alias(libs.plugins.kotlinAndroid)
+    // Kotlin cannot be applied here again, as the plugin is already on the class path via withPluginClasspath()
 }
 
 android {
@@ -35,7 +37,7 @@ android {
         release {
             matchingFallbacks = ['full']
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -53,9 +55,11 @@ android {
 
         {{managedDevices}}
     }
+}
 
-    kotlinOptions {
-        jvmTarget = "21"
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 

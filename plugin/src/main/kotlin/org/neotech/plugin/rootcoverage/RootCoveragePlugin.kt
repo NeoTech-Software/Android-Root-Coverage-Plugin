@@ -3,11 +3,11 @@ package org.neotech.plugin.rootcoverage
 import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.dsl.BuildType
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.BaseExtension
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
@@ -24,7 +24,7 @@ import java.io.File
 
 class RootCoveragePlugin : Plugin<Project> {
 
-    private val minimumRequiredAgpVersion = AndroidPluginVersion(8, 8, 0)
+    private val minimumRequiredAgpVersion = AndroidPluginVersion(9, 0, 0)
 
     private lateinit var rootProjectExtension: RootCoveragePluginExtension
 
@@ -201,7 +201,7 @@ class RootCoveragePlugin : Plugin<Project> {
         // - A user provided Gradle Managed Device.
         // - All Gradle Managed Devices if any is available.
         // - All through ADB connected devices.
-        val gradleManagedDevices = subProject.extensions.getByType(BaseExtension::class.java).testOptions.managedDevices.devices
+        val gradleManagedDevices = subProject.extensions.getByType(CommonExtension::class.java).testOptions.managedDevices.allDevices
 
         if (rootProjectExtension.runOnGradleManagedDevices && !rootProjectExtension.gradleManagedDeviceName.isNullOrEmpty()) {
             return AndroidTestTask(

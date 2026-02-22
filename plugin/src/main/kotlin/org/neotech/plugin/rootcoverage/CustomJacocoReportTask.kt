@@ -1,6 +1,5 @@
 package org.neotech.plugin.rootcoverage
 
-import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.RegularFile
@@ -10,7 +9,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.testing.jacoco.tasks.JacocoReport
-import org.neotech.plugin.rootcoverage.utilities.fileTree
 
 abstract class CustomJacocoReportTask : JacocoReport() {
 

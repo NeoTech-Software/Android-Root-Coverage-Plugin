@@ -15,9 +15,6 @@ pluginConfiguration:
       value:
         ":library_android_flavors": "demoDebug"
 
-    - name: executeTests
-      value: true
-
     - name: includeUnitTestResults
       value: true
     - name: includeAndroidTestResults
@@ -28,4 +25,4 @@ pluginConfiguration:
     - name: runOnGradleManagedDevices
       value: true
     - name: gradleManagedDeviceName
-      value: nexusoneapi30
+      value: smallphoneapi32

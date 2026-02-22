@@ -102,7 +102,7 @@ pluginManager.withPlugin("jacoco") {
     // Extracts the JaCoCo runtime jar from the configured JaCoCo Agent
     def extractJacocoRuntimeTask = tasks.register("extractJacocoTestKitRuntime", Copy) {
         from {
-            zipTree(project.configurations.getByName(JacocoPlugin.AGENT_CONFIGURATION_NAME).asPath).matching { include 'jacocoagent.jar' }.singleFile
+            zipTree(project.configurations.named(JacocoPlugin.AGENT_CONFIGURATION_NAME).map {it.asPath }).matching { include 'jacocoagent.jar' }.singleFile
         }
         into project.layout.buildDirectory.dir("testkit")
     }
@@ -118,12 +118,12 @@ pluginManager.withPlugin("jacoco") {
         it.group = "reporting"
         it.description = "Generates testkit-gradle.properties file which can be read and added to a TestKit build as gradle.properties"
         it.dependsOn(extractJacocoRuntimeTask)
-        it.outputFile = new File(buildDir, "testkit/${javaTestTask.name}/gradle.properties")
-        it.property("org.gradle.jvmargs", "\"-javaagent:${buildDir}/testkit/jacocoagent.jar=destfile=${destinationFileProvider.get()}\"")
+        it.destinationFile.set(project.layout.buildDirectory.file("testkit/${javaTestTask.name}/gradle.properties"))
+        it.property("org.gradle.jvmargs", "\"-javaagent:${project.layout.buildDirectory.get()}/testkit/jacocoagent.jar=destfile=${destinationFileProvider.get()}\"")
     }
 
     // Make the generated gradle.properties file available on the test classpath as resource
-    dependencies.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, files(new File(buildDir, "testkit/${javaTestTask.name}")))
+    dependencies.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, files(project.layout.buildDirectory.file("testkit/${javaTestTask.name}")))
 
     // "Fixes": https://github.com/gradle/gradle/issues/16603
     def jacocoTestReport = tasks.named("jacocoTestReport")
