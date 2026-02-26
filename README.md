@@ -29,7 +29,7 @@ following methods:
   ```kotlin
   plugins {
       // Add the plugin to the plugin block
-      id("nl.neotech.plugin.rootcoverage") version "1.11.0"
+      id("nl.neotech.plugin.rootcoverage") version "1.12.0"
   }
   ```
 </details>
@@ -40,7 +40,7 @@ following methods:
   ```groovy
   plugins {
    // Add the plugin to the plugin block
-   id "nl.neotech.plugin.rootcoverage" version "1.11.0"
+   id "nl.neotech.plugin.rootcoverage" version "1.12.0"
   }
   ```
 </details>
@@ -56,7 +56,7 @@ following methods:
    
    buildscript {
       dependencies {
-         classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.11.0'
+         classpath 'nl.neotech.plugin:android-root-coverage-plugin:1.12.0'
       }
    }
    ```
@@ -225,24 +225,24 @@ for specific modules:
 </details>
 
 # 4. Compatibility
-| Version             | [Android Gradle plugin version](https://developer.android.com/studio/releases/gradle-plugin#updating-gradle) | Gradle version         |
-|---------------------|--------------------------------------------------------------------------------------------------------------|------------------------|
-| **1.12.0-SNAPSHOT** | 9.0+                                                                                                         | 9.1+                   |
-| **1.11.0**          | 8.11+                                                                                                        | 8.13+                  |
-| **1.10.0**          | 8.8+                                                                                                         | 8.10.2+                |
-| **1.9.0**           | 8.6+                                                                                                         | 8.7+                   |
-| **1.8.0**           | 8.5.2<br/>8.4.2<br/>8.3.0-alpha05 - 8.3.2                                                                    | 8.6+<br/>8.5+<br/>8.4+ |
-| **Note 1**          | 8.0 - 8.3.0-alpha04                                                                                          | n.a.                   |
-| **1.7.1**           | 7.4                                                                                                          | 7.5+                   |
-| **1.6.0**           | 7.3                                                                                                          | 7.4+                   |
-| **1.5.3**           | 7.2                                                                                                          | 7.3+                   |
-| **Note 2**          | 7.0 - 7.2.0-alpha05                                                                                          | n.a.                   |
-| **1.4.0**           | 4.2<br/>4.1                                                                                                  | 6.7.1+<br/>6.5+        |
-| **1.3.1**           | 4.0<br/>3.6                                                                                                  | 6.1.1+<br/>5.6.4+      |
-| **1.2.1**           | 3.5                                                                                                          | 5.4.1+                 |
-| **1.1.2**           | 3.4                                                                                                          | 5.1.1+                 |
-| **1.1.1**           | 3.3                                                                                                          | 4.10.1+                |
-| **1.0.2**           | 3.2                                                                                                          | 4.6+                   |
+| Version      | [Android Gradle plugin version](https://developer.android.com/studio/releases/gradle-plugin#updating-gradle) | Gradle version         |
+|--------------|--------------------------------------------------------------------------------------------------------------|------------------------|
+| **1.12.0**   | 9.0+                                                                                                         | 9.1+                   |
+| **1.11.0**   | 8.11+                                                                                                        | 8.13+                  |
+| **1.10.0**   | 8.8+                                                                                                         | 8.10.2+                |
+| **1.9.0**    | 8.6+                                                                                                         | 8.7+                   |
+| **1.8.0**    | 8.5.2<br/>8.4.2<br/>8.3.0-alpha05 - 8.3.2                                                                    | 8.6+<br/>8.5+<br/>8.4+ |
+| **Note 1**   | 8.0 - 8.3.0-alpha04                                                                                          | n.a.                   |
+| **1.7.1**    | 7.4                                                                                                          | 7.5+                   |
+| **1.6.0**    | 7.3                                                                                                          | 7.4+                   |
+| **1.5.3**    | 7.2                                                                                                          | 7.3+                   |
+| **Note 2**   | 7.0 - 7.2.0-alpha05                                                                                          | n.a.                   |
+| **1.4.0**    | 4.2<br/>4.1                                                                                                  | 6.7.1+<br/>6.5+        |
+| **1.3.1**    | 4.0<br/>3.6                                                                                                  | 6.1.1+<br/>5.6.4+      |
+| **1.2.1**    | 3.5                                                                                                          | 5.4.1+                 |
+| **1.1.2**    | 3.4                                                                                                          | 5.1.1+                 |
+| **1.1.1**    | 3.3                                                                                                          | 4.10.1+                |
+| **1.0.2**    | 3.2                                                                                                          | 4.6+                   |
 
 <details>
   <summary><b>Note 1: AGP 8.0-8.3.0-alpha04</b></summary>
